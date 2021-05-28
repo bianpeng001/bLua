@@ -6,6 +6,8 @@
 
 所以, 解决或者改善这些问题, 应该是大有需求的. 我把之前的一些尝试和思考, 写在这个小工程里. 不一定都合适, 主要是提供一个解决思路. 抛砖引玉, 欢迎讨论.
 
+放到这里来, 也是为了接受社会的拷打, 提升代码质量, 为Unity3D的lua热更技术, 做一点点小小的贡献.
+Unity3D的热更, 有两个流派, 一个是把lua当补丁用, 一个是把lua尽量用. 两者各有优缺点, 线上也都在使用.
 
 ## 介绍
 
@@ -26,14 +28,15 @@
 - overload
 	从内心是抗拒的, 需要运行时根据参数的数量, 类型, 进行二次分发. 太浪费, 可以有限支持一下根据参数个数. 另外, 提供了机制来减少overload.
 - 支持泛型?
-	由于il2cpp的问题, 值类型, 总归是个坑. 但后面, 应该也许可以支持一下下.
+	由于il2cpp的问题, 值类型, 总归是个坑. 但后面, 应该也许可以有限地支持一下下.
 - 泛型容器?
 	容器还是要的, T[], List<T>, Dictionary<K, V>, HashSet<T>. 参见不支持泛型, 那条.
 - delegate
-	本来不想做了, 觉得挺麻烦的, 不过做着做着, 发现意外收获. 原来真相早就在面前, 迟迟没有看见. 其实特别简单.
-	而且, 有了这个, 可以做一些易用的功能了. 比如, 组件里面的临时的属性读写. 不用依赖wrap了, 可以按需方便的加.
+	本来想不支持了, 觉得挺麻烦的, 不过做着做着, 发现意外收获. 原来真相早就在面前, 却骑驴找马, 实际做的时候, 比预想的要简单.
+	有了这个, 可以做一些易用的功能了. 比如, 组件里面的临时的属性读写. 不用依赖wrap了, 可以按需方便的加.
+	或者写代码的时候, 给lua那边一个回调函数.
 - 升级到lua5.4.3
-	升级到最新, 关爱强迫症患者.
+	升级到最新版本, 关爱强迫症患者.
 
 
 ## 类型机制
@@ -64,8 +67,8 @@ c#这边提供一个delegate, 在lua端调用
 ```
 
 - 动态属性
-c#给module注册两个方法, get_path, set_path
-这样, behaviour里面的属性, 就可以方便的注册到lua的behaviour里面去, 并不用走wrap, 更不用把obj传来传去
+c#给module注册两个方法, get_XXXX, set_XXXX
+这样, behaviour里面的属性, 就可以方便的注册到lua的behaviour里面去, 并不用走wrap, 也不用把obj传来传去, 简单灵活. 等后面有时间, 把这个语法真的改成属性访问就更加美好了.
 ```CSharp
 	AddProperty("path", () => path, value => path = value);
 ```
@@ -74,6 +77,24 @@ c#给module注册两个方法, get_path, set_path
 	print('path', module.get_path())
 ```
 
+-- 初始化过程
+```CSharp
+{
+	state = new LuaState(new LuaFileLoader());
+	state.Create();
+
+	state.DoFile("StartUp.lua");
+
+	// init wrap
+	var reg = new LuaRegister();
+	Binder.Bind(reg);
+	AutoWrap.Init(state, reg);
+	state.DoFile("Binder.lua");
+}
+```
+
+## 致谢
+感谢tolua这个项目, 提供了不少思路, 学到了很多.
 
 ## 联系我
 email: bianpeng001@163.com
