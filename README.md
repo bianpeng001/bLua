@@ -48,33 +48,38 @@ Unity3D的热更, 有两个流派, 一个是把lua当补丁用, 一个是把lua�
 
 - delegate
 c#这边提供一个delegate, 在lua端调用
+
+c#:
 ```CSharp
-	public static LuaDelegate GetDelegate()
-	{
-		var method = new AutoWrap.Func<int, int, int, int>()
-		{
-			cb = (a, b, c) => a + b + c,
-		};
-		return new LuaDelegate(method);
-	}
+public static LuaDelegate GetDelegate()
+{
+	return new LuaDelegate(AutoWrap.CreateFunc(
+		(int a, int b, int c) => a + b + c
+	));
+}
 ```
+
+lua:
 ```lua
-    local Example = bLua.Example
-    local dele = Example.GetDelegate()
-    print(dele)
-    local sum = dele(1, 2, 3)
-    print('sum', sum)
+	local Example = bLua.Example
+	local dele = Example.GetDelegate()
+	print(dele)
+	local sum = dele(1, 2, 3)
+	print('sum', sum)
 ```
 
 - 动态属性
 c#给module注册两个方法, get_XXXX, set_XXXX
-这样, behaviour里面的属性, 就可以方便的注册到lua的behaviour里面去, 并不用走wrap, 也不用把obj传来传去, 简单灵活. 等后面有时间, 把这个语法真的改成属性访问就更加美好了.
+这样, behaviour里面的属性, 就可以方便的注册到lua的behaviour里面去, 并不用走wrap, 也不用把obj传来传去, 简单灵活.
 ```CSharp
 	AddProperty("path", () => path, value => path = value);
+	AddProperty("enabled", () => enabled, value => enabled = value);
 ```
 
 ```lua
-	print('path', module.get_path())
+	print('path', module.path)
+	print('enabled', module.enabled)
+	module.enabled = true
 ```
 
 -- 初始化过程
