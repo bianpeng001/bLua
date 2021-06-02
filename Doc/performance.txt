@@ -1,0 +1,52 @@
+比较delegate 和 反射, 和直接调用
+
+using System;
+using System.Reflection;
+
+public class MyWrapper
+{
+    // this is the 'reflection' bit
+    private static MethodInfo _method = typeof(ThirdPartyComponent).GetMethod("SomePrivateMethod", BindingFlags.NonPublic | BindingFlags.Static);
+
+    public string SomePublicMethod()
+    {
+        // now we can invoke the method using the method info
+        // note there are no parameters to pass
+        return (string) _method.Invoke(null, null);
+    }
+
+}
+
+In performance terms, this compares pretty unfavourably against a plain old method call. Initial performance tests showed that 10,000,000 calls to SomePublicMethod above were taking over 12 seconds compared to calling the same method publicly (I setup stub methods to make the performance more measurable) which took less than 1/10 of a second. Ouch!
+
+It was then that I realised that creating a strongly typed delegate might give us a little more speed...
+
+using System;
+using System.Reflection;
+
+public class MyWrapper
+{
+    // this is the 'reflection' bit
+    private static MethodInfo _method = typeof(ThirdPartyComponent).GetMethod("SomePrivateMethod", BindingFlags.NonPublic | BindingFlags.Static);
+    
+    // This is my delegate with the same signature as the private method
+    private delegate string MyDelegate();
+    
+    // Create an instance of the delegate pointing at our private function
+    private static MyDelegate _delegate = (MyDelegate) Delegate.CreateDelegate(typeof(MyDelegate), _method);
+
+    public string SomePublicMethod()
+    {
+        // invoke the delegate
+        return _delegate();
+    }
+
+}
+
+Here's the final results for 10,000,000 calls:
+
+Invocation Method	Duration (seconds)
+Direct Call to Public Method	0.0625
+Method.Invoke(null, null)	12.0312
+Delegate	0.1093
+
