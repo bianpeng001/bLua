@@ -291,9 +291,9 @@ namespace bLua
 
             var className = lua_tostring(L, 1);
             var cls = luaRegister.GetClass(className);
-            Assert(lua_istable(L, 2));
+            AssertTable(lua_istable(L, 2));
             lua_pushvalue(L, 2);
-            Assert(lua_istable(L, 3));
+            AssertTable(lua_istable(L, 3));
 
             if (cls.luaref != LUA_NOREF)
             {
@@ -310,7 +310,7 @@ namespace bLua
         private static int TypeOf(IntPtr L)
         {
             CheckArgumentCount(L, 1);
-            Assert(lua_istable(L, 1));
+            AssertTable(lua_istable(L, 1));
 
             lua_pushstring(L, "class");
             lua_rawget(L, -2);
@@ -400,10 +400,9 @@ namespace bLua
             return true;
         }
 
-        public static void Assert(bool expected, string message = "")
+        private static void AssertTable(bool success)
         {
-            if (!expected)
-                throw new Exception($"assert failed {message}");
+            LogUtil.Assert(success, "table expected");
         }
     }
 }

@@ -31,6 +31,10 @@ namespace bLua.Extension
             return GameObject.Instantiate<GameObject>(_this);
         }
 
+        public static void Destroy2(GameObject obj)
+        {
+            GameObject.Destroy(obj);
+        }
     }
 
 }

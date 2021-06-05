@@ -1,6 +1,5 @@
 <linker>
-    <assembly fullname="FootballNetwork" preserve="all" />
-	<assembly fullname="Google.Protobuf" preserve="all" />
+	
 </linker>
 
 

@@ -334,9 +334,9 @@ namespace bLua
             int ctx,
             lua_KFunction k);
 
-        public static ErrorCode lua_pcall(IntPtr L, int nargs, int nresults, int errfunc)
+        public static ErrorCode lua_pcall(IntPtr L, int nargs, int nresults, int msgh)
         {
-            return lua_pcallk(L, nargs, nresults, errfunc, 0, null);
+            return lua_pcallk(L, nargs, nresults, msgh, 0, null);
         }
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]

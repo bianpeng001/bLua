@@ -154,16 +154,20 @@ namespace bLua
 
         public LuaTable Require(string path)
         {
-            var top1 = lua_gettop(L);
+            var topBegin = lua_gettop(L);
 
             lua_getglobal(L, "require");
             lua_pushstring(L, path);
-            lua_call(L, 1, 1);
+            
+            if (!PCall(1, 1))
+                return null;
+
             var luaref = new LuaRef(this);
             var table = new LuaTable(this, luaref);
 
-            var top2 = lua_gettop(L);
-            lua_pop(L, top2 - top1);
+            var topEnd = lua_gettop(L);
+            if (topEnd != topBegin)
+                lua_pop(L, topEnd - topBegin);
             return table;
         }
 
@@ -182,7 +186,7 @@ namespace bLua
 
         public LuaTable DoFileRetTable(string path)
         {
-            int top = lua_gettop(L);
+            int topBegin = lua_gettop(L);
             if (!DoFile(path))
             {
                 return null;
@@ -191,8 +195,8 @@ namespace bLua
             LuaTable tbl = new LuaTable(this, luaref);
 
             int topEnd = lua_gettop(L);
-            if (topEnd != top)
-                lua_pop(L, topEnd - top);
+            if (topEnd != topBegin)
+                lua_pop(L, topEnd - topBegin);
 
             return tbl;
         }
@@ -222,16 +226,14 @@ namespace bLua
 
         private bool PCall(int args, int rets)
         {
-            var top = lua_gettop(L);
             if (lua_pcall(L, args, rets, 0) != ErrorCode.LUA_OK)
             {
-                var msg = AutoWrap.TypeTrait<string>.pull(L, -1);
-                Debug.LogError(msg);
+                var msg = lua_tostring(L, -1);
+                LogUtil.Error(msg);
                 lua_pop(L, 1);
 
                 return false;
             }
-            lua_pop(L, lua_gettop(L) - top);
             return true;
         }
 

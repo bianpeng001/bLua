@@ -26,6 +26,14 @@ namespace bLua
     {
         private static Example02 instance;
 
+        private Camera mainCamera;
+        public Camera GetMainCamera()
+        {
+            if (mainCamera == null)
+                mainCamera = Camera.main;
+            return mainCamera;
+        }
+
         void Awake()
         {
             instance = this;
@@ -49,6 +57,15 @@ namespace bLua
         {
             base.OnDestroy();
             Cs2Lua.Clean();
+        }
+
+        public Vector3 GetFloorPoint()
+        {
+            var ray = GetMainCamera().ScreenPointToRay(Input.mousePosition);
+            new Plane(Vector3.up, 0.0f).Raycast(ray, out var d);
+            var pos = ray.GetPoint(d);
+
+            return pos;
         }
 
     }

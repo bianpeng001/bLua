@@ -68,6 +68,7 @@ reg.Add("UnityEngine.Matrix4x4", typeof(UnityEngine.Matrix4x4), null, typeof(Uni
 reg.Add("bLua.LuaDelegate", typeof(bLua.LuaDelegate), null, typeof(bLua_LuaDelegate));
 reg.Add("bLua.LogUtil", typeof(bLua.LogUtil), null, typeof(bLua_LogUtil));
 reg.Add("bLua.Example", typeof(bLua.Example), typeof(UnityEngine.MonoBehaviour), typeof(bLua_Example));
+reg.Add("bLua.Example02", typeof(bLua.Example02), typeof(UnityEngine.MonoBehaviour), typeof(bLua_Example02));
 }
 public static void DoNotCallMe()
 {

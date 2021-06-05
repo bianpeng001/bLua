@@ -168,7 +168,8 @@ namespace bLua
 
         public static T[] PullArray<T>(IntPtr L, int pos)
         {
-            Assert(lua_istable(L, pos));
+            AssertTable(lua_istable(L, pos));
+
             int len = (int)lua_rawlen(L, pos);
             if (len == 0)
                 return null;
@@ -201,7 +202,8 @@ namespace bLua
 
         public static List<T> PullList<T>(IntPtr L, int pos)
         {
-            Assert(lua_istable(L, pos));
+            AssertTable(lua_istable(L, pos));
+
             int len = (int)lua_rawlen(L, pos);
             if (len == 0)
                 return null;

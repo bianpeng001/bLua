@@ -49,9 +49,16 @@ namespace bLua
             luaref.Rawget(state);
         }
 
-        public void EndCall(int nargs, int nresultes)
+        public void EndCall(int nargs, int nrets)
         {
-            lua_call(state, nargs, nresultes);
+            var err = lua_pcall(state, nargs, nrets, 0);
+            if (err != ErrorCode.LUA_OK)
+            {
+                var msg = lua_tostring(state, -1);
+                lua_pop(state, 1);
+                LogUtil.Error(msg);
+                throw new Exception();
+            }
         }
 
         public void Clean()

@@ -73,6 +73,7 @@ bLua = {}
 bLua.LuaDelegate = DefineClass({ class = "bLua.LuaDelegate" })
 bLua.LogUtil = DefineClass({ class = "bLua.LogUtil" })
 bLua.Example = DefineClass({ class = "bLua.Example", baseClass = "UnityEngine.MonoBehaviour" })
+bLua.Example02 = DefineClass({ class = "bLua.Example02", baseClass = "UnityEngine.MonoBehaviour" })
 
 bLua.LuaDelegate.__call = CallLuaDelegate or function(obj, ...)
 	print(obj, ...)

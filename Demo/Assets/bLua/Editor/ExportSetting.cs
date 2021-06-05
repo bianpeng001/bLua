@@ -364,6 +364,11 @@ namespace bLua
                 type = typeof(bLua.Example),
                 baseClass = typeof(UnityEngine.MonoBehaviour),
             },
+            new ExportType()
+            {
+                type = typeof(bLua.Example02),
+                baseClass = typeof(UnityEngine.MonoBehaviour),
+            },
         };
     }
 }
