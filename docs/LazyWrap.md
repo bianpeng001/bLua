@@ -236,7 +236,8 @@ public static Delegate CreateDelegate(Type type, object firstArgument, MethodInf
 
 这个就很香了, 如果是静态方法, firstArgument是null. 简直完美. 这个delegate, 可以适用于一切方法.
 
-最终结果, 应该是一个IUnityMethod的类, 需要做必要的lua栈push/pull操作. 结合上面的TypeTrait工具类, 这里的代码就很机械了.
+最终结果应该是一个IUnityMethod的类, 需要做必要的lua栈push/pull操作. 结合上面的TypeTrait工具类, 这里的代码就很美丽了.
+
 ```CSharp
 public class Func<T1, T2, Result> : IUnityMethod
 {
@@ -297,6 +298,7 @@ public static void LookAt(UnityEngine.Transform _this, UnityEngine.Vector3 world
 {
 	_this.LookAt(worldPosition);
 }
+// ...
 ```
 
 
@@ -307,6 +309,21 @@ TODO
 ### 然则, 到底省在哪里?
 既然还是要wrap, 一些人可能已经发现了, 相对于传统的wrap, 到底省在哪里了?
 此时应该音乐响起, 真相只有一个, 下面就是见证奇迹的时刻!
+
+总结一下上面的姿势, 主要在于复用了相同函数声明类型的lua出栈入栈代码. 简单的来说, 如果两个函数的参数是一样的, 那他的lua这里操作栈的部分, 也就可以复用. 然后实现部分, 用delegate来对应到目标方法. 然后, 作为有经验的老码农, 负责任的说, 大部分的函数, 信息主要在函数名本身, 他的用到的参数的类型, 尽管没有啥限制, 但程序员并不会用太多.
+
+比如这几个类型
+```CSharp
+void f();
+void f(int);
+void f(int, int);
+void f(string);
+void f(object);
+void f(object, int);
+void f(object, int, int);
+void f(object, string);
+```
+呆想想, 这种是最多的.
 
 TODO:
 
