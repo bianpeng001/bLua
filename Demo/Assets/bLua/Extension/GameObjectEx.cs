@@ -35,6 +35,12 @@ namespace bLua.Extension
         {
             GameObject.Destroy(obj);
         }
+
+        public static void LookAt(GameObject _this, Vector3 point)
+        {
+            _this.transform.LookAt(point, Vector3.up);
+        }
+
     }
 
 }

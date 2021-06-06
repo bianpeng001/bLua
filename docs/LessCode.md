@@ -132,9 +132,9 @@ AutoWrap.TypeTrait<Vector3>.Set(
         LuaLib.lua_rawgeti(L, pos, 3);
 
         Vector3 v;
-        v.x = Float.pull(L, pos + 1);
-        v.y = Float.pull(L, pos + 2);
-        v.z = Float.pull(L, pos + 3);
+        v.x = Float.pull(L, -3);
+        v.y = Float.pull(L, -2);
+        v.z = Float.pull(L, -1);
 
         LuaLib.lua_pop(L, 3);
 

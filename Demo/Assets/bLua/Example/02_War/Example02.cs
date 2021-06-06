@@ -68,6 +68,13 @@ namespace bLua
             return pos;
         }
 
+        public static Vector3 GetDeltaPosition(Vector3 start, Vector3 end, float backsize)
+        {
+            var delta = end - start;
+            var ray = new Ray(start, delta.normalized);
+            return ray.GetPoint(delta.magnitude - backsize) - start;
+        }
+
     }
 }
 

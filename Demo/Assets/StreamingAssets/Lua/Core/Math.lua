@@ -36,6 +36,8 @@ function Vector3.New(x, y, z)
     return v
 end
 
+Vector3.zero = Vector3.New(0, 0, 0)
+
 function Vector3:Length()
     return sqrt(self:SqrLength())
 end

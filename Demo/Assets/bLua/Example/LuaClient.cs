@@ -97,17 +97,18 @@ namespace bLua
                 },
                 (L, pos) =>
                 {
+                    var top = LuaLib.lua_gettop(L);
                     if (pos < 0)
-                        pos = LuaLib.lua_gettop(L) + pos + 1;
+                        pos = top + pos + 1;
 
                     LuaLib.lua_rawgeti(L, pos, 1);
                     LuaLib.lua_rawgeti(L, pos, 2);
                     LuaLib.lua_rawgeti(L, pos, 3);
 
                     Vector3 v;
-                    v.x = Float.pull(L, pos + 1);
-                    v.y = Float.pull(L, pos + 2);
-                    v.z = Float.pull(L, pos + 3);
+                    v.x = Float.pull(L, -3);
+                    v.y = Float.pull(L, -2);
+                    v.z = Float.pull(L, -1);
 
                     LuaLib.lua_pop(L, 3);
 
@@ -125,15 +126,16 @@ namespace bLua
                 },
                 (L, pos) =>
                 {
+                    var top = LuaLib.lua_gettop(L);
                     if (pos < 0)
-                        pos = LuaLib.lua_gettop(L) + pos + 1;
+                        pos = top + pos + 1;
 
                     LuaLib.lua_rawgeti(L, pos, 1);
                     LuaLib.lua_rawgeti(L, pos, 2);
 
                     Vector2 v;
-                    v.x = Float.pull(L, pos + 1);
-                    v.y = Float.pull(L, pos + 2);
+                    v.x = Float.pull(L, -2);
+                    v.y = Float.pull(L, -1);
 
                     LuaLib.lua_pop(L, 2);
 
@@ -155,8 +157,9 @@ namespace bLua
                 },
                 (L, pos) =>
                 {
+                    var top = LuaLib.lua_gettop(L);
                     if (pos < 0)
-                        pos = LuaLib.lua_gettop(L) + pos + 1;
+                        pos = top + pos + 1;
 
                     LuaLib.lua_rawgeti(L, pos, 1);
                     LuaLib.lua_rawgeti(L, pos, 2);
@@ -164,10 +167,10 @@ namespace bLua
                     LuaLib.lua_rawgeti(L, pos, 4);
 
                     Color color;
-                    color.r = Float.pull(L, pos + 1);
-                    color.g = Float.pull(L, pos + 2);
-                    color.b = Float.pull(L, pos + 3);
-                    color.a = Float.pull(L, pos + 4);
+                    color.r = Float.pull(L, -4);
+                    color.g = Float.pull(L, -3);
+                    color.b = Float.pull(L, -2);
+                    color.a = Float.pull(L, -1);
 
                     LuaLib.lua_pop(L, 4);
                     

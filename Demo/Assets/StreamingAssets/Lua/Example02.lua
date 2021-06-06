@@ -1,4 +1,5 @@
 local GameObject = UnityEngine.GameObject
+local Example02 = bLua.Example02
 
 local LuaBehaviour = require("Core/LuaBehaviour")
 local Math = require("Core/Math")
@@ -47,7 +48,7 @@ end
 function Player:Action()
     if self.action == ACT_MOVE then
         if self.time < 1 then
-            self.time = self.time + _deltaTime / 5
+            self.time = self.time + _deltaTime * self.timeRactor
             local pos = Vector3.Add(self.startPosition, Vector3.Scale(self.deltaPosition, self.time))
             self:SetPosition(pos)
         else
@@ -104,7 +105,9 @@ local function CreatePlayer()
     p.action = ACT_MOVE
     p.time = 0
     p.startPosition = pos
-    p.deltaPosition = { 0, 0, -5 }
+    p.deltaPosition = Example02.GetDeltaPosition(pos, Vector3.zero, 1.0)
+    p.timeRactor = 1/ 3.0
+    p.gameObject:LookAt(Vector3.zero)
 end
 
 local _tickTime = 0

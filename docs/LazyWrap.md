@@ -11,8 +11,9 @@
 
 ### 枚举
 
-建议枚举类型数据不用c#来完成. 直接放到lua里面去. 枚举事实上可以当做一种常量.
-这样的话, 就是类型系统那边要做一些额外的处理.
+建议枚举类型数据不用生成c#代码来完成注册初始化, 比如UnityEngine.KeyCode的wrap文件, 大约有2600行.
+直接放到lua里面去, 枚举事实上可以当做一种常量. 全转成lua, 岂不美哉.
+就是类型系统那边要做一些修改, 自动处理枚举和int, 有些额外的处理.
 
 例如: 单位类型
 ```CSharp
@@ -38,9 +39,6 @@ Game.UnityType = {
     Boss = 103,
 }
 ```
-直接放到lua里面去初始化枚举数据, 也减掉不少wrap代码量.
-
-比如UnityEngine.KeyCode的wrap文件, 原本有2600行, 全转成lua, 岂不美哉.
 
 ### 方法和属性
 
@@ -74,14 +72,14 @@ end
 
 控制台运行:
 ```
-$lua lazywrap_test.lua
+$ lua lazywrap_test.lua
 ```
 
 控制台输出:
 ```
-get field       SayHello
+register method SayHello
 call method     hello   1234
-get field       SayHello
+register method SayHello
 call method     hi      5678
 ```
 
@@ -160,6 +158,48 @@ call method     UnityEngine.GameObject  SayHello        hi      5678
 
 接下来, 把RegisterMethod换成可以注册c#方法的基础方法, 按需注册顺利完成.
 
+### 注册属性
+c#的属性的实现, 实际上是get_XXX, set_XXX两个方法, 算是一个语法糖. 包括index这种语法, 也是一样的. c#编译器提供了一个语法糖, 把属性访问, 翻译成对这两个方法的调用.
+lua这边, 只能自己做了. 需要拦截read/write两个的入口.
+
+```lua
+-- prop test
+local function Test1()
+    local mt = {}
+    mt.__index = function(obj, k)
+        print('get', obj, k)
+        return 1
+    end
+    mt.__newindex = function(obj, k, v)
+        print('set', obj, k, v)
+    end
+
+    local a = {}
+    setmetatable(a, mt)
+
+	-- read
+    a.x = 1
+    a.x = 2
+	-- write
+    print(a.x)
+    print(a.y)
+end
+```
+
+控制台输出:
+```
+set     table: 0000023399EA7A10 x       1
+set     table: 0000023399EA7A10 x       2
+get     table: 0000023399EA7A10 x
+1
+get     table: 0000023399EA7A10 y
+1
+```
+
+这两个地方, 换成read/write的方法调用即可, 其他逻辑跟前面的方法注册一样.
+
+结论, 只是为了语法完整性而支持了一下属性, 其实比直接的方法调用, 多了一个查找过程, 所以并不是特别的划算. 如果不嫌丑的话, 还是建议方法调用, 直接a:get_XXX().
+
 #### overload
 c#对overload比较友好, 只要参数不同, 就能自动定位到正确的方法. 这是静态类型语言与生俱来的一个优势.
 但是动态类型语言lua里面, 要达到overload, 还要更多的信息.
@@ -168,28 +208,101 @@ c#对overload比较友好, 只要参数不同, 就能自动定位到正确的方
 
 所以, 建议尽量避免依赖参数类型的校验的overload.
 
+TODO:
+
 ### 动态wrap
 
-动态注册相比于静态注册, 有另外一个问题要处理, 既动态的把对应的delegate实例化出来, 每次返回一个函数. 我们可以用一个if语句, 来分配每一个方法, 看起来就像这样
+动态注册相比于静态注册, 有另外一个问题要处理, 既动态的把对应的delegate实例化出来, 每次返回一个函数. 
+原始的想法是这样, 可以用一个if语句, 分配每一个方法, 看起来就像这样:
 
-```
+```CSharp
 switch(name)
 {
-	case 'XXX':
+	case "XXX":
 		return XXX;
-	case 'YYY':
+	case "YYY":
 		return YYY;
 }
 ```
 
-功能没有问题, 思路清晰, 代码简单, 直接明了, 是一个不错的方式. 其实我还是找到了另一个方案2, 不一定比这个好, 也算是目前.net框架下面可以利用的一个feature.
+功能没有问题, 思路清晰, 代码简单, 直接明了, 是一个不错的方式. 
+但我觉得应该再优雅一点, 很幸运确实在.net框架下找到了方案2, 性能不一定比这个好, 有选择总比没选择好. 后面有时间, 可以把两个方案都实现对比一下.
 
-### 注册属性
-TODO:
+从概念上来说, 有点像c++里面的成员方法指针.
+
+```CSharp
+public static Delegate CreateDelegate(Type type, object firstArgument, MethodInfo method);
+```
+
+这个就很香了, 如果是静态方法, firstArgument是null. 简直完美. 这个delegate, 可以适用于一切方法.
+
+最终结果, 应该是一个IUnityMethod的类, 需要做必要的lua栈push/pull操作. 结合上面的TypeTrait工具类, 这里的代码就很机械了.
+```CSharp
+public class Func<T1, T2, Result> : IUnityMethod
+{
+	public System.Func<T1, T2, Result> cb;
+
+	public int Call(IntPtr L)
+	{
+		var t1 = TypeTrait<T1>.pull(L, -2);
+		var t2 = TypeTrait<T2>.pull(L, -1);
+
+		var result = cb(t1, t2);
+		TypeTrait<Result>.push(L, result);
+
+		return TypeTrait<Result>.retCount;
+	}
+}
+```
+这样的代码, 只跟参数个数有关, 于是我复制粘贴了10份, 每一个都是比上一个多一个参数, T1 ... T10, 十分的壮观
+```CSharp
+public int Call(IntPtr L)
+{
+	var t1 = TypeTrait<T1>.pull(L, -10);
+	var t2 = TypeTrait<T2>.pull(L, -9);
+	var t3 = TypeTrait<T3>.pull(L, -8);
+	var t4 = TypeTrait<T4>.pull(L, -7);
+	var t5 = TypeTrait<T5>.pull(L, -6);
+	var t6 = TypeTrait<T6>.pull(L, -5);
+	var t7 = TypeTrait<T7>.pull(L, -4);
+	var t8 = TypeTrait<T8>.pull(L, -3);
+	var t9 = TypeTrait<T9>.pull(L, -2);
+	var t10 = TypeTrait<T10>.pull(L, -1);
+
+	var result = cb(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+	TypeTrait<Result>.push(L, result);
+
+	return TypeTrait<Result>.retCount;
+}
+```
+10个参数够了, 真的不少了, 超出人类记忆的极限了. 想想十个正交的条件, 得有多少个结果. 提高代码阅读性来避免出现更多的参数吧.
+
+美好的生活到此就差不多了, 除了静态方法, 还有更多的实例方法存在. 问题是在于那个firstArgument, 对应c#的this. 因为实例方法的this, 是直接带到delegate里面去的. 所以, 想要继续沿用的话, delegate的对象需要动态创建销毁, 那应该是效率极其低下的一个选择, 不用考虑了.
+
+所以, 从节约的角度, 强力推荐使用静态方法. 但对于那些无法避免的实例方法咋办, 请看下节, 还是要引入一种wrap. 把 instance method 转换成 static method.
 
 ### 需要另一种wrap
 对于实例方法, 实例属性, 需要做一些wrap操作. 把实例方法, wrap成静态方法.
 这种wrap, 其实也是要生成代码的, 但是没有跨语言调用, 且过程特别简单, 仅仅是把参数复制了一遍. 相当于操作lua栈, 并复制参数, 肯定是省多了.
+```CSharp
+public static void SetParent(UnityEngine.Transform _this, UnityEngine.Transform p)
+{
+	_this.SetParent(p);
+}
+public static void Translate(UnityEngine.Transform _this, float x, float y, float z)
+{
+	_this.Translate(x, y, z);
+}
+public static void LookAt(UnityEngine.Transform _this, UnityEngine.Vector3 worldPosition)
+{
+	_this.LookAt(worldPosition);
+}
+```
+
+
+### 静态属性
+这又是一个很烦人的概念, c#允许类上面有静态的属性, 而且还挺常用的.
+TODO
 
 ### 然则, 到底省在哪里?
 既然还是要wrap, 一些人可能已经发现了, 相对于传统的wrap, 到底省在哪里了?
