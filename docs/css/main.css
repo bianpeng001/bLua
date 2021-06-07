@@ -13,3 +13,17 @@ div#mainContent
     background-color: #f4ff0054;
 }
 
+div#replaceItem
+{
+	text-align: center;
+	font-family: "楷体";
+	font-size: 48pt;
+}
+
+div#textItem
+{
+    text-align: center;
+    font-family: "JetBrains Mono NL";
+    src: url("JetBrainsMonoNL-Regular.ttf") format('truetype');
+}
+
