@@ -99,6 +99,7 @@ namespace bLua
             cs2lua = state.Require(path);
             send = cs2lua.GetFunction("SendMessage");
             register = cs2lua.GetFunction("RegisterMessage");
+
         }
 
         public static void Clean()

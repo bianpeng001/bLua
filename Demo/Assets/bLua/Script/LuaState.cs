@@ -60,7 +60,7 @@ namespace bLua
         {
             LogUtil.Assert(objList.Count > 0
                 && obj == objList[obj.index],
-                "aaa");
+                "obj is not belong to state");
 
             var lastIndex = objList.Count - 1;
             if (lastIndex != obj.index)
@@ -69,6 +69,7 @@ namespace bLua
                 objList[obj.index] = last;
                 last.index = obj.index;
             }
+            obj.index = -1;
             objList[lastIndex] = null;
             objList.RemoveAt(lastIndex);
         }
@@ -285,6 +286,10 @@ namespace bLua
         public readonly ObjectCache objCache = new ObjectCache();
 
         public static implicit operator IntPtr(LuaState state) => state.L;
+
+
     }
 }
+
+
 

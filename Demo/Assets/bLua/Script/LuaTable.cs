@@ -32,6 +32,7 @@ namespace bLua
         {
             this.state = state;
             this.luaref = luaref;
+
             state.AddLuaObject(this);
         }
 
