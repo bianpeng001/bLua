@@ -53,7 +53,6 @@ namespace bLua
                 onUpdate.Call();
         }
 
-
         public Vector3 GetFloorPoint()
         {
             var ray = GetMainCamera().ScreenPointToRay(Input.mousePosition);
