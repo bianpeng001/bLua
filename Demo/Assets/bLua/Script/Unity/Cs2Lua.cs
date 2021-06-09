@@ -30,15 +30,13 @@ namespace bLua
 
         private static void PushMessage(string message)
         {
-            if (msgDict.TryGetValue(message, out var msgId))
-                AutoWrap.TypeTrait<int>.push(state, msgId);
-            else
+            if (!msgDict.TryGetValue(message, out var msgId))
             {
-                ++msgIdSeed;
-                msgDict.Add(message, msgIdSeed);
-                RegisterMessage(message, msgIdSeed);
-                AutoWrap.TypeTrait<int>.push(state, msgIdSeed);
+                msgId = ++msgIdSeed;
+                msgDict.Add(message, msgId);
+                RegisterMessage(message, msgId);
             }
+            AutoWrap.TypeTrait<int>.push(state, msgId);
         }
 
         private static void RegisterMessage(string message, int msgId)

@@ -53,11 +53,6 @@ namespace bLua
                 onUpdate.Call();
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            Cs2Lua.Clean();
-        }
 
         public Vector3 GetFloorPoint()
         {
