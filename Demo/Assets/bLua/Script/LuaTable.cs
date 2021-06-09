@@ -32,10 +32,12 @@ namespace bLua
         {
             this.state = state;
             this.luaref = luaref;
+            state.AddLuaObject(this);
         }
 
         protected override void OnDispose()
         {
+            state.RemoveLuaObject(this);
             luaref.Destroy(state);
         }
 

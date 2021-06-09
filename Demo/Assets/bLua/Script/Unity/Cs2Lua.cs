@@ -43,44 +43,49 @@ namespace bLua
 
         private static void RegisterMessage(string message, int msgId)
         {
-            register.BeginCall();
+            register.Parepare();
             AutoWrap.TypeTrait<string>.push(state, message);
             AutoWrap.TypeTrait<int>.push(state, msgId);
-            register.EndCall(2, 0);
+            register.Execute(2, 0);
+            register.Cleanup();
         }
 
         public static void SendMessage<T1>(string message)
         {
-            send.BeginCall();
+            send.Parepare();
             PushMessage(message);
-            send.EndCall(1, 0);
+            send.Execute(1, 0);
+            send.Cleanup();
         }
 
         public static void SendMessage<T1>(string message, T1 t1)
         {
-            send.BeginCall();
+            send.Parepare();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
-            send.EndCall(2, 0);
+            send.Execute(2, 0);
+            send.Cleanup();
         }
 
         public static void SendMessage<T1, T2>(string message, T1 t1, T2 t2)
         {
-            send.BeginCall();
+            send.Parepare();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
-            send.EndCall(3, 0);
+            send.Execute(3, 0);
+            send.Cleanup();
         }
 
         public static void SendMessage<T1, T2, T3>(string message, T1 t1, T2 t2, T3 t3)
         {
-            send.BeginCall();
+            send.Parepare();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             AutoWrap.TypeTrait<T3>.push(state, t3);
-            send.EndCall(4, 0);
+            send.Execute(4, 0);
+            send.Cleanup();
         }
 
         private static LuaTable cs2lua;
@@ -98,9 +103,13 @@ namespace bLua
 
         public static void Clean()
         {
-            send.Dispose();
-            register.Dispose();
-            cs2lua.Dispose();
+            if (send != null)
+                send.Dispose();
+            if (register != null)
+                register.Dispose();
+            if (cs2lua != null)
+                cs2lua.Dispose();
+
         }
 
     }

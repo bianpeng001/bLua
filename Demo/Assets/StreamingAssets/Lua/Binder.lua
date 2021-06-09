@@ -48,6 +48,8 @@ UnityEngine.Texture2D = DefineClass({ class = "UnityEngine.Texture2D", baseClass
 UnityEngine.Physics = DefineClass({ class = "UnityEngine.Physics" })
 UnityEngine.Collider = DefineClass({ class = "UnityEngine.Collider", baseClass = "UnityEngine.Component" })
 UnityEngine.MeshCollider = DefineClass({ class = "UnityEngine.MeshCollider", baseClass = "UnityEngine.Collider" })
+UnityEngine.TrailRenderer = DefineClass({ class = "UnityEngine.TrailRenderer", baseClass = "UnityEngine.Renderer" })
+UnityEngine.LineRenderer = DefineClass({ class = "UnityEngine.LineRenderer", baseClass = "UnityEngine.Renderer" })
 UnityEngine.BoxCollider = DefineClass({ class = "UnityEngine.BoxCollider", baseClass = "UnityEngine.Collider" })
 UnityEngine.CapsuleCollider = DefineClass({ class = "UnityEngine.CapsuleCollider", baseClass = "UnityEngine.Collider" })
 UnityEngine.SphereCollider = DefineClass({ class = "UnityEngine.SphereCollider", baseClass = "UnityEngine.Collider" })
@@ -572,6 +574,21 @@ UnityEngine.MeshColliderCookingOptions =
 	EnableMeshCleaning = 4,
 	WeldColocatedVertices = 8,
 	UseFastMidphase = 16,
+}
+
+UnityEngine.LineTextureMode =
+{
+	Stretch = 0,
+	Tile = 1,
+	DistributePerSegment = 2,
+	RepeatPerSegment = 3,
+}
+
+UnityEngine.LineAlignment =
+{
+	View = 0,
+	Local = 1,
+	TransformZ = 1,
 }
 
 UnityEngine.CollisionFlags =

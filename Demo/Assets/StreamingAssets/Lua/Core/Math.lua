@@ -36,7 +36,15 @@ function Vector3.New(x, y, z)
     return v
 end
 
-Vector3.zero = Vector3.New(0, 0, 0)
+function Vector3:Clone()
+    return Vector3.New(self[1], self[2], self[3])
+end
+
+function Vector3.Set(v, x, y, z)
+    v[1] = x
+    v[2] = y
+    v[3] = z
+end
 
 function Vector3:Length()
     return sqrt(self:SqrLength())
@@ -54,9 +62,10 @@ function Vector3.Sub(a, b)
     return { a[1] - b[1], a[2] - b[2], a[3] - b[3] }
 end
 
-function Vector3.Scale(v, s)
+function Vector3.Mul(v, s)
     return { v[1] * s, v[2] * s, v[3] * s }
 end
+Vector3.Scale = Vector3.Mul
 
 function Vector3.Dot(a, b)
     return a[1] * b[1] + a[2] * b[2] + a[3] * b[3]
@@ -73,6 +82,8 @@ end
 function Vector3.Distance(a, b)
 
 end
+
+Vector3.zero = Vector3.New(0, 0, 0)
 
 local Vector2 = {}
 module.Vector2 = Vector2

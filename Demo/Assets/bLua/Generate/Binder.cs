@@ -45,6 +45,8 @@ reg.Add("UnityEngine.Texture2D", typeof(UnityEngine.Texture2D), typeof(UnityEngi
 reg.Add("UnityEngine.Physics", typeof(UnityEngine.Physics), null, typeof(UnityEngine_Physics));
 reg.Add("UnityEngine.Collider", typeof(UnityEngine.Collider), typeof(UnityEngine.Component), typeof(UnityEngine_Collider));
 reg.Add("UnityEngine.MeshCollider", typeof(UnityEngine.MeshCollider), typeof(UnityEngine.Collider), typeof(UnityEngine_MeshCollider));
+reg.Add("UnityEngine.TrailRenderer", typeof(UnityEngine.TrailRenderer), typeof(UnityEngine.Renderer), typeof(UnityEngine_TrailRenderer));
+reg.Add("UnityEngine.LineRenderer", typeof(UnityEngine.LineRenderer), typeof(UnityEngine.Renderer), typeof(UnityEngine_LineRenderer));
 reg.Add("UnityEngine.BoxCollider", typeof(UnityEngine.BoxCollider), typeof(UnityEngine.Collider), typeof(UnityEngine_BoxCollider));
 reg.Add("UnityEngine.CapsuleCollider", typeof(UnityEngine.CapsuleCollider), typeof(UnityEngine.Collider), typeof(UnityEngine_CapsuleCollider));
 reg.Add("UnityEngine.SphereCollider", typeof(UnityEngine.SphereCollider), typeof(UnityEngine.Collider), typeof(UnityEngine_SphereCollider));

@@ -23,7 +23,14 @@ div#replaceItem
 div#textItem
 {
     text-align: center;
-    font-family: "JetBrains Mono NL";
-    src: url("JetBrainsMonoNL-Regular.ttf") format('truetype');
+    font-family: 'JetBrains Mono NL';
+	src:url(JetBrainsMonoNL-Regular.ttf) format('truetype');
+}
+
+div#textItem2
+{
+    text-align: center;
+    font-family: 'Architects Daughter';
+	font-size: 32pt;
 }
 

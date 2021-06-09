@@ -159,6 +159,11 @@ namespace bLua
 
 
             var method = unityMethodMap[methodId];
+            if (method == null)
+            {
+                LogUtil.Error($"method not found: methodId={methodId}, args={argumentCount} {lua_type(L, 1)}");
+                throw new Exception();
+            }
             return method.Call(L);
         }
 
@@ -191,6 +196,7 @@ namespace bLua
 
             if (methodList.Count == 0)
             {
+                LogUtil.Debug($"method not exists: {className}.{methodName}@{argumentCount}");
                 return 0;
             }
             else if (methodList.Count == 1)

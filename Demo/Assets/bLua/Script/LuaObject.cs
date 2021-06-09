@@ -25,6 +25,7 @@ namespace bLua
     public abstract class LuaObject : IDisposable
     {
         private bool disposed = false;
+        internal int index;
 
         public void Dispose()
         {

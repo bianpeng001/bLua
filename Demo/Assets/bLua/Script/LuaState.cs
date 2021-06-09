@@ -22,6 +22,7 @@ limitations under the License.
 using AOT;
 #endif
 using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static bLua.LuaLib;
@@ -29,10 +30,8 @@ using static bLua.LuaLib;
 namespace bLua
 {
 
-    public sealed class LuaState : LuaObject
+    public sealed class LuaState : IDisposable
     {
-        private readonly ILoader loader;
-
         private static (IntPtr L, LuaState state)[] stateList;
 
         public static LuaState GetState(IntPtr L)
@@ -46,9 +45,44 @@ namespace bLua
             return null;
         }
 
+        private readonly ILoader loader;
+
+        #region
+        private readonly List<LuaObject> objList = new List<LuaObject>(512);
+
+        internal void AddLuaObject(LuaObject obj)
+        {
+            obj.index = objList.Count;
+            objList.Add(obj);
+        }
+
+        internal void RemoveLuaObject(LuaObject obj)
+        {
+            LogUtil.Assert(objList.Count > 0
+                && obj == objList[obj.index],
+                "aaa");
+
+            var lastIndex = objList.Count - 1;
+            if (lastIndex != obj.index)
+            {
+                var last = objList[lastIndex];
+                objList[obj.index] = last;
+                last.index = obj.index;
+            }
+            objList[lastIndex] = null;
+            objList.RemoveAt(lastIndex);
+        }
+
+        #endregion
+
         public LuaState(ILoader loader)
         {
             this.loader = loader;
+        }
+
+        ~LuaState()
+        {
+            Dispose();
         }
 
         public IntPtr L { get; private set; }
@@ -146,10 +180,21 @@ namespace bLua
             return 0;
         }
 
-        protected override void OnDispose()
+        private bool disposed = false;
+        public void Dispose()
         {
-            lua_close(L);
-            L = IntPtr.Zero;
+            if (!disposed)
+            {
+                disposed = true;
+
+                for (int i = objList.Count - 1; i >= 0; --i)
+                {
+                    objList[i].Dispose();
+                }
+
+                lua_close(L);
+                L = IntPtr.Zero;
+            }
         }
 
         public LuaTable Require(string path)
@@ -242,5 +287,4 @@ namespace bLua
         public static implicit operator IntPtr(LuaState state) => state.L;
     }
 }
-
 

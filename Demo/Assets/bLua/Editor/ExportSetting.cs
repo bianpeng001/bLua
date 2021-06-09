@@ -251,6 +251,16 @@ namespace bLua
             },
             new ExportType()
             {
+                type = typeof(UnityEngine.TrailRenderer),
+                baseClass = typeof(UnityEngine.Renderer),
+            },
+            new ExportType()
+            {
+                type = typeof(UnityEngine.LineRenderer),
+                baseClass = typeof(UnityEngine.Renderer),
+            },
+            new ExportType()
+            {
                 type = typeof(UnityEngine.BoxCollider),
                 baseClass = typeof(UnityEngine.Collider),
             },
@@ -309,6 +319,7 @@ namespace bLua
                 type = typeof(UnityEngine.ParticleSystem),
                 baseClass = typeof(UnityEngine.Component),
             },
+            
             new ExportType()
             {
                 type = typeof(UnityEngine.Canvas),

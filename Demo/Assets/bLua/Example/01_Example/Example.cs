@@ -50,10 +50,10 @@ namespace bLua
 
                 using (var func = tbl.GetFunction("SayHello"))
                 {
-                    func.BeginCall();
-                    func.EndCall(0, 1);
+                    func.Parepare();
+                    func.Execute(0, 1);
                     var ret = AutoWrap.TypeTrait<int>.pull(state, -1);
-                    func.Clean();
+                    func.Cleanup();
                     Debug.Log($"ret: {ret}");
 
                     var ret2 = func.Call<int>();
