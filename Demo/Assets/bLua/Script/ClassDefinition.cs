@@ -40,6 +40,9 @@ namespace bLua
         public Type extClass;
 
         public List<MethodInfo> methodList;
+        
+        public int classId;
+
     }
 
 }

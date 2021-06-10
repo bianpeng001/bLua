@@ -3,13 +3,13 @@ local rawset = rawset
 local rawget = rawget
 local setmetatable = setmetatable
 
-local RegisterUnityMethod = RegisterUnityMethod or function(className, methodName)
+local RegisterUnityMethod = RegisterUnityMethod or function(class_id, methodName)
     local methodId = 101
-    print('RegisterUnityMethod', className, methodName, '->', methodId)
+    print('RegisterUnityMethod', class_id, methodName, '->', methodId)
     return methodId
 end
 
-local RegisterUnityClass = RegisterUnityClass or function(className, class)
+local RegisterUnityClass = RegisterUnityClass or function(className, class, class_id)
     print('RegisterUnityClass', className)
 end
 
@@ -23,12 +23,13 @@ end
 
 local function MakeIndexFunction(class)
     local className = class.class
+    local class_id = class[1]
     local _cache = class._cache
 
     return function(obj, methodName)
         local entry = rawget(_cache, methodName)
         if not entry then
-            local methodId = RegisterUnityMethod(className, methodName)
+            local methodId = RegisterUnityMethod(class_id, methodName)
             if methodId then
                 local method = function(...)
                     return CallUnityMethod(methodId, ...)
@@ -36,8 +37,8 @@ local function MakeIndexFunction(class)
                 entry = { 1, method, methodId, }
                 rawset(class, methodName, method)
             else
-                local get_methodId = RegisterUnityMethod(className, 'get_' .. methodName)
-                local set_methodId = RegisterUnityMethod(className, 'set_' .. methodName)
+                local get_methodId = RegisterUnityMethod(class_id, 'get_' .. methodName)
+                local set_methodId = RegisterUnityMethod(class_id, 'set_' .. methodName)
                 entry = { 2, get_methodId, set_methodId, }
                 rawset(_cache, methodName, entry)
             end
@@ -58,13 +59,14 @@ end
 
 local function MakeNewIndexFunction(class)
     local className = class.class
+    local class_id = class[1]
     local _cache = class._cache
 
     return function(obj, methodName, value)
         local entry = rawget(_cache, methodName)
         if not entry then
-            local get_methodId = RegisterUnityMethod(className, 'get_' .. methodName)
-            local set_methodId = RegisterUnityMethod(className, 'set_' .. methodName)
+            local get_methodId = RegisterUnityMethod(class_id, 'get_' .. methodName)
+            local set_methodId = RegisterUnityMethod(class_id, 'set_' .. methodName)
             entry = { 2, get_methodId, set_methodId, }
             rawset(_cache, methodName, entry)
         end
@@ -75,8 +77,15 @@ end
 
 local AutoWrap = {}
 
+local _class_id_seed = 0
+
 function AutoWrap.DefineClass(class)
     class._cache = {}
+
+    _class_id_seed = _class_id_seed + 1
+    local class_id = _class_id_seed
+    class[1] = class_id
+    local className = class.class
 
     local indexFunc = MakeIndexFunction(class)
 
@@ -86,13 +95,13 @@ function AutoWrap.DefineClass(class)
     class.__gc = CollectUnityHandle
 
     class.__tostring = function(obj)
-        return string.format('%s@%d', class.class, obj[1])
+        return string.format('%s@%d', className, obj[1])
     end
 
     local mt = { __index = indexFunc }
     setmetatable(class, mt)
     
-    RegisterUnityClass(class.class, class)
+    RegisterUnityClass(className, class_id, class)
 
     return class
 end

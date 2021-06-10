@@ -62,6 +62,15 @@ namespace bLua
             return typeList[index];
         }
 
+        public ClassDefinition GetClass(int classId)
+        {
+            var index = typeList.FindIndex(a => a.classId == classId);
+            if (index < 0)
+                return null;
+
+            return typeList[index];
+        }
+
         public ClassDefinition GetClass(Type type)
         {
             var index = typeList.FindIndex(a => a.type == type);
@@ -115,6 +124,7 @@ namespace bLua
 
             return methodList.Count;
         }
+
     }
 
 }

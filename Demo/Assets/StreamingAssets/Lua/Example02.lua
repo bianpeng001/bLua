@@ -217,19 +217,21 @@ local function OnTick()
 end
 
 local function OnUpdate()
-    BulletsMgr.OnUpdate(_bulletsMgr)
+    _bulletsMgr:OnUpdate()
 
+    local n = 0
     local deads = _unitsMgr.deads
     for pid, v in pairs(_unitsMgr.units) do
         if v.hp < 0 then
-            table.insert(deads, pid)
+            n = n + 1
+            deads[n] = pid
         else
             v:Action()
         end
     end
 
-    if #deads > 0 then
-        for i = 1, #deads do
+    if n > 0 then
+        for i = 1, n do
             local pid = deads[i]
             local unit = _unitsMgr.units[pid]
             if unit.gameObject then

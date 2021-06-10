@@ -188,15 +188,15 @@ namespace bLua
             CheckArgumentCount(L, 2);
             var argumentCount = lua_gettop(L);
 
-            var className = lua_tostring(L, -2);
+            var classId = TypeTrait<int>.pull(L, -2);
             var methodName = lua_tostring(L, -1);
 
-            var cls = luaRegister.GetClass(className);
+            var cls = luaRegister.GetClass(classId);
             luaRegister.FindAllMethods(cls, methodName, methodList);
 
             if (methodList.Count == 0)
             {
-                LogUtil.Debug($"method not exists: {className}.{methodName}@{argumentCount}");
+                LogUtil.Debug($"method not exists: {cls.name}.{methodName}@{argumentCount}");
                 return 0;
             }
             else if (methodList.Count == 1)
@@ -297,15 +297,17 @@ namespace bLua
 
             var className = lua_tostring(L, 1);
             var cls = luaRegister.GetClass(className);
-            AssertTable(lua_istable(L, 2));
-            lua_pushvalue(L, 2);
+            var classId = TypeTrait<int>.pull(L, 2);
             AssertTable(lua_istable(L, 3));
+            lua_pushvalue(L, 3);
+            AssertTable(lua_istable(L, 4));
 
             if (cls.luaref != LUA_NOREF)
             {
                 cls.luaref.Destroy(state);
             }
             cls.luaref = new LuaRef(state);
+            cls.classId = classId;
 
             return 0;
         }
@@ -318,12 +320,17 @@ namespace bLua
             CheckArgumentCount(L, 1);
             AssertTable(lua_istable(L, 1));
 
+            /*
             lua_pushstring(L, "class");
             lua_rawget(L, -2);
             var className = lua_tostring(L, -1);
             lua_pop(L, 1);
+            */
+            lua_rawgeti(L, 1, 1);
+            var classId = TypeTrait<int>.pull(L, -1);
+            lua_pop(L, 1);
 
-            var cls = luaRegister.GetClass(className);
+            var cls = luaRegister.GetClass(classId);
             TypeTrait<Type>.push(L, cls.type);
 
             return 1;
@@ -335,16 +342,15 @@ namespace bLua
         private static int Cast2Type(IntPtr L)
         {
             lua_rawgeti(L, 1, 1);
-            var objIndex = (int)lua_tointeger(L, -1);
+            var objIndex = TypeTrait<int>.pull(L, -1);
             lua_pop(L, 1);
-            
-            lua_pushstring(L, "class");
-            lua_rawget(L, -2);
-            var className = lua_tostring(L, -1);
+
+            lua_rawgeti(L, 2, 1);
+            var classId = TypeTrait<int>.pull(L, -1);
             lua_pop(L, 1);
 
             var obj = state.objCache.GetObject(objIndex);
-            var cls = luaRegister.GetClass(className);
+            var cls = luaRegister.GetClass(classId);
             PushObject(L, obj, cls);
 
             return 1;
