@@ -55,29 +55,35 @@ namespace bLua
 
         public ClassDefinition GetClass(string name)
         {
-            var index = typeList.FindIndex(a => a.name == name);
-            if (index < 0)
-                return null;
-
-            return typeList[index];
+            for (int i = 0; i < typeList.Count; ++i)
+            {
+                var cls = typeList[i];
+                if (cls.name == name)
+                    return cls;
+            }
+            return null;
         }
 
         public ClassDefinition GetClass(int classId)
         {
-            var index = typeList.FindIndex(a => a.classId == classId);
-            if (index < 0)
-                return null;
-
-            return typeList[index];
+            for (int i = 0; i < typeList.Count; ++i)
+            {
+                var cls = typeList[i];
+                if (cls.classId == classId)
+                    return cls;
+            }
+            return null;
         }
 
         public ClassDefinition GetClass(Type type)
         {
-            var index = typeList.FindIndex(a => a.type == type);
-            if (index < 0)
-                return null;
-
-            return typeList[index];
+            for (int i = 0; i < typeList.Count; ++i)
+            {
+                var cls = typeList[i];
+                if (cls.type == type)
+                    return cls;
+            }
+            return null;
         }
 
         public int FindAllMethods(
