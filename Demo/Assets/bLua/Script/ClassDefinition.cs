@@ -28,8 +28,6 @@ namespace bLua
     {
         public LuaRef luaref = LuaLib.LUA_NOREF;
 
-        public int index;
-
         public string name;
 
         public Type type;
@@ -41,8 +39,13 @@ namespace bLua
 
         public List<MethodInfo> methodList;
         
-        public int classId;
+        public readonly int classId;
 
+
+        public ClassDefinition(int classId)
+        {
+            this.classId = classId;
+        }
     }
 
 }

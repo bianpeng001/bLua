@@ -26,13 +26,12 @@ namespace bLua
 {
     public class LuaRegister
     {
-        private readonly List<ClassDefinition> typeList = new List<ClassDefinition>();
+        private readonly List<ClassDefinition> typeList = new List<ClassDefinition>() { null };
 
         public void Add(string name, Type type, Type baseClass, Type helpClass)
         {
-            typeList.Add(new ClassDefinition()
+            typeList.Add(new ClassDefinition(typeList.Count)
             {
-                index = typeList.Count,
                 name = name,
                 type = type,
                 baseClass = baseClass,
@@ -42,9 +41,8 @@ namespace bLua
 
         public void Add(string name, Type type, Type extClass, Type baseClass, Type helpClass)
         {
-            typeList.Add(new ClassDefinition()
+            typeList.Add(new ClassDefinition(typeList.Count)
             {
-                index = typeList.Count,
                 name = name,
                 type = type,
                 baseClass = baseClass,
@@ -55,7 +53,7 @@ namespace bLua
 
         public ClassDefinition GetClass(string name)
         {
-            for (int i = 0; i < typeList.Count; ++i)
+            for (int i = 1; i < typeList.Count; ++i)
             {
                 var cls = typeList[i];
                 if (cls.name == name)
@@ -66,18 +64,12 @@ namespace bLua
 
         public ClassDefinition GetClass(int classId)
         {
-            for (int i = 0; i < typeList.Count; ++i)
-            {
-                var cls = typeList[i];
-                if (cls.classId == classId)
-                    return cls;
-            }
-            return null;
+            return typeList[classId];
         }
 
         public ClassDefinition GetClass(Type type)
         {
-            for (int i = 0; i < typeList.Count; ++i)
+            for (int i = 1; i < typeList.Count; ++i)
             {
                 var cls = typeList[i];
                 if (cls.type == type)

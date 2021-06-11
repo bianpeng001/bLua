@@ -297,19 +297,20 @@ namespace bLua
 
             var className = lua_tostring(L, 1);
             var cls = luaRegister.GetClass(className);
-            var classId = TypeTrait<int>.pull(L, 2);
+            
+            AssertTable(lua_istable(L, 2));
+            lua_pushvalue(L, 2);
             AssertTable(lua_istable(L, 3));
-            lua_pushvalue(L, 3);
-            AssertTable(lua_istable(L, 4));
 
             if (cls.luaref != LUA_NOREF)
             {
                 cls.luaref.Destroy(state);
             }
             cls.luaref = new LuaRef(state);
-            cls.classId = classId;
 
-            return 0;
+            TypeTrait<int>.push(L, cls.classId);
+
+            return 1;
         }
 
 #if HAS_MONO_PINVOKE

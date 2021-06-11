@@ -77,15 +77,12 @@ end
 
 local AutoWrap = {}
 
-local _class_id_seed = 0
-
 function AutoWrap.DefineClass(class)
     class._cache = {}
 
-    _class_id_seed = _class_id_seed + 1
-    local class_id = _class_id_seed
-    class[1] = class_id
     local className = class.class
+    local class_id = RegisterUnityClass(className, class)
+    class[1] = class_id
 
     local indexFunc = MakeIndexFunction(class)
 
@@ -101,8 +98,6 @@ function AutoWrap.DefineClass(class)
     local mt = { __index = indexFunc }
     setmetatable(class, mt)
     
-    RegisterUnityClass(className, class_id, class)
-
     return class
 end
 

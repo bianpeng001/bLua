@@ -10,18 +10,17 @@ local Input = UnityEngine.Input
 local Time = UnityEngine.Time
 local Vector3 = Math.Vector3
 
-local module = LuaBehaviour.CreateModule()
-local _example02 = nil
-local _deltaTime = 0
-
 local ACT_MOVE <const> = 1
 local ACT_SHOOT <const> = 2
+local _G <const> = -9.8
 
+local module = LuaBehaviour.CreateModule()
+
+local _example02 = nil
+local _deltaTime = 0
 local _unitsMgr
 local _bulletsMgr
-
 local _pidSeed = 1000
-local _G <const> = -9.8
 
 local Player = {}
 Player.__index = Player

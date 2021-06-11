@@ -70,14 +70,12 @@ retCount, 是这里做了一些特殊操作, 用来支持多个返回值那种.
 
 
 ```CSharp
-    
-    // 所有的pull
     var t1 = TypeTrait<T1>.pull(L, -3);
     var t2 = TypeTrait<T2>.pull(L, -2);
     var t3 = TypeTrait<T3>.pull(L, -1);
 
-    // 所有的push
     TypeTrait<Result>.push(L, result);
+    return 1;
 
 ```
 然后代码就长一样了, 很整齐, 对于代码生成特别方便.
@@ -112,6 +110,8 @@ private static void PushString(IntPtr L, string value)
 {
     lua_pushstring(L, value);
 }
+
+// 自定义数据类型的扩展
 // Vector3, 转换成一个table { x,y,z }
 AutoWrap.TypeTrait<Vector3>.Set(
     1,
@@ -142,5 +142,6 @@ AutoWrap.TypeTrait<Vector3>.Set(
     });
 ```
 
-### 复用wrap
+###  多返回值
+
 
