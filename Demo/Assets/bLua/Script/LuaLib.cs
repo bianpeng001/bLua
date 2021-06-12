@@ -276,6 +276,9 @@ namespace bLua
         public static extern IntPtr lua_tolstring(IntPtr L, int idx, out int length);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void luaL_traceback(IntPtr L, IntPtr L1, byte[] msg, int level);
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern long lua_toboolean(IntPtr L, int idx);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]

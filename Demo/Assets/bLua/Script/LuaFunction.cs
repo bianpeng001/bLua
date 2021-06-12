@@ -59,8 +59,7 @@ namespace bLua
             {
                 var msg = lua_tostring(state, -1);
                 lua_pop(state, 1);
-                LogUtil.Error(msg);
-                throw new Exception();
+                throw new Exception(msg);
             }
         }
 
@@ -78,53 +77,53 @@ namespace bLua
             Cleanup();
         }
 
-        public Result Call<Result>()
+        public TResult Call<TResult>()
         {
             Parepare();
             Execute(0, 1);
-            var value = AutoWrap.TypeTrait<Result>.pull(state, -1);
+            var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
 
             return value;
         }
 
-        public Result Call<T1, Result>(T1 t1)
+        public TResult Call<T1, TResult>(T1 t1)
         {
             Parepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             Execute(1, 1);
-            var value = AutoWrap.TypeTrait<Result>.pull(state, -1);
+            var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
 
             return value;
         }
 
-        public Result Call<T1, T2, Result>(T1 t1, T2 t2)
+        public TResult Call<T1, T2, TResult>(T1 t1, T2 t2)
         {
             Parepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             Execute(2, 1);
-            var value = AutoWrap.TypeTrait<Result>.pull(state, -1);
+            var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
 
             return value;
         }
 
-        public Result Call<T1, T2, T3, Result>(T1 t1, T2 t2, T3 t3)
+        public TResult Call<T1, T2, T3, TResult>(T1 t1, T2 t2, T3 t3)
         {
             Parepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             AutoWrap.TypeTrait<T3>.push(state, t3);
             Execute(3, 1);
-            var value = AutoWrap.TypeTrait<Result>.pull(state, -1);
+            var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
 
             return value;
         }
 
-        public Result Call<T1, T2, T3, T4, Result>(T1 t1, T2 t2, T3 t3, T4 t4)
+        public TResult Call<T1, T2, T3, T4, TResult>(T1 t1, T2 t2, T3 t3, T4 t4)
         {
             Parepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
@@ -132,13 +131,13 @@ namespace bLua
             AutoWrap.TypeTrait<T3>.push(state, t3);
             AutoWrap.TypeTrait<T4>.push(state, t4);
             Execute(4, 1);
-            var value = AutoWrap.TypeTrait<Result>.pull(state, -1);
+            var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
 
             return value;
         }
 
-        public Result Call<T1, T2, T3, T4, T5, Result>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
+        public TResult Call<T1, T2, T3, T4, T5, TResult>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
         {
             Parepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
@@ -147,13 +146,13 @@ namespace bLua
             AutoWrap.TypeTrait<T4>.push(state, t4);
             AutoWrap.TypeTrait<T5>.push(state, t5);
             Execute(5, 1);
-            var value = AutoWrap.TypeTrait<Result>.pull(state, -1);
+            var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
 
             return value;
         }
 
-        public Result Call<T1, T2, T3, T4, T5, T6, Result>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6)
+        public TResult Call<T1, T2, T3, T4, T5, T6, TResult>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6)
         {
             Parepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
@@ -163,13 +162,13 @@ namespace bLua
             AutoWrap.TypeTrait<T5>.push(state, t5);
             AutoWrap.TypeTrait<T6>.push(state, t6);
             Execute(6, 1);
-            var value = AutoWrap.TypeTrait<Result>.pull(state, -1);
+            var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
 
             return value;
         }
 
-        public Result Call<T1, T2, T3, T4, T5, T6, T7, Result>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7)
+        public TResult Call<T1, T2, T3, T4, T5, T6, T7, TResult>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7)
         {
             Parepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
@@ -180,7 +179,7 @@ namespace bLua
             AutoWrap.TypeTrait<T6>.push(state, t6);
             AutoWrap.TypeTrait<T7>.push(state, t7);
             Execute(7, 1);
-            var value = AutoWrap.TypeTrait<Result>.pull(state, -1);
+            var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
 
             return value;

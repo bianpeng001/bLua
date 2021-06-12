@@ -164,7 +164,15 @@ namespace bLua
                 LogUtil.Error($"method not found: methodId={methodId}, args={argumentCount} {lua_type(L, 1)}");
                 throw new Exception();
             }
-            return method.Call(L);
+            try
+            {
+                return method.Call(L);
+            }
+            catch(Exception ex)
+            {
+                var traceback = state.GetTraceback(ex.Message);
+                throw new Exception(traceback);
+            }
         }
 
 #if HAS_MONO_PINVOKE

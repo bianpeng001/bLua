@@ -287,7 +287,20 @@ namespace bLua
 
         public static implicit operator IntPtr(LuaState state) => state.L;
 
-
+        public string GetTraceback(string msg)
+        {
+            byte[] bytes = null;
+            if (msg != null)
+            {
+                var count = UTF8Encoding.UTF8.GetByteCount(msg);
+                bytes = new byte[count + 1];
+                UTF8Encoding.UTF8.GetBytes(msg, 0, msg.Length, bytes, 0);
+            }
+            luaL_traceback(L, L, bytes, 1);
+            var traceback = AutoWrap.TypeTrait<string>.pull(L, -1);
+            lua_pop(L, 1);
+            return traceback;
+        }
     }
 }
 
