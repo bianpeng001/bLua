@@ -219,7 +219,7 @@ namespace bLua
             else
             {
 
-                var method = new OverloadRecolveMethod(methodList);
+                var method = new OverloadResolver(methodList);
                 var methodId = unityMethodMap.Count;
                 unityMethodMap.Add(method);
                 methodList.Clear();

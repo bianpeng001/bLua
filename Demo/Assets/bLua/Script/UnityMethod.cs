@@ -541,44 +541,55 @@ namespace bLua
             }
         }
 
-        public class OverloadRecolveMethod : IUnityMethod
+        public class OverloadResolver : IUnityMethod
         {
-            private (MethodInfo method, ParameterInfo[] arguments, IUnityMethod unityMethod)[] dispatch;
+            private (MethodInfo method, int args, IUnityMethod wrappedMethod)[] dispatch;
 
-            public OverloadRecolveMethod(List<MethodInfo> methodList)
+            public OverloadResolver(List<MethodInfo> methodList)
             {
-                dispatch = new (MethodInfo, ParameterInfo[], IUnityMethod)[methodList.Count];
+                dispatch = new (MethodInfo, int, IUnityMethod)[methodList.Count];
+                methodList.Sort((a, b) => a.GetParameters().Length - b.GetParameters().Length);
+
                 for (int i = 0; i < methodList.Count; ++i)
                 {
                     var method = methodList[i];
                     dispatch[i].method = method;
-                    dispatch[i].arguments = method.GetParameters();
+                    if (i > 0 && dispatch[i - 1].args == method.GetParameters().Length)
+                    {
+                        LogUtil.Debug("overload by args count failed");
+                    }
+                    dispatch[i].args = method.GetParameters().Length;
                 }
             }
 
             public int Call(IntPtr L)
             {
-                IUnityMethod unityMethod = null;
+                IUnityMethod wrappedMethod = null;
+
                 var argumentCount = LuaLib.lua_gettop(L) - 1;
 
                 for (int i = 0; i < dispatch.Length; ++i)
                 {
-                    if (dispatch[i].arguments.Length == argumentCount)
+                    if (dispatch[i].args == argumentCount)
                     {
-                        if (dispatch[i].unityMethod != null)
-                            unityMethod = dispatch[i].unityMethod;
+                        if (dispatch[i].wrappedMethod != null)
+                            wrappedMethod = dispatch[i].wrappedMethod;
                         else
                         {
-                            unityMethod = CreateUnityMethod(dispatch[i].method);
-                            dispatch[i].unityMethod = unityMethod;
+                            dispatch[i].method = null;
+                            wrappedMethod = CreateUnityMethod(dispatch[i].method);
+                            dispatch[i].wrappedMethod = wrappedMethod;
                         }
                         break;
                     }
                 }
-                if (unityMethod == null)
+                if (wrappedMethod == null)
+                {
+                    LogUtil.Error("no matched method");
                     return 0;
+                }
 
-                return unityMethod.Call(L);
+                return wrappedMethod.Call(L);
             }
         }
 
