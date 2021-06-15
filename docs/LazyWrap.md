@@ -308,11 +308,38 @@ public static void LookAt(UnityEngine.Transform _this, UnityEngine.Vector3 world
 TODO
 
 #### 然则, 到底省在哪里?
-既然还是要wrap, 一些人可能已经发现了, 相对于传统的wrap, 到底省在哪里了?
-此时应该音乐响起, 真相只有一个, 下面就是见证奇迹的时刻!
-
-[节省wrap代码](LessCode.md#节省代码)
+可能已经发现了, 既然还是要wrap, 相对于原先的wrap, 到底省在哪里了?
+详见这里: [节省wrap代码](LessCode.md#节省代码)
 
 #### 缺点
-这个方案我很喜欢, 但是也有缺点, 对于il2cpp的AOT还是要额外支持一下.
+这个方案我很喜欢, 但是也有缺点, 对于il2cpp的AOT还是要额外支持一下. il2cpp对于值类型的数据, 需要额外的一份AOT代码. 对于引用类型的反而安全, 因为都是指针.
+
+刷AOT的那部分代码, 用完就可以删了, 不用生成到release目标版本里面去.
+
 TODO:
+
+
+#### 底层代码
+
+跟预想的差不多, 从methodInfo里面, 拿到真实的method的入口地址, 设置到delegate里面去.
+
+CreateDelegateInternal, dotnet\runtime\src\coreclr\System.Private.CoreLib\src\System\Delegate.CoreCLR.cs:407
+BindToMethod, dotnet\runtime\src\coreclr\vm\comdelegate.cpp:1027
+
+```C++
+void COMDelegate::BindToMethod(DELEGATEREF   *pRefThis,
+                               OBJECTREF     *pRefFirstArg,
+                               MethodDesc    *pTargetMethod,
+                               MethodTable   *pExactMethodType,
+                               BOOL           fIsOpenDelegate)
+{
+	//...
+	pTargetCode = pTargetMethod->GetMultiCallableAddrOfCode();
+	// ...
+	refRealDelegate->SetTarget(*pRefFirstArg);
+	refRealDelegate->SetMethodPtr(pTargetCode);
+}
+
+```
+最后, 还是万恶的this, 如果target是可以修改的, 那就更完美了. 不过人家这么设计, 总归是有考虑的. 而且, 看起来也没有机会修改这个target值.
+

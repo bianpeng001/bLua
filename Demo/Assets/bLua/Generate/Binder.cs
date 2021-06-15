@@ -71,6 +71,7 @@ reg.Add("bLua.LuaDelegate", typeof(bLua.LuaDelegate), null, typeof(bLua_LuaDeleg
 reg.Add("bLua.LogUtil", typeof(bLua.LogUtil), null, typeof(bLua_LogUtil));
 reg.Add("bLua.Example", typeof(bLua.Example), typeof(UnityEngine.MonoBehaviour), typeof(bLua_Example));
 reg.Add("bLua.Example02", typeof(bLua.Example02), typeof(UnityEngine.MonoBehaviour), typeof(bLua_Example02));
+reg.Add("bLua.MoveSystem", typeof(bLua.MoveSystem), null, typeof(bLua_MoveSystem));
 }
 public static void DoNotCallMe()
 {

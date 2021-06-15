@@ -97,7 +97,7 @@ namespace bLua
                 cls.methodList.AddRange(cls.type.GetMethods(flag));
             }
 
-            for(int i = 0; i < cls.methodList.Count; ++i)
+            for (int i = 0; i < cls.methodList.Count; ++i)
             {
                 var method = cls.methodList[i];
                 if (method.Name == methodName)

@@ -17,7 +17,7 @@
 1. .net对象存储区, 用FreeList实现, 安全高效地分配和释放  [(详情)](docs/ObjectCache.md)
 1. 整理出一套基于泛型实现c#和lua之间的传参接口
 1. 实现luaDelegate, 支持动态注册c#的delegate到lua中回调  [(详情)](docs/LuaDelegate.md)
-1. 支持多返回值, 提高数据传递性能
+1. 支持多返回值, 提高数据传递性能 [(详情)](docs/LessCode.md#多返回值)
 1. 减少c#端对lua中数据的引用, 避免循环引用  [(详情)](docs/Cs2Lua.md)
 1. 升级到lua-5.4.3, 喜闻乐见的跟进版本
 1. 接上条, 原生支持int64, 分代GC等lua特性

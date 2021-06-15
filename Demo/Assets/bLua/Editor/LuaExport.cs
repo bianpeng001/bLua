@@ -524,12 +524,17 @@ namespace bLua
                 return $"{GetTypeName(type.GetElementType())}[]";
             else if (type.IsGenericType)
             {
-                var ns = type.Namespace;
                 var tname = type.Name;
                 var idx = tname.LastIndexOf('`');
                 tname = tname.Substring(0, idx);
+                var gargs = string.Join(", ", Array.ConvertAll(type.GetGenericArguments(), GetTypeName));
 
-                var gargs = string.Join(" ", Array.ConvertAll(type.GetGenericArguments(), GetTypeName));
+                string ns;
+                if (type.DeclaringType == null)
+                    ns = type.Namespace;
+                else
+                    ns = GetTypeName(type.DeclaringType);
+
                 return $"{ns}.{tname}<{gargs}>";
             }
 

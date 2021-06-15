@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2021 边蓬(bianpeng001@163.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,36 +15,29 @@ limitations under the License.
 */
 
 /*
- * 2021年5月30日, 边蓬
+ * 2021年6月13日, 边蓬
  */
 
 using UnityEngine;
 
 namespace bLua
 {
-    public class Example02 : LuaBehaviour
+    public class Example05 : LuaBehaviour
     {
-        private static Example02 instance;
+        private static Example05 instance;
 
-        private Camera mainCamera;
-        public Camera GetMainCamera()
-        {
-            if (mainCamera == null)
-                mainCamera = Camera.main;
-            return mainCamera;
-        }
+        private MoveSystem moveSystem;
 
         void Awake()
         {
-            instance = this;
-
             Application.targetFrameRate = 60;
+            instance = this;
+            moveSystem = new MoveSystem();
 
             var state = LuaClient.State;
             Cs2Lua.Init(state, "Cs2Lua.lua");
-            Cs2Lua.SendMessage("SayHello", "hello", 1234);
-
             LoadModule(state);
+            module.SetField("moveSystem", moveSystem);
 
             if (onAwake != null)
                 onAwake.Call();
@@ -56,22 +49,7 @@ namespace bLua
                 onUpdate.Call();
         }
 
-        public Vector3 GetFloorPoint()
-        {
-            var ray = GetMainCamera().ScreenPointToRay(Input.mousePosition);
-            new Plane(Vector3.up, 0.0f).Raycast(ray, out var d);
-            var pos = ray.GetPoint(d);
-
-            return pos;
-        }
-
-        public static Vector3 GetDeltaPosition(Vector3 start, Vector3 end, float backsize)
-        {
-            var delta = end - start;
-            var ray = new Ray(start, delta.normalized);
-            return ray.GetPoint(delta.magnitude - backsize) - start;
-        }
-
     }
 }
+
 

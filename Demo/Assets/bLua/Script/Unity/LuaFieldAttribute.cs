@@ -19,7 +19,7 @@ limitations under the License.
  */
 using System;
 
-namespace bLua.Unity
+namespace bLua
 {
     public class LuaFieldAttribute : Attribute
     {

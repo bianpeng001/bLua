@@ -20,17 +20,16 @@ limitations under the License.
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using static bLua.LuaLib;
 
 namespace bLua
 {
     public static partial class AutoWrap
     {
-        private static int Bool2Int(bool value) => value ? -1 : 0;
-
         private static void PushBool(IntPtr L, bool value)
         {
-            lua_pushboolean(L, Bool2Int(value));
+            lua_pushboolean(L, value ? -1 : 0);
         }
 
         private static bool PullBool(IntPtr L, int pos)
@@ -90,12 +89,17 @@ namespace bLua
 
         private static string PullString(IntPtr L, int pos)
         {
+            if (lua_isnil(L, pos))
+                return null;
             return lua_tostring(L, pos);
         }
 
         private static void PushString(IntPtr L, string value)
         {
-            lua_pushstring(L, value);
+            if (value == null || string.IsNullOrEmpty(value))
+                lua_pushnil(L);
+            else
+                lua_pushstring(L, value);
         }
 
         private static void PushValueType<T>(IntPtr L, T value)
@@ -106,6 +110,33 @@ namespace bLua
         private static T PullValueType<T>(IntPtr L, int pos)
         {
             return default(T);
+        }
+
+        private static void PushLuaFunction(IntPtr L, LuaFunction value)
+        {
+            if (value == null)
+                lua_pushnil(L);
+            else
+                value.Prepare();
+        }
+
+        private static LuaFunction PullLuaFunction(IntPtr L, int pos)
+        {
+            if (lua_isnil(L, pos) || lua_type(L, pos) != DataType.LUA_TFUNCTION)
+                return null;
+
+            lua_pushvalue(L, pos);
+            var s = LuaState.GetState(L);
+            return new LuaFunction(s, new LuaRef(s));
+        }
+
+        private static void PushLuaTable(IntPtr L, LuaTable value)
+        {
+        }
+
+        private static LuaTable PullLuaTable(IntPtr L, int pos)
+        {
+            return null;
         }
 
         private static void PushObject(IntPtr L, object obj, ClassDefinition cls)
@@ -168,13 +199,13 @@ namespace bLua
 
         public static T[] PullArray<T>(IntPtr L, int pos)
         {
-            AssertTable(lua_istable(L, pos));
+            LogUtil.Assert(lua_istable(L, pos));
 
             int len = (int)lua_rawlen(L, pos);
             if (len == 0)
                 return null;
             T[] value = new T[len];
-            for(int i = 0; i < len; ++i)
+            for (int i = 0; i < len; ++i)
             {
                 lua_rawgeti(L, pos, i + 1);
                 value[i] = TypeTrait<T>.pull(L, -1);
@@ -202,7 +233,7 @@ namespace bLua
 
         public static List<T> PullList<T>(IntPtr L, int pos)
         {
-            AssertTable(lua_istable(L, pos));
+            LogUtil.Assert(lua_istable(L, pos));
 
             int len = (int)lua_rawlen(L, pos);
             if (len == 0)
@@ -217,6 +248,102 @@ namespace bLua
             lua_pop(L, len);
             return value;
         }
+
+        #region 多返回值
+
+        public interface IMulRet
+        {
+            void Push(IntPtr L);
+        }
+
+        public struct MulRet<T1, T2> : IMulRet
+        {
+            public (T1 t1, T2 t2) value;
+
+            public void Push(IntPtr L)
+            {
+                TypeTrait<T1>.push(L, value.t1);
+                TypeTrait<T2>.push(L, value.t2);
+            }
+
+            public static implicit operator MulRet<T1, T2>((T1, T2) value)
+            {
+                return new MulRet<T1, T2>() { value = value };
+            }
+        }
+
+        public struct MulRet<T1, T2, T3> : IMulRet
+        {
+            public (T1 t1, T2 t2, T3 t3) value;
+
+            public void Push(IntPtr L)
+            {
+                TypeTrait<T1>.push(L, value.t1);
+                TypeTrait<T2>.push(L, value.t2);
+                TypeTrait<T3>.push(L, value.t3);
+            }
+
+            public static implicit operator MulRet<T1, T2, T3>((T1, T2, T3) value)
+            {
+                return new MulRet<T1, T2, T3>() { value = value };
+            }
+        }
+
+        public struct MulRet<T1, T2, T3, T4> : IMulRet
+        {
+            public (T1 t1, T2 t2, T3 t3, T4 t4) value;
+
+            public void Push(IntPtr L)
+            {
+                TypeTrait<T1>.push(L, value.t1);
+                TypeTrait<T2>.push(L, value.t2);
+                TypeTrait<T3>.push(L, value.t3);
+                TypeTrait<T4>.push(L, value.t4);
+            }
+
+            public static implicit operator MulRet<T1, T2, T3, T4>((T1, T2, T3, T4) value)
+            {
+                return new MulRet<T1, T2, T3, T4>() { value = value };
+            }
+        }
+
+        private static void PushMulRet<T>(IntPtr L, T value)
+        {
+            if (value is IMulRet ret)
+                ret.Push(L);
+            else
+            {
+                throw new Exception();
+            }
+        }
+
+        private static void PushMulRetNoGC<T>(IntPtr L, T value) where T : struct, IMulRet
+        {
+            value.Push(L);
+        }
+
+        private static MethodInfo mPushMulRet;
+        private static readonly Dictionary<Type, Delegate> mulRetDict = new Dictionary<Type, Delegate>();
+        private static Push<T> MakePushMulRet<T>()
+        {
+            Delegate dele;
+            var type = typeof(T);
+            if (mulRetDict.TryGetValue(type, out dele))
+            {
+                return (Push<T>)dele;
+            }
+
+            if (mPushMulRet == null)
+            {
+                mPushMulRet = typeof(AutoWrap).GetMethod("PushMulRetNoGC",
+                     BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            }
+            dele = Delegate.CreateDelegate(typeof(Push<T>), null, mPushMulRet.MakeGenericMethod(type));
+            mulRetDict[type] = dele;
+            return (Push<T>)dele;
+        }
+
+        #endregion
 
         public static class TypeTrait<T>
         {
@@ -269,6 +396,28 @@ namespace bLua
                 {
                     push = (Push<string>)PushString as Push<T>;
                     pull = (Pull<string>)PullString as Pull<T>;
+                }
+                else if (type == typeof(LuaFunction))
+                {
+                    push = (Push<LuaFunction>)PushLuaFunction as Push<T>;
+                    pull = (Pull<LuaFunction>)PullLuaFunction as Pull<T>;
+                }
+                else if (type == typeof(LuaTable))
+                {
+                    push = (Push<LuaTable>)PushLuaTable as Push<T>;
+                    pull = (Pull<LuaTable>)PullLuaTable as Pull<T>;
+                }
+                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,>))
+                {
+                    retCount = 2;
+                    push = (Push<T>)MakePushMulRet<T>();
+                    pull = null;
+                }
+                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,,>))
+                {
+                    retCount = 3;
+                    push = (Push<T>)MakePushMulRet<T>();
+                    pull = null;
                 }
                 else if (type.IsArray)
                 {

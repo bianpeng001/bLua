@@ -11,6 +11,11 @@ public static void Add(System.Collections.Generic.List<string> _this, string ite
 	_this.Add(item);
 }
 
+public static System.Collections.ObjectModel.ReadOnlyCollection<string> AsReadOnly(System.Collections.Generic.List<string> _this)
+{
+	return _this.AsReadOnly();
+}
+
 public static int BinarySearch(System.Collections.Generic.List<string> _this, string item)
 {
 	return _this.BinarySearch(item);
@@ -39,6 +44,11 @@ public static void CopyTo(System.Collections.Generic.List<string> _this, int ind
 public static void CopyTo(System.Collections.Generic.List<string> _this, string[] array, int arrayIndex)
 {
 	_this.CopyTo(array, arrayIndex);
+}
+
+public static System.Collections.Generic.List<string> GetRange(System.Collections.Generic.List<string> _this, int index, int count)
+{
+	return _this.GetRange(index, count);
 }
 
 public static int IndexOf(System.Collections.Generic.List<string> _this, string item)

@@ -43,13 +43,15 @@ namespace bLua
             luaref.Destroy(state);
         }
 
-        public void Parepare()
+        public void Prepare()
         {
             if (!luaref.IsValidRef())
-                throw new Exception();
-
-            top = lua_gettop(state);
-            luaref.Rawget(state);
+                lua_pushnil(state);
+            else
+            {
+                top = lua_gettop(state);
+                luaref.Rawget(state);
+            }
         }
 
         public void Execute(int nargs, int nresultes)
@@ -72,14 +74,14 @@ namespace bLua
 
         public void Call()
         {
-            Parepare();
+            Prepare();
             Execute(0, 0);
             Cleanup();
         }
 
         public TResult Call<TResult>()
         {
-            Parepare();
+            Prepare();
             Execute(0, 1);
             var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
             Cleanup();
@@ -89,7 +91,7 @@ namespace bLua
 
         public TResult Call<T1, TResult>(T1 t1)
         {
-            Parepare();
+            Prepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             Execute(1, 1);
             var value = AutoWrap.TypeTrait<TResult>.pull(state, -1);
@@ -100,7 +102,7 @@ namespace bLua
 
         public TResult Call<T1, T2, TResult>(T1 t1, T2 t2)
         {
-            Parepare();
+            Prepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             Execute(2, 1);
@@ -112,7 +114,7 @@ namespace bLua
 
         public TResult Call<T1, T2, T3, TResult>(T1 t1, T2 t2, T3 t3)
         {
-            Parepare();
+            Prepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             AutoWrap.TypeTrait<T3>.push(state, t3);
@@ -125,7 +127,7 @@ namespace bLua
 
         public TResult Call<T1, T2, T3, T4, TResult>(T1 t1, T2 t2, T3 t3, T4 t4)
         {
-            Parepare();
+            Prepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             AutoWrap.TypeTrait<T3>.push(state, t3);
@@ -139,7 +141,7 @@ namespace bLua
 
         public TResult Call<T1, T2, T3, T4, T5, TResult>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
         {
-            Parepare();
+            Prepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             AutoWrap.TypeTrait<T3>.push(state, t3);
@@ -154,7 +156,7 @@ namespace bLua
 
         public TResult Call<T1, T2, T3, T4, T5, T6, TResult>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6)
         {
-            Parepare();
+            Prepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             AutoWrap.TypeTrait<T3>.push(state, t3);
@@ -170,7 +172,7 @@ namespace bLua
 
         public TResult Call<T1, T2, T3, T4, T5, T6, T7, TResult>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7)
         {
-            Parepare();
+            Prepare();
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             AutoWrap.TypeTrait<T3>.push(state, t3);

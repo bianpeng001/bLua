@@ -24,7 +24,7 @@ namespace bLua
     {
         private void Awake()
         {
-            Load(LuaClient.State);
+            LoadModule(LuaClient.State);
         }
 
         private void Update()

@@ -17,6 +17,7 @@ limitations under the License.
 /*
  * 2021年5月26日, 边蓬
  */
+using System;
 using UnityEngine;
 
 namespace bLua
@@ -33,7 +34,10 @@ namespace bLua
         public string path;
         protected LuaTable module;
 
-        protected LuaFunction onUpdate, onLateUpdate, onFixedUpdate;
+        protected LuaFunction onAwake,
+            onUpdate,
+            onLateUpdate,
+            onFixedUpdate;
 
         protected void CreateProperty<T>(
             string name,
@@ -50,7 +54,7 @@ namespace bLua
             }
         }
 
-        public void Load(LuaState state)
+        public void LoadModule(LuaState state)
         {
             if (mode == ModuleType.Dofile)
                 module = state.DoFileRetTable(path);
@@ -64,19 +68,17 @@ namespace bLua
             CreateProperty("name", () => name, value => name = value);
             CreateProperty("enabled", () => enabled, value => enabled = value);
 
-            using (var onAwake = module.GetFunction("Awake"))
-            {
-                if (onAwake != null)
-                    onAwake.Call();
-            }
-
+            onAwake = module.GetFunction("Awake");
             onUpdate = module.GetFunction("Update");
             onLateUpdate = module.GetFunction("LateUpdate");
             onFixedUpdate = module.GetFunction("FixedUpdate");
         }
 
+
         protected virtual void OnDestroy()
         {
+            if (onAwake != null)
+                onAwake.Dispose();
             if (onUpdate != null)
                 onUpdate.Dispose();
             if (onLateUpdate != null)

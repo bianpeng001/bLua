@@ -41,7 +41,7 @@ namespace bLua
 
         private static void RegisterMessage(string message, int msgId)
         {
-            register.Parepare();
+            register.Prepare();
             AutoWrap.TypeTrait<string>.push(state, message);
             AutoWrap.TypeTrait<int>.push(state, msgId);
             register.Execute(2, 0);
@@ -50,7 +50,7 @@ namespace bLua
 
         public static void SendMessage<T1>(string message)
         {
-            send.Parepare();
+            send.Prepare();
             PushMessage(message);
             send.Execute(1, 0);
             send.Cleanup();
@@ -58,7 +58,7 @@ namespace bLua
 
         public static void SendMessage<T1>(string message, T1 t1)
         {
-            send.Parepare();
+            send.Prepare();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
             send.Execute(2, 0);
@@ -67,7 +67,7 @@ namespace bLua
 
         public static void SendMessage<T1, T2>(string message, T1 t1, T2 t2)
         {
-            send.Parepare();
+            send.Prepare();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
@@ -77,7 +77,7 @@ namespace bLua
 
         public static void SendMessage<T1, T2, T3>(string message, T1 t1, T2 t2, T3 t3)
         {
-            send.Parepare();
+            send.Prepare();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
@@ -97,7 +97,6 @@ namespace bLua
             cs2lua = state.Require(path);
             send = cs2lua.GetFunction("SendMessage");
             register = cs2lua.GetFunction("RegisterMessage");
-
         }
 
         public static void Clean()
@@ -108,7 +107,6 @@ namespace bLua
                 register.Dispose();
             if (cs2lua != null)
                 cs2lua.Dispose();
-
         }
 
     }

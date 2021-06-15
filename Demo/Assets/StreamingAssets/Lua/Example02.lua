@@ -1,13 +1,28 @@
+Copyright 2021 边蓬(bianpeng001@163.com)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+]]--
+
 local GameObject = UnityEngine.GameObject
 local TrailRenderer = UnityEngine.TrailRenderer
+local Input = UnityEngine.Input
+local Time = UnityEngine.Time
 
 local Example02 = bLua.Example02
 
 local LuaBehaviour = require("Core/LuaBehaviour")
 local Math = require("Core/Math")
 
-local Input = UnityEngine.Input
-local Time = UnityEngine.Time
 local Vector3 = Math.Vector3
 
 local ACT_MOVE <const> = 1
@@ -175,7 +190,7 @@ function module.Awake()
     print('gameObject:', module.gameObject)
     print('name:', module.name)
     print(module.luaBehaviour, getmetatable(module.luaBehaviour).class)
-    _example02 = cast2type(module.luaBehaviour, bLua.Example02)
+    _example02 = cast2type(module.luaBehaviour, Example02)
     print('Awake', Time.time, Time.deltaTime)
 
     module.unitPrefab = { GameObject.Find("Res/Unit01") }

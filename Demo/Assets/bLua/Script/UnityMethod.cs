@@ -543,7 +543,7 @@ namespace bLua
 
         public class OverloadResolver : IUnityMethod
         {
-            private (MethodInfo method, int args, IUnityMethod wrappedMethod)[] dispatch;
+            private (MethodInfo method, int argc, IUnityMethod wrappedMethod)[] dispatch;
 
             public OverloadResolver(List<MethodInfo> methodList)
             {
@@ -554,11 +554,11 @@ namespace bLua
                 {
                     var method = methodList[i];
                     dispatch[i].method = method;
-                    if (i > 0 && dispatch[i - 1].args == method.GetParameters().Length)
+                    dispatch[i].argc = method.GetParameters().Length;
+                    if (i > 0 && dispatch[i - 1].argc == dispatch[i].argc)
                     {
-                        LogUtil.Debug("overload by args count failed");
+                        LogUtil.Debug("overload on args count failed");
                     }
-                    dispatch[i].args = method.GetParameters().Length;
                 }
             }
 
@@ -570,7 +570,7 @@ namespace bLua
 
                 for (int i = 0; i < dispatch.Length; ++i)
                 {
-                    if (dispatch[i].args == argumentCount)
+                    if (dispatch[i].argc == argumentCount)
                     {
                         if (dispatch[i].wrappedMethod != null)
                             wrappedMethod = dispatch[i].wrappedMethod;

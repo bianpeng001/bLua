@@ -97,7 +97,7 @@ namespace bLua
                 return (node.funcType, node.cbType);
             }
         }
-        
+
         static AutoWrap()
         {
             gparamsCache = new Type[16][];
@@ -168,8 +168,9 @@ namespace bLua
             {
                 return method.Call(L);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                LogUtil.Error(ex.StackTrace);
                 var traceback = state.GetTraceback(ex.Message);
                 throw new Exception(traceback);
             }
@@ -204,7 +205,6 @@ namespace bLua
 
             if (methodList.Count == 0)
             {
-                LogUtil.Debug($"method not exists: {cls.name}.{methodName}@{argumentCount}");
                 return 0;
             }
             else if (methodList.Count == 1)
@@ -273,7 +273,7 @@ namespace bLua
         private static LuaRegister luaRegister;
         private static LuaState state;
 
-        public static readonly BindingFlags InstanceMemberFlag = BindingFlags.Public 
+        public static readonly BindingFlags InstanceMemberFlag = BindingFlags.Public
             | BindingFlags.Instance
             | BindingFlags.DeclaredOnly;
         public static readonly BindingFlags StaticMemberFlag = BindingFlags.Public
@@ -291,7 +291,7 @@ namespace bLua
             lua_rawgeti(L, 1, 1);
             var objIndex = (int)lua_tointeger(L, 2);
             lua_remove(L, 2);
-            
+
             state.objCache.Free(objIndex);
             return 0;
         }
@@ -305,10 +305,10 @@ namespace bLua
 
             var className = lua_tostring(L, 1);
             var cls = luaRegister.GetClass(className);
-            
-            AssertTable(lua_istable(L, 2));
+
+            LogUtil.Assert(lua_istable(L, 2));
             lua_pushvalue(L, 2);
-            AssertTable(lua_istable(L, 3));
+            LogUtil.Assert(lua_istable(L, 3));
 
             if (cls.luaref != LUA_NOREF)
             {
@@ -327,14 +327,8 @@ namespace bLua
         private static int TypeOf(IntPtr L)
         {
             CheckArgumentCount(L, 1);
-            AssertTable(lua_istable(L, 1));
+            LogUtil.Assert(lua_istable(L, 1));
 
-            /*
-            lua_pushstring(L, "class");
-            lua_rawget(L, -2);
-            var className = lua_tostring(L, -1);
-            lua_pop(L, 1);
-            */
             lua_rawgeti(L, 1, 1);
             var classId = TypeTrait<int>.pull(L, -1);
             lua_pop(L, 1);
@@ -398,7 +392,8 @@ namespace bLua
             var notSupport = method.GetCustomAttribute<ObsoleteAttribute>(false) != null
                 || method.IsGenericMethod
                 || method.IsGenericMethodDefinition
-                || method.ReturnType.IsGenericType
+                || method.ReturnType.IsGenericTypeDefinition
+                || method.ReturnType.IsByRef
                 || ((method.GetParameters() is var arguments) && Array.FindIndex(arguments, CheckArgument) >= 0);
 
             return !notSupport;
@@ -421,10 +416,6 @@ namespace bLua
             return true;
         }
 
-        private static void AssertTable(bool success)
-        {
-            LogUtil.Assert(success, "table expected");
-        }
     }
 }
 

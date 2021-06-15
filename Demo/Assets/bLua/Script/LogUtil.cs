@@ -59,6 +59,11 @@ namespace bLua
             logCallback(LogLevel.Error, message);
         }
 
+        public static void Assert(bool success)
+        {
+            Assert(success, "asset failed");
+        }
+
         public static void Assert(bool success, string message)
         {
             if (!success)

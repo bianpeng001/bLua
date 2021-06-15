@@ -144,6 +144,85 @@ AutoWrap.TypeTrait<Vector3>.Set(
 
 ###  多返回值
 这个结构里面, 支持多个返回值, 也是容易的. 用在push/pull一些自定义的结构类型, 为了减少GC, 在lua栈上面以展开的形式存储.
+定义一个结构, 用来返回两个值, 类型不限
+
+```CSharp
+public interface IMulRet
+{
+    void Push(IntPtr L);
+}
+
+public struct MulRet<T1, T2> : IMulRet
+{
+    public T1 t1;
+    public T2 t2;
+
+    public void Push(IntPtr L)
+    {
+        TypeTrait<T1>.push(L, t1);
+        TypeTrait<T2>.push(L, t2);
+    }
+}
+
+//  有GC问题, 令人心痛
+private static void PushMulRet<T>(IntPtr L, T value)
+{
+    if (value is IMulRet ret)
+        ret.Push(L);
+    else
+    {
+        throw new Exception();
+    }
+}
+```
+
+测试方法, 返回 两个值:
+```CSharp
+public MulRet<bool, int> GetMulRet()
+{
+    return (true, 1234);
+}
+```
+
+原方案里面支持多返回值, 是用参数ref/out来实现的, 使用的地方需要放一些默认的占位用的参数.
+这里利用ValueTuple的语法糖, 使得写起来舒服一些. 比较遗憾的是, 我这里这个方式, 会产生GC.
+
+```CSharp
+
+// 利用这个意思隐式转换, 可以把返回的Tuple的值, 转成实际需要的值
+public static implicit operator MulRet<T1, T2>((T1, T2) value)
+{
+    return new MulRet<T1, T2>() { t1 = value.Item1, t2 = value.Item2 };
+}
+```
+
+补充一个无GC的实现方式:
+```CSharp
+private static void PushMulRetNoGC<T>(IntPtr L, T value) where T : struct, IMulRet
+{
+    value.Push(L);
+}
+
+private static Push<T> MakePushMulRet<T>()
+{
+    Delegate dele;
+    var type = typeof(T);
+    if (mulRetDict.TryGetValue(type, out dele))
+    {
+        return (Push<T>)dele;
+    }
+
+    if (mPushMulRet == null)
+    {
+        mPushMulRet = typeof(AutoWrap).GetMethod("PushMulRetNoGC",
+                BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+    }
+    dele = Delegate.CreateDelegate(typeof(Push<T>), null, mPushMulRet.MakeGenericMethod(type));
+    mulRetDict[type] = dele;
+    return (Push<T>)dele;
+}
+```
+没有上面的那个优雅, 但是真的没有GC, 且要注意AOT问题.
 
 
 ### 节省代码

@@ -76,6 +76,16 @@ public static void AddBlendShapeFrame(UnityEngine.Mesh _this, string shapeName, 
 	_this.AddBlendShapeFrame(shapeName, frameWeight, deltaVertices, deltaNormals, deltaTangents);
 }
 
+public static Unity.Collections.NativeArray<UnityEngine.BoneWeight1> GetAllBoneWeights(UnityEngine.Mesh _this)
+{
+	return _this.GetAllBoneWeights();
+}
+
+public static Unity.Collections.NativeArray<System.Byte> GetBonesPerVertex(UnityEngine.Mesh _this)
+{
+	return _this.GetBonesPerVertex();
+}
+
 public static void SetSubMesh(UnityEngine.Mesh _this, int index, UnityEngine.Rendering.SubMeshDescriptor desc, int flags)
 {
 	_this.SetSubMesh(index, desc, (UnityEngine.Rendering.MeshUpdateFlags)flags);

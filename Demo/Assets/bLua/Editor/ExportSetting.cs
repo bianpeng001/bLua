@@ -370,6 +370,7 @@ namespace bLua
                 type = typeof(bLua.LogUtil),
                 baseClass = null,
             },
+
             new ExportType()
             {
                 type = typeof(bLua.Example),
@@ -379,6 +380,11 @@ namespace bLua
             {
                 type = typeof(bLua.Example02),
                 baseClass = typeof(UnityEngine.MonoBehaviour),
+            },
+            new ExportType()
+            {
+                type = typeof(bLua.MoveSystem),
+                baseClass = null,
             },
         };
     }
