@@ -163,17 +163,6 @@ public struct MulRet<T1, T2> : IMulRet
         TypeTrait<T2>.push(L, t2);
     }
 }
-
-//  有GC问题, 令人心痛
-private static void PushMulRet<T>(IntPtr L, T value)
-{
-    if (value is IMulRet ret)
-        ret.Push(L);
-    else
-    {
-        throw new Exception();
-    }
-}
 ```
 
 测试方法, 返回 两个值:
@@ -183,9 +172,8 @@ public MulRet<bool, int> GetMulRet()
     return (true, 1234);
 }
 ```
-
 原方案里面支持多返回值, 是用参数ref/out来实现的, 使用的地方需要放一些默认的占位用的参数.
-这里利用ValueTuple的语法糖, 使得写起来舒服一些. 比较遗憾的是, 我这里这个方式, 会产生GC.
+这里利用ValueTuple的语法糖, 使得写起来舒服一些. 
 
 ```CSharp
 
@@ -196,30 +184,63 @@ public static implicit operator MulRet<T1, T2>((T1, T2) value)
 }
 ```
 
-补充一个无GC的实现方式:
+到此为止, 代码还是很漂亮的, 但是不得不再关注一下GC的问题, 相当遗憾.
+```CSharp
+private static void PushMulRet<T>(IntPtr L, T value)
+{
+    if (value is IMulRet ret)
+        ret.Push(L);
+    else
+    {
+        throw new Exception();
+    }
+}
+```
+PushMulRet对应的IL, 看到有一个很扎眼的box, 就像一把尖刀, 难以无视:
+```CSharp
+// IMulRet mulRet = value as IMulRet;
+IL_0001: ldarg.1
+IL_0002: box !!T
+IL_0007: isinst bLua.AutoWrap/IMulRet
+IL_000c: stloc.0
+```
+
+但是, 我还是希望一个没有带来额外GC的方法.
+于是, 为了避免GC, 需要实现成这样:
+
 ```CSharp
 private static void PushMulRetNoGC<T>(IntPtr L, T value) where T : struct, IMulRet
 {
     value.Push(L);
 }
+```
+看IL, 这下美丽多了:
+```CSharp
+// value.Push(L);
+IL_0001: ldarga.s 'value'
+IL_0003: ldarg.0
+IL_0004: constrained. !!T
+IL_000a: callvirt instance void bLua.AutoWrap/IMulRet::Push(native int)
+```
+以及, 还需要额外做一些工作, 来使得上面的代码能工作起来.
 
-private static Push<T> MakePushMulRet<T>()
+```CSharp
+private static Delegate MakePushMulRet(Type pushType, Type valueType)
 {
     Delegate dele;
-    var type = typeof(T);
-    if (mulRetDict.TryGetValue(type, out dele))
-    {
-        return (Push<T>)dele;
-    }
+    if (mulRetCache.TryGetValue(valueType, out dele))
+        return dele;
 
     if (mPushMulRet == null)
     {
-        mPushMulRet = typeof(AutoWrap).GetMethod("PushMulRetNoGC",
+        mPushMulRet = typeof(AutoWrap).GetMethod(
+            "PushMulRetNoGC",
                 BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
     }
-    dele = Delegate.CreateDelegate(typeof(Push<T>), null, mPushMulRet.MakeGenericMethod(type));
-    mulRetDict[type] = dele;
-    return (Push<T>)dele;
+
+    dele = Delegate.CreateDelegate(pushType, null, mPushMulRet.MakeGenericMethod(valueType));
+    mulRetCache[valueType] = dele;
+    return dele;
 }
 ```
 没有上面的那个优雅, 但是真的没有GC, 且要注意AOT问题.
