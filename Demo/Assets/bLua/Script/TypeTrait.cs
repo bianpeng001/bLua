@@ -266,7 +266,7 @@ namespace bLua
                 TypeTrait<T2>.push(L, value.t2);
             }
 
-            public static implicit operator MulRet<T1, T2>((T1, T2) value)
+            public static implicit operator MulRet<T1, T2>(in (T1, T2) value)
             {
                 return new MulRet<T1, T2>() { value = value };
             }
@@ -283,7 +283,7 @@ namespace bLua
                 TypeTrait<T3>.push(L, value.t3);
             }
 
-            public static implicit operator MulRet<T1, T2, T3>((T1, T2, T3) value)
+            public static implicit operator MulRet<T1, T2, T3>(in (T1, T2, T3) value)
             {
                 return new MulRet<T1, T2, T3>() { value = value };
             }
@@ -301,9 +301,28 @@ namespace bLua
                 TypeTrait<T4>.push(L, value.t4);
             }
 
-            public static implicit operator MulRet<T1, T2, T3, T4>((T1, T2, T3, T4) value)
+            public static implicit operator MulRet<T1, T2, T3, T4>(in (T1, T2, T3, T4) value)
             {
                 return new MulRet<T1, T2, T3, T4>() { value = value };
+            }
+        }
+
+        public struct MulRet<T1, T2, T3, T4, T5> : IMulRet
+        {
+            public (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) value;
+
+            public void Push(IntPtr L)
+            {
+                TypeTrait<T1>.push(L, value.t1);
+                TypeTrait<T2>.push(L, value.t2);
+                TypeTrait<T3>.push(L, value.t3);
+                TypeTrait<T4>.push(L, value.t4);
+                TypeTrait<T5>.push(L, value.t5);
+            }
+
+            public static implicit operator MulRet<T1, T2, T3, T4, T5>(in (T1, T2, T3, T4, T5) value)
+            {
+                return new MulRet<T1, T2, T3, T4, T5>() { value = value };
             }
         }
 
@@ -323,24 +342,23 @@ namespace bLua
         }
 
         private static MethodInfo mPushMulRet;
-        private static readonly Dictionary<Type, Delegate> mulRetDict = new Dictionary<Type, Delegate>();
-        private static Push<T> MakePushMulRet<T>()
+        private static readonly Dictionary<Type, Delegate> mulRetCache = new Dictionary<Type, Delegate>();
+        private static Delegate MakePushMulRet(Type pushType, Type valueType)
         {
             Delegate dele;
-            var type = typeof(T);
-            if (mulRetDict.TryGetValue(type, out dele))
-            {
-                return (Push<T>)dele;
-            }
+            if (mulRetCache.TryGetValue(valueType, out dele))
+                return dele;
 
             if (mPushMulRet == null)
             {
-                mPushMulRet = typeof(AutoWrap).GetMethod("PushMulRetNoGC",
+                mPushMulRet = typeof(AutoWrap).GetMethod(
+                    "PushMulRetNoGC",
                      BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             }
-            dele = Delegate.CreateDelegate(typeof(Push<T>), null, mPushMulRet.MakeGenericMethod(type));
-            mulRetDict[type] = dele;
-            return (Push<T>)dele;
+
+            dele = Delegate.CreateDelegate(pushType, null, mPushMulRet.MakeGenericMethod(valueType));
+            mulRetCache[valueType] = dele;
+            return dele;
         }
 
         #endregion
@@ -410,13 +428,25 @@ namespace bLua
                 else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,>))
                 {
                     retCount = 2;
-                    push = (Push<T>)MakePushMulRet<T>();
+                    push = (Push<T>)MakePushMulRet(typeof(Push<T>), typeof(T));
                     pull = null;
                 }
                 else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,,>))
                 {
                     retCount = 3;
-                    push = (Push<T>)MakePushMulRet<T>();
+                    push = (Push<T>)MakePushMulRet(typeof(Push<T>), typeof(T));
+                    pull = null;
+                }
+                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,,,>))
+                {
+                    retCount = 4;
+                    push = (Push<T>)MakePushMulRet(typeof(Push<T>), typeof(T));
+                    pull = null;
+                }
+                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,,,,>))
+                {
+                    retCount = 5;
+                    push = (Push<T>)MakePushMulRet(typeof(Push<T>), typeof(T));
                     pull = null;
                 }
                 else if (type.IsArray)
@@ -472,6 +502,7 @@ namespace bLua
                 }
                 else if (type.IsEnum)
                 {
+                    throw new Exception("not support");
                 }
                 else if (type.IsValueType)
                 {

@@ -189,7 +189,7 @@ public MulRet<bool, int> GetMulRet()
 
 ```CSharp
 
-// 利用这个意思隐式转换, 可以把返回的Tuple的值, 转成实际需要的值
+// 利用这个隐式转换, 可以把返回的Tuple的值, 转成实际需要的值
 public static implicit operator MulRet<T1, T2>((T1, T2) value)
 {
     return new MulRet<T1, T2>() { t1 = value.Item1, t2 = value.Item2 };
