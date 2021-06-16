@@ -25,6 +25,9 @@ namespace bLua
         private void Awake()
         {
             LoadModule(LuaClient.State);
+
+            if (onAwake != null)
+                onAwake.Call();
         }
 
         private void Update()

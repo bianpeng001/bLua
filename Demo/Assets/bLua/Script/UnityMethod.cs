@@ -576,8 +576,8 @@ namespace bLua
                             wrappedMethod = dispatch[i].wrappedMethod;
                         else
                         {
-                            dispatch[i].method = null;
                             wrappedMethod = CreateUnityMethod(dispatch[i].method);
+                            dispatch[i].method = null;
                             dispatch[i].wrappedMethod = wrappedMethod;
                         }
                         break;

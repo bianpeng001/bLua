@@ -23,12 +23,15 @@ local Math = require("Core/Math")
 local print = print
 local Example05 = bLua.Example05
 local Vector3 = Math.Vector3
+local Quaternion = Math.Quaternion
 
 local _moveSystem
 local _deltaTime
 local _unitsMgr
 local _unitPrefab
 local _towerMgr = {}
+
+local _ring
 
 local _unit_pid_seed = 0
 
@@ -59,9 +62,9 @@ function Unit:OnIdle()
 	local path
 
 	path = _moveSystem:FindPath(self.x, self.z, 0, 0)
-	print(#path)
-	for i = 1, #path / 2 do
-		print(path[i*2-1], path[i*2])
+	print(path, path.Count)
+	for i = 0, path.Count/2-1 do
+		print(path:get_Item(i*2), path:get_Item(i*2+1))
 	end
 	self.ai.path = path
 	self.ai.time = 0
@@ -71,9 +74,11 @@ function Unit:OnIdle()
 end
 
 function Unit:OnMove()
+	
 end
 
 function Unit:OnAttack()
+
 end
 
 Unit.actions = { Unit.OnIdle, Unit.OnMove, Unit.OnAttack }
@@ -172,17 +177,15 @@ function module.Awake()
 	local a, b = _moveSystem:GetMulRet()
 	print(a, b)
 
-	path = _moveSystem:FindPath(0, 0, 2, 0)
-	for i = 1, #path / 2 do
-		print(path[2*i-1], path[2*i])
-	end
-
 	_unitPrefab =
 	{
 		GameObject.Find("Res/Unit01"),
 		GameObject.Find("Res/Unit02"),
 		GameObject.Find("Res/Bullet01"),
 	}
+
+	local ringObj = GameObject.Find('Base/Ring')
+	_ring = ringObj.transform
 
 	local t1
 	t1 = Tower.New()
@@ -194,6 +197,9 @@ function module.Awake()
 	table.insert(_towerMgr, t1)
 end
 
+local _ringQuat
+local _ringAngle = 0
+
 function module.Update()
 	_deltaTime = Time.deltaTime
 
@@ -202,7 +208,13 @@ function module.Update()
 	end
 
 	_unitsMgr:Update()
-
+	
+	_ringAngle = _ringAngle + 0.5 * _deltaTime
+	while _ringAngle > math.pi*2 do
+		_ringAngle = _ringAngle - math.pi*2
+	end
+	_ringQuat = Quaternion.AngleAxis(_ringAngle, 0, 0, 1, _ringQuat)
+	_ring.localRotation = _ringQuat
 end
 
 return module

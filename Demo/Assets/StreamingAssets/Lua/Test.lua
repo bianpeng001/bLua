@@ -1,3 +1,4 @@
+local AutoWrap = require("Core/AutoWrap")
 
 local GameObject = UnityEngine.GameObject
 
@@ -16,6 +17,7 @@ local function Test1()
 
     tr.localPosition = {4, 4, 4}
     local p = tr.localPosition
+    print(p)
     print(p, table.unpack(p))
 
     local tr2 = obj.transform
@@ -104,16 +106,19 @@ local function Test7()
 
     print('test int[]')
     local a = Example.GetIntArray()
+    a = AutoWrap.ToTable(a)
     print('len', #a)
     print(table.unpack(a))
 
     print('test List<int>')
     local b = Example.GetIntList()
+    b = AutoWrap.ToTable(b)
     print('len', #b)
     print(table.unpack(b))
 
     print('test string[]')
     local c = Example.GetStringArray()
+    c = AutoWrap.ToTable(c)
     print('len', #c)
     print(table.unpack(c))
 end

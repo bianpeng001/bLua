@@ -173,6 +173,7 @@ namespace bLua
             if (lua_isnil(L, pos))
                 return default(T);
 
+
             lua_rawgeti(L, pos, 1);
             var objIndex = (int)lua_tointeger(L, -1);
             lua_pop(L, 1);
@@ -184,23 +185,16 @@ namespace bLua
         {
             if (value == null || value.Length == 0)
                 lua_pushnil(L);
-            else if (value.Length < 32)
-            {
-                lua_createtable(L, value.Length, 0);
-                for (int i = 0; i < value.Length; ++i)
-                {
-                    TypeTrait<T>.push(L, value[i]);
-                    lua_rawseti(L, -2, i + 1);
-                }
-            }
             else
                 PushObject<T[]>(L, value);
         }
 
         public static T[] PullArray<T>(IntPtr L, int pos)
         {
-            LogUtil.Assert(lua_istable(L, pos));
+            return PullObject<T[]>(L, pos);
 
+            /*
+            LogUtil.Assert(lua_istable(L, pos));
             int len = (int)lua_rawlen(L, pos);
             if (len == 0)
                 return null;
@@ -212,30 +206,23 @@ namespace bLua
             }
             lua_pop(L, len);
             return value;
+            */
         }
 
         private static void PushList<T>(IntPtr L, List<T> value)
         {
             if (value == null || value.Count == 0)
                 lua_pushnil(L);
-            else if (value.Count < 32)
-            {
-                lua_createtable(L, value.Count, 0);
-                for (int i = 0; i < value.Count; ++i)
-                {
-                    TypeTrait<T>.push(L, value[i]);
-                    lua_rawseti(L, -2, i + 1);
-                }
-            }
             else
                 PushObject<List<T>>(L, value);
         }
 
         public static List<T> PullList<T>(IntPtr L, int pos)
         {
+            return PullObject<List<T>>(L, pos);
+            /*
             LogUtil.Assert(lua_istable(L, pos));
-
-            int len = (int)lua_rawlen(L, pos);
+            int len = (int)lua(L, pos);
             if (len == 0)
                 return null;
 
@@ -247,40 +234,41 @@ namespace bLua
             }
             lua_pop(L, len);
             return value;
+            */
         }
 
         #region 多返回值
 
-        public interface IMulRet
+        public interface IMultRet
         {
             void Push(IntPtr L);
         }
 
-        public struct MulRet<T1, T2> : IMulRet
+        public struct MultRet<T1, T2> : IMultRet
         {
-            public (T1 t1, T2 t2) value;
+            public (T1, T2) value;
 
             public void Push(IntPtr L)
             {
-                TypeTrait<T1>.push(L, value.t1);
-                TypeTrait<T2>.push(L, value.t2);
+                TypeTrait<T1>.push(L, value.Item1);
+                TypeTrait<T2>.push(L, value.Item2);
             }
 
-            public static implicit operator MulRet<T1, T2>(in (T1, T2) value)
+            public static implicit operator MultRet<T1, T2>(in (T1, T2) value)
             {
-                return new MulRet<T1, T2>() { value = value };
+                return new MultRet<T1, T2>() { value = value };
             }
         }
 
-        public struct MulRet<T1, T2, T3> : IMulRet
+        public struct MulRet<T1, T2, T3> : IMultRet
         {
-            public (T1 t1, T2 t2, T3 t3) value;
+            public (T1, T2, T3) value;
 
             public void Push(IntPtr L)
             {
-                TypeTrait<T1>.push(L, value.t1);
-                TypeTrait<T2>.push(L, value.t2);
-                TypeTrait<T3>.push(L, value.t3);
+                TypeTrait<T1>.push(L, value.Item1);
+                TypeTrait<T2>.push(L, value.Item2);
+                TypeTrait<T3>.push(L, value.Item3);
             }
 
             public static implicit operator MulRet<T1, T2, T3>(in (T1, T2, T3) value)
@@ -289,16 +277,16 @@ namespace bLua
             }
         }
 
-        public struct MulRet<T1, T2, T3, T4> : IMulRet
+        public struct MulRet<T1, T2, T3, T4> : IMultRet
         {
-            public (T1 t1, T2 t2, T3 t3, T4 t4) value;
+            public (T1, T2, T3, T4) value;
 
             public void Push(IntPtr L)
             {
-                TypeTrait<T1>.push(L, value.t1);
-                TypeTrait<T2>.push(L, value.t2);
-                TypeTrait<T3>.push(L, value.t3);
-                TypeTrait<T4>.push(L, value.t4);
+                TypeTrait<T1>.push(L, value.Item1);
+                TypeTrait<T2>.push(L, value.Item2);
+                TypeTrait<T3>.push(L, value.Item3);
+                TypeTrait<T4>.push(L, value.Item4);
             }
 
             public static implicit operator MulRet<T1, T2, T3, T4>(in (T1, T2, T3, T4) value)
@@ -307,17 +295,17 @@ namespace bLua
             }
         }
 
-        public struct MulRet<T1, T2, T3, T4, T5> : IMulRet
+        public struct MulRet<T1, T2, T3, T4, T5> : IMultRet
         {
-            public (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) value;
+            public (T1, T2, T3, T4, T5) value;
 
             public void Push(IntPtr L)
             {
-                TypeTrait<T1>.push(L, value.t1);
-                TypeTrait<T2>.push(L, value.t2);
-                TypeTrait<T3>.push(L, value.t3);
-                TypeTrait<T4>.push(L, value.t4);
-                TypeTrait<T5>.push(L, value.t5);
+                TypeTrait<T1>.push(L, value.Item1);
+                TypeTrait<T2>.push(L, value.Item2);
+                TypeTrait<T3>.push(L, value.Item3);
+                TypeTrait<T4>.push(L, value.Item4);
+                TypeTrait<T5>.push(L, value.Item5);
             }
 
             public static implicit operator MulRet<T1, T2, T3, T4, T5>(in (T1, T2, T3, T4, T5) value)
@@ -326,9 +314,9 @@ namespace bLua
             }
         }
 
-        private static void PushMulRet<T>(IntPtr L, T value)
+        private static void PushMultRet<T>(IntPtr L, T value)
         {
-            if (value is IMulRet ret)
+            if (value is IMultRet ret)
                 ret.Push(L);
             else
             {
@@ -336,28 +324,28 @@ namespace bLua
             }
         }
 
-        private static void PushMulRetNoGC<T>(IntPtr L, T value) where T : struct, IMulRet
+        private static void PushMultRetNoGC<T>(IntPtr L, T value) where T : struct, IMultRet
         {
             value.Push(L);
         }
 
-        private static MethodInfo mPushMulRet;
-        private static readonly Dictionary<Type, Delegate> mulRetCache = new Dictionary<Type, Delegate>();
-        private static Delegate MakePushMulRet(Type pushType, Type valueType)
+        private static MethodInfo mPushMultRet;
+        private static readonly Dictionary<Type, Delegate> multRetCache = new Dictionary<Type, Delegate>();
+        private static Delegate MakePushMultRet(Type pushType, Type valueType)
         {
             Delegate dele;
-            if (mulRetCache.TryGetValue(valueType, out dele))
+            if (multRetCache.TryGetValue(valueType, out dele))
                 return dele;
 
-            if (mPushMulRet == null)
+            if (mPushMultRet == null)
             {
-                mPushMulRet = typeof(AutoWrap).GetMethod(
-                    "PushMulRetNoGC",
+                mPushMultRet = typeof(AutoWrap).GetMethod(
+                    "PushMultRetNoGC",
                      BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             }
 
-            dele = Delegate.CreateDelegate(pushType, null, mPushMulRet.MakeGenericMethod(valueType));
-            mulRetCache[valueType] = dele;
+            dele = Delegate.CreateDelegate(pushType, null, mPushMultRet.MakeGenericMethod(valueType));
+            multRetCache[valueType] = dele;
             return dele;
         }
 
@@ -379,7 +367,57 @@ namespace bLua
             static TypeTrait()
             {
                 var type = typeof(T);
+                if (type.IsPrimitive)
+                {
+                    InitPrimitive(type);
+                }
+                else if (type == typeof(string))
+                {
+                    push = (Push<string>)PushString as Push<T>;
+                    pull = (Pull<string>)PullString as Pull<T>;
+                }
+                else if (type == typeof(LuaFunction))
+                {
+                    push = (Push<LuaFunction>)PushLuaFunction as Push<T>;
+                    pull = (Pull<LuaFunction>)PullLuaFunction as Pull<T>;
+                }
+                else if (type == typeof(LuaTable))
+                {
+                    push = (Push<LuaTable>)PushLuaTable as Push<T>;
+                    pull = (Pull<LuaTable>)PullLuaTable as Pull<T>;
+                }
+                else if (typeof(IMultRet).IsAssignableFrom(type))
+                {
+                    InitMultRet(type);
+                }
+                else if (type.IsArray)
+                {
+                    InitArray(type);
+                }
+                else if (type.IsGenericType
+                    && type.GetGenericTypeDefinition() is var gd
+                    && gd == typeof(List<>))
+                {
+                    InitList(type);
+                }
+                else if (type.IsEnum)
+                {
+                    throw new NotSupportedException();
+                }
+                else if (type.IsValueType)
+                {
+                    push = (Push<T>)PushValueType<T>;
+                    pull = (Pull<T>)PullValueType<T>;
+                }
+                else if (type.IsClass)
+                {
+                    push = (Push<T>)PushObject<T>;
+                    pull = (Pull<T>)PullObject<T>;
+                }
+            }
 
+            private static void InitPrimitive(Type type)
+            {
                 if (type == typeof(bool))
                 {
                     push = (Push<bool>)PushBool as Push<T>;
@@ -410,109 +448,98 @@ namespace bLua
                     push = (Push<double>)PushDouble as Push<T>;
                     pull = (Pull<double>)PullDouble as Pull<T>;
                 }
-                else if (type == typeof(string))
+                else
                 {
-                    push = (Push<string>)PushString as Push<T>;
-                    pull = (Pull<string>)PullString as Pull<T>;
+                    throw new NotSupportedException();
                 }
-                else if (type == typeof(LuaFunction))
+            }
+
+            private static void InitMultRet(Type type)
+            {
+                if (type.IsValueType
+                    && type.IsGenericType
+                    && type.GetGenericTypeDefinition() is var gd)
                 {
-                    push = (Push<LuaFunction>)PushLuaFunction as Push<T>;
-                    pull = (Pull<LuaFunction>)PullLuaFunction as Pull<T>;
-                }
-                else if (type == typeof(LuaTable))
-                {
-                    push = (Push<LuaTable>)PushLuaTable as Push<T>;
-                    pull = (Pull<LuaTable>)PullLuaTable as Pull<T>;
-                }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,>))
-                {
-                    retCount = 2;
-                    push = (Push<T>)MakePushMulRet(typeof(Push<T>), typeof(T));
+                    if (gd == typeof(MultRet<,>))
+                        retCount = 2;
+                    else if (gd == typeof(MulRet<,,>))
+                        retCount = 3;
+                    else if (gd == typeof(MulRet<,,,>))
+                        retCount = 4;
+                    else if (gd == typeof(MulRet<,,,,>))
+                        retCount = 5;
+                    else
+                        throw new NotSupportedException();
+
+
+                    push = (Push<T>)MakePushMultRet(typeof(Push<T>), typeof(T));
+
                     pull = null;
                 }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,,>))
+                else
                 {
-                    retCount = 3;
-                    push = (Push<T>)MakePushMulRet(typeof(Push<T>), typeof(T));
+                    push = PushMultRet<T>;
                     pull = null;
                 }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,,,>))
+            }
+
+            private static void InitList(Type type)
+            {
+                var gargs = type.GetGenericArguments();
+                LogUtil.Assert(gargs.Length > 0);
+                var elemType = gargs[0];
+                if (elemType == typeof(int))
                 {
-                    retCount = 4;
-                    push = (Push<T>)MakePushMulRet(typeof(Push<T>), typeof(T));
-                    pull = null;
+                    push = (Push<List<int>>)PushList<int> as Push<T>;
+                    pull = (Pull<List<int>>)PullList<int> as Pull<T>;
                 }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MulRet<,,,,>))
+                else if (elemType == typeof(float))
                 {
-                    retCount = 5;
-                    push = (Push<T>)MakePushMulRet(typeof(Push<T>), typeof(T));
-                    pull = null;
+                    push = (Push<List<float>>)PushList<float> as Push<T>;
+                    pull = (Pull<List<float>>)PullList<float> as Pull<T>;
                 }
-                else if (type.IsArray)
+                else if (elemType == typeof(string))
                 {
-                    var elem = type.GetElementType();
-                    if (elem == typeof(int))
-                    {
-                        push = (Push<int[]>)PushArray<int> as Push<T>;
-                        pull = (Pull<int[]>)PullArray<int> as Pull<T>;
-                    }
-                    else if (elem == typeof(float))
-                    {
-                        push = (Push<float[]>)PushArray<float> as Push<T>;
-                        pull = (Pull<float[]>)PullArray<float> as Pull<T>;
-                    }
-                    else if (elem == typeof(string))
-                    {
-                        push = (Push<string[]>)PushArray<string> as Push<T>;
-                        pull = (Pull<string[]>)PullArray<string> as Pull<T>;
-                    }
-                    else if (elem.IsClass)
-                    {
-                        push = (Push<object[]>)PushArray<object> as Push<T>;
-                        pull = (Pull<object[]>)PullArray<object> as Pull<T>;
-                    }
+                    push = (Push<List<string>>)PushList<string> as Push<T>;
+                    pull = (Pull<List<string>>)PullList<string> as Pull<T>;
                 }
-                else if (type.IsGenericType
-                    && type.GetGenericTypeDefinition() is var gtd
-                    && gtd == typeof(List<>))
+                else if (elemType.IsClass)
                 {
-                    var gargs = type.GetGenericArguments();
-                    var gtype = gargs[0];
-                    if (gtype == typeof(int))
-                    {
-                        push = (Push<List<int>>)PushList<int> as Push<T>;
-                        pull = (Pull<List<int>>)PullList<int> as Pull<T>;
-                    }
-                    else if (gtype == typeof(float))
-                    {
-                        push = (Push<List<float>>)PushList<float> as Push<T>;
-                        pull = (Pull<List<float>>)PullList<float> as Pull<T>;
-                    }
-                    else if (gtype == typeof(string))
-                    {
-                        push = (Push<List<string>>)PushList<string> as Push<T>;
-                        pull = (Pull<List<string>>)PullList<string> as Pull<T>;
-                    }
-                    else if (gtype.IsClass)
-                    {
-                        push = (Push<List<object>>)PushList<object> as Push<T>;
-                        pull = (Pull<List<object>>)PullList<object> as Pull<T>;
-                    }
+                    push = (Push<List<object>>)PushList<object> as Push<T>;
+                    pull = (Pull<List<object>>)PullList<object> as Pull<T>;
                 }
-                else if (type.IsEnum)
+                else
                 {
-                    throw new Exception("not support");
+                    throw new NotSupportedException();
                 }
-                else if (type.IsValueType)
+            }
+
+            private static void InitArray(Type type)
+            {
+                var elemType = type.GetElementType();
+                if (elemType == typeof(int))
                 {
-                    push = (Push<T>)PushValueType<T>;
-                    pull = (Pull<T>)PullValueType<T>;
+                    push = (Push<int[]>)PushArray<int> as Push<T>;
+                    pull = (Pull<int[]>)PullArray<int> as Pull<T>;
                 }
-                else if (type.IsClass)
+                else if (elemType == typeof(float))
                 {
-                    push = (Push<T>)PushObject<T>;
-                    pull = (Pull<T>)PullObject<T>;
+                    push = (Push<float[]>)PushArray<float> as Push<T>;
+                    pull = (Pull<float[]>)PullArray<float> as Pull<T>;
+                }
+                else if (elemType == typeof(string))
+                {
+                    push = (Push<string[]>)PushArray<string> as Push<T>;
+                    pull = (Pull<string[]>)PullArray<string> as Pull<T>;
+                }
+                else if (elemType.IsClass)
+                {
+                    push = (Push<object[]>)PushArray<object> as Push<T>;
+                    pull = (Pull<object[]>)PullArray<object> as Pull<T>;
+                }
+                else
+                {
+                    throw new NotSupportedException();
                 }
             }
         }

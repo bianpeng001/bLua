@@ -37,6 +37,7 @@ namespace bLua
             var state = LuaClient.State;
             Cs2Lua.Init(state, "Cs2Lua.lua");
             LoadModule(state);
+
             module.SetField("moveSystem", moveSystem);
 
             if (onAwake != null)

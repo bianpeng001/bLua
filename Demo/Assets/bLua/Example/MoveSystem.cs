@@ -77,17 +77,16 @@ namespace bLua
             }
         }
 
-        public MulRet<bool, float> MoveTo(int pid, GameObject obj, float speed, int x1, int z1, int x2, int z2)
+        public MultRet<bool, float> MoveTo(int pid, GameObject obj, float speed, int x1, int z1, int x2, int z2)
         {
             return (false, 0);
         }
 
-        private readonly List<int> pathList = new List<int>();
         private readonly List<PointXZ> pathXZList = new List<PointXZ>();
 
         public List<int> FindPath(int x1, int z1, int x2, int z2)
         {
-            pathList.Clear();
+            var pathList = new List<int>();
             if (map.FindPath(x1, z1, x2, z2))
             {
                 pathXZList.Clear();
@@ -101,7 +100,7 @@ namespace bLua
             return pathList;
         }
 
-        public MulRet<bool, int> GetMulRet()
+        public MultRet<bool, int> GetMulRet()
         {
             return (true, 1234);
         }

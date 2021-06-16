@@ -40,6 +40,7 @@ local function MakeIndexFunction(class)
     local className = class.class
     local class_id = class[1]
     local _cache = class._cache
+    local type
 
     return function(obj, methodName)
         local entry = rawget(_cache, methodName)
@@ -49,26 +50,30 @@ local function MakeIndexFunction(class)
                 local method = function(...)
                     return CallUnityMethod(methodId, ...)
                 end
+                type = 1
                 entry = { 1, method, methodId, }
                 rawset(class, methodName, method)
             else
                 local get_methodId = RegisterUnityMethod(class_id, 'get_' .. methodName)
                 local set_methodId = RegisterUnityMethod(class_id, 'set_' .. methodName)
-                entry = { 2, get_methodId, set_methodId, }
-                rawset(_cache, methodName, entry)
+                if get_methodId or set_methodId then
+                    type = 2
+                    entry = { 2, get_methodId, set_methodId, }
+                    rawset(_cache, methodName, entry)
+                end
             end
+        else
+            type = entry[1]
         end
 
-        local type = entry[1]
         if type == 1 then
             return entry[2]
         elseif type == 2 then
 
             return CallUnityMethod(entry[2], obj)
-        else
-            print('errored')
-            return nil
         end
+
+        return nil
     end
 end
 
@@ -160,6 +165,22 @@ function AutoWrap.Test3()
 
     e = nil
     collectgarbage('collect')
+end
+
+function AutoWrap.ToTable(coll)
+	local n = coll.Count
+	local result = {}
+    if n then
+        for i = 0, n - 1 do
+            result[i + 1] = coll:get_Item(i)
+        end
+    else
+        n = coll.Length
+        for i = 0, n - 1 do
+            result[i + 1] = coll:Get(i)
+        end
+    end
+	return result
 end
 
 

@@ -17,6 +17,7 @@ function module.Awake()
     print('Awake', Time.time, Time.deltaTime)
 
     module.transform = module.gameObject.transform
+    
 end
 
 local angle = 0
