@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace bLua.War
+namespace bLua
 {
     public class UnitComponent : MonoBehaviour
     {

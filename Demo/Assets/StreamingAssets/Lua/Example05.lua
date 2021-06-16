@@ -48,11 +48,35 @@ function Unit.New()
 		z = 0,
 		position = { 0, 0, 0 },
 
-		ai = { state = 1, },
+		state = 1,
+		ai = { },
 	}
 	setmetatable(obj, Unit)
 	return obj
 end
+
+function Unit:OnIdle()
+	local path
+
+	path = _moveSystem:FindPath(self.x, self.z, 0, 0)
+	print(#path)
+	for i = 1, #path / 2 do
+		print(path[i*2-1], path[i*2])
+	end
+	self.ai.path = path
+	self.ai.time = 0
+	self.ai.position = self.transform.localPosition
+
+	self.state = 2
+end
+
+function Unit:OnMove()
+end
+
+function Unit:OnAttack()
+end
+
+Unit.actions = { Unit.OnIdle, Unit.OnMove, Unit.OnAttack }
 
 function Unit:LoadModel()
 	self.gameObject = _unitPrefab[1]:Clone()
@@ -63,26 +87,11 @@ function Unit:LoadModel()
 end
 
 function Unit:Update()
-	local state, path
+	local cb
 
-	state = self.ai.state
-	if state == 1 then
-		self.ai.state = 2
-		path = _moveSystem:FindPath(self.x, self.z, 0, 0)
-		print(#path)
-		for i = 1, #path / 2 do
-			print(path[i*2-1], path[i*2])
-		end
-		self.ai.path = path
-		self.ai.time = 0
-		self.ai.position = self.transform.localPosition
-	elseif state == 2 then
-		self.ai.time = self.ai.time + _deltaTime
-
-	elseif state == 3 then
-
-	else
-
+	cb = self.actions[self.state]
+	if cb then
+		cb(self)
 	end
 end
 

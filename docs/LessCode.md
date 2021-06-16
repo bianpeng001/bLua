@@ -235,7 +235,7 @@ private static Delegate MakePushMulRet(Type pushType, Type valueType)
     {
         mPushMulRet = typeof(AutoWrap).GetMethod(
             "PushMulRetNoGC",
-                BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
     }
 
     dele = Delegate.CreateDelegate(pushType, null, mPushMulRet.MakeGenericMethod(valueType));
