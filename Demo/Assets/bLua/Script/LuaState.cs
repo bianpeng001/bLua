@@ -164,7 +164,9 @@ namespace bLua
                         sb.Append("<litudata>");
                         break;
                     case DataType.LUA_TUSERDATA:
-                        sb.Append("<udata>");
+                        sb.Append("<udata:");
+                        sb.Append(luaL_tostring(L, i));
+                        sb.Append('>');
                         break;
                     case DataType.LUA_TNONE:
                         sb.Append("<none>");

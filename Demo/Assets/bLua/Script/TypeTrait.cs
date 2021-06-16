@@ -152,9 +152,11 @@ namespace bLua
 
                 var objIndex = state.objCache.Add(obj);
 
-                lua_createtable(L, 1, 0);
+                var addr = lua_newuserdatauv(L, 1, 1);
+                LogUtil.Assert(addr != IntPtr.Zero);
+
                 lua_pushinteger(L, objIndex);
-                lua_rawseti(L, -2, 1);
+                lua_setiuservalue(L, -2, 1);
 
                 lua_rawgeti(L, LUA_REGISTRYINDEX, cls.luaref);
                 lua_setmetatable(L, -2);
@@ -173,8 +175,10 @@ namespace bLua
             if (lua_isnil(L, pos))
                 return default(T);
 
+            if (!lua_isuserdata(L, pos))
+                throw new Exception();
 
-            lua_rawgeti(L, pos, 1);
+            lua_getiuservalue(L, pos, 1);
             var objIndex = (int)lua_tointeger(L, -1);
             lua_pop(L, 1);
 

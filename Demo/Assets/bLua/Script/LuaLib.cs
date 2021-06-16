@@ -312,6 +312,17 @@ namespace bLua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_createtable(IntPtr L, int narr, int nrec);
 
+        #region uservalue
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr lua_newuserdatauv(IntPtr L, int size, int nuvalue);
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_setiuservalue(IntPtr L, int index, int n);
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_getiuservalue(IntPtr L, int index, int n);
+        #endregion
+
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_getfenv(IntPtr L, int idx);
 

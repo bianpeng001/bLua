@@ -32,17 +32,22 @@ local CallUnityMethod = CallUnityMethod or function(methodId, ...)
     print('CallUnityMethod', methodId, ...)
 end
 
-local CollectUnityHandle = CollectUnityHandle or function(obj)
-    print('CollectUnityHandle')
+local CollectUnityObject = CollectUnityObject or function(obj)
+    print('CollectUnityObject')
+end
+
+local UnityObject2ObjIndex = UnityObject2ObjIndex or function(obj)
+    print('UnityObject2ObjIndex')
 end
 
 local function MakeIndexFunction(class)
     local className = class.class
     local class_id = class[1]
     local _cache = class._cache
-    local type
 
     return function(obj, methodName)
+        local type
+
         local entry = rawget(_cache, methodName)
         if not entry then
             local methodId = RegisterUnityMethod(class_id, methodName)
@@ -109,10 +114,10 @@ function AutoWrap.DefineClass(class)
     class.__index = indexFunc
     class.__newindex = MakeNewIndexFunction(class)
 
-    class.__gc = CollectUnityHandle
+    class.__gc = CollectUnityObject
 
     class.__tostring = function(obj)
-        return string.format('%s@%d', className, obj[1])
+        return string.format('%s@%d', className, UnityObject2ObjIndex(obj))
     end
 
     local mt = { __index = indexFunc }

@@ -264,22 +264,24 @@ namespace bLua
             var lastStep = PointXZ.zero;
             
             path.Add(stop);
-            var curr = this[stop].prev;
+            int lastIndex = 0;
 
+            var curr = this[stop].prev;
             while (true)
             {
-                var last = path.Count - 1;
-                var step = curr - path[last];
+                var step = curr - path[lastIndex];
                 if (step == lastStep)
-                    path[last] = curr;
+                    path[lastIndex] = curr;
                 else
                 {
                     path.Add(curr);
                     lastStep = step;
+                    ++lastIndex;
                 }
 
                 if (curr == start)
                     break;
+
                 curr = this[curr].prev;
             }
         }
