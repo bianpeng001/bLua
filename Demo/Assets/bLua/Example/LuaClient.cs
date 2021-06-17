@@ -212,6 +212,14 @@ namespace bLua
                     return quat;
                 });
         }
+
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem("Tools/Lua/Collect", priority = 21, validate = false)]
+        public static void Collect()
+        {
+            LuaLib.lua_gc(LuaClient.Instance.state, LuaLib.GCOption.LUA_GCCOLLECT);
+        }
+#endif
     }
 
 }

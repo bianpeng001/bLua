@@ -312,15 +312,16 @@ namespace bLua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_createtable(IntPtr L, int narr, int nrec);
 
-        #region uservalue
+        #region userdata
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr lua_newuserdatauv(IntPtr L, int size, int nuvalue);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_setiuservalue(IntPtr L, int index, int n);
+        public static extern int lua_setiuservalue(IntPtr L, int idx, int n);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_getiuservalue(IntPtr L, int index, int n);
+        public static extern int lua_getiuservalue(IntPtr L, int idx, int n);
+
         #endregion
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
@@ -364,6 +365,9 @@ namespace bLua
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_status(IntPtr L);
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_gc(IntPtr L, GCOption what);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_gc(IntPtr L, GCOption what, int data);
@@ -478,6 +482,29 @@ namespace bLua
             IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
             lua_pushcclosure(L, fn, 0);
         }
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void blua_openlib(IntPtr L);
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int UserDataGetObjIndex(IntPtr L, int pos);
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void UserDataSetObjIndex(IntPtr L, int pos, int value);
+
+        /*
+        private static unsafe int UserDataGetObjIndex(IntPtr L, int pos)
+        {
+            var addr = lua_touserdata(L, pos);
+            return *(int*)addr.ToPointer();
+        }
+
+        private static unsafe void UserDataSetObjIndex(IntPtr L, int pos, int value)
+        {
+            var addr = lua_touserdata(L, pos);
+            *(int*)addr.ToPointer() = value;
+        }
+        */
 
     }
 

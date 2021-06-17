@@ -173,18 +173,20 @@ function AutoWrap.Test3()
 end
 
 function AutoWrap.ToTable(coll)
-	local n = coll.Count
 	local result = {}
+
+	local n = coll.Count
     if n then
-        for i = 0, n - 1 do
-            result[i + 1] = coll:get_Item(i)
+        for i = 1, n do
+            result[i] = coll:get_Item(i - 1)
         end
     else
         n = coll.Length
-        for i = 0, n - 1 do
-            result[i + 1] = coll:Get(i)
+        for i = 1, n do
+            result[i] = coll:Get(i - 1)
         end
     end
+
 	return result
 end
 

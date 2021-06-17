@@ -31,7 +31,7 @@ local function Test2()
 
     print('Example', Example)
     local e = Example.GetInstance()
-    print('Example.Instance', e, e[1])
+    print('Example.Instance', e)
 
     Example.Add(1, 2)
     Example.Add(1, 2, 3)

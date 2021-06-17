@@ -115,6 +115,10 @@ function UnitsMgr:Add(p)
     self.units[p.pid] = p
 end
 
+function UnitsMgr:Remove(p)
+    self.units[p.pid] = nil
+end
+
 local BulletsMgr = {}
 BulletsMgr.__index = BulletsMgr
 
@@ -204,6 +208,8 @@ local function CreatePlayer()
     obj.name = 'Player01'
     local tr = obj.transform
     tr.parent = nil
+
+    print('CreatePlayer', obj, tr)
 
     local p = Player.New()
     p.gameObject = obj

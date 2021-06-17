@@ -94,6 +94,7 @@ namespace bLua
             stateList = new (IntPtr, LuaState)[] { (L, this), };
 
             luaL_openlibs(L);
+            blua_openlib(L);
             lua_gc(L, GCOption.LUA_GCGEN, 20, 100);
             lua_register(L, "print", Print);
 

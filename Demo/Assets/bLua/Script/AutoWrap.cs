@@ -291,15 +291,12 @@ namespace bLua
             if (!lua_isuserdata(L, 1))
                 throw new Exception();
 
-            lua_getiuservalue(L, 1, 1);
-            var objIndex = (int)lua_tointeger(L, -1);
-            lua_pop(L, 1);
-            lua_remove(L, 2);
-
+            var objIndex = UserDataGetObjIndex(L, 1);
             state.objCache.Free(objIndex);
             return 0;
         }
 
+        /*
 #if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
 #endif
@@ -309,9 +306,13 @@ namespace bLua
 
             if (!lua_isuserdata(L, 1))
                 throw new Exception();
-            lua_getiuservalue(L, 1, 1);
+
+            var objIndex = UserDataGetObjIndex(L, 1);
+            TypeTrait<int>.push(L, objIndex);
+
             return 1;
         }
+        */
 
 #if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
@@ -361,10 +362,11 @@ namespace bLua
 #endif
         private static int Cast2Type(IntPtr L)
         {
-            lua_getiuservalue(L, 1, 1);
-            var objIndex = TypeTrait<int>.pull(L, -1);
-            lua_pop(L, 1);
+            if (!lua_isuserdata(L, 1))
+                throw new Exception();
 
+            var objIndex = UserDataGetObjIndex(L, 1);
+            
             lua_rawgeti(L, 2, 1);
             var classId = TypeTrait<int>.pull(L, -1);
             lua_pop(L, 1);
@@ -387,7 +389,6 @@ namespace bLua
             lua_register(state, "CallLuaDelegate", CallLuaDelegate);
 
             lua_register(state, "CollectUnityObject", CollectUnityObject);
-            lua_register(state, "UnityObject2ObjIndex", UnityObject2ObjIndex);
 
             lua_register(state, "typeof", TypeOf);
             lua_register(state, "cast2type", Cast2Type);

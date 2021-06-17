@@ -152,11 +152,9 @@ namespace bLua
 
                 var objIndex = state.objCache.Add(obj);
 
-                var addr = lua_newuserdatauv(L, 1, 1);
+                var addr = lua_newuserdatauv(L, 4, 0);
                 LogUtil.Assert(addr != IntPtr.Zero);
-
-                lua_pushinteger(L, objIndex);
-                lua_setiuservalue(L, -2, 1);
+                UserDataSetObjIndex(L, -1, objIndex);
 
                 lua_rawgeti(L, LUA_REGISTRYINDEX, cls.luaref);
                 lua_setmetatable(L, -2);
@@ -178,12 +176,11 @@ namespace bLua
             if (!lua_isuserdata(L, pos))
                 throw new Exception();
 
-            lua_getiuservalue(L, pos, 1);
-            var objIndex = (int)lua_tointeger(L, -1);
-            lua_pop(L, 1);
+            var objIndex = UserDataGetObjIndex(L, pos);
 
             return (T)state.objCache.GetObject(objIndex);
         }
+
 
         private static void PushArray<T>(IntPtr L, T[] value)
         {
@@ -196,21 +193,6 @@ namespace bLua
         public static T[] PullArray<T>(IntPtr L, int pos)
         {
             return PullObject<T[]>(L, pos);
-
-            /*
-            LogUtil.Assert(lua_istable(L, pos));
-            int len = (int)lua_rawlen(L, pos);
-            if (len == 0)
-                return null;
-            T[] value = new T[len];
-            for (int i = 0; i < len; ++i)
-            {
-                lua_rawgeti(L, pos, i + 1);
-                value[i] = TypeTrait<T>.pull(L, -1);
-            }
-            lua_pop(L, len);
-            return value;
-            */
         }
 
         private static void PushList<T>(IntPtr L, List<T> value)
@@ -224,21 +206,6 @@ namespace bLua
         public static List<T> PullList<T>(IntPtr L, int pos)
         {
             return PullObject<List<T>>(L, pos);
-            /*
-            LogUtil.Assert(lua_istable(L, pos));
-            int len = (int)lua(L, pos);
-            if (len == 0)
-                return null;
-
-            List<T> value = new List<T>();
-            for (int i = 0; i < len; ++i)
-            {
-                lua_rawgeti(L, pos, i + 1);
-                value.Add(TypeTrait<T>.pull(L, -1));
-            }
-            lua_pop(L, len);
-            return value;
-            */
         }
 
         #region 多返回值
