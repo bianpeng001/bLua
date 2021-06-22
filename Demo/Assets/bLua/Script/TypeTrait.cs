@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月21日, 边蓬
- */
-
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -122,8 +118,10 @@ namespace bLua
 
         private static LuaFunction PullLuaFunction(IntPtr L, int pos)
         {
-            if (lua_isnil(L, pos) || lua_type(L, pos) != DataType.LUA_TFUNCTION)
+            if (lua_isnil(L, pos))
                 return null;
+            else if (lua_type(L, pos) != DataType.LUA_TFUNCTION)
+                throw new Exception();
 
             lua_pushvalue(L, pos);
             var s = LuaState.GetState(L);
@@ -132,11 +130,24 @@ namespace bLua
 
         private static void PushLuaTable(IntPtr L, LuaTable value)
         {
+            if (value == null)
+            {
+                lua_pushnil(L);
+                return;
+            }
+            value.Push();
         }
 
         private static LuaTable PullLuaTable(IntPtr L, int pos)
         {
-            return null;
+            if (lua_isnil(L, pos))
+                return null;
+            else if (lua_type(L, pos) != DataType.LUA_TTABLE)
+                throw new Exception();
+
+            lua_pushvalue(L, pos);
+            var s = LuaState.GetState(L);
+            return new LuaTable(s, new LuaRef(s));
         }
 
         private static void PushObject(IntPtr L, object obj, ClassDefinition cls)
@@ -374,6 +385,10 @@ namespace bLua
                 else if (type.IsEnum)
                 {
                     throw new NotSupportedException();
+                }
+                else if (type == typeof(object))
+                {
+                    push = (Push<object>)PushObject<object> as Push<T>;
                 }
                 else if (type.IsValueType)
                 {

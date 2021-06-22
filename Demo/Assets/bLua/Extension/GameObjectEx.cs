@@ -17,7 +17,7 @@ limitations under the License.
 using System;
 using UnityEngine;
 
-namespace bLua.Extension
+namespace bLua
 {
     public static class GameObjectEx
     {
@@ -44,3 +44,5 @@ namespace bLua.Extension
     }
 
 }
+
+

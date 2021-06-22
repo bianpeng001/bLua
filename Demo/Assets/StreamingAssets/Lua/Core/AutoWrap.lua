@@ -25,7 +25,7 @@ local RegisterUnityMethod = RegisterUnityMethod or function(class_id, methodName
     return methodId
 end
 
-local RegisterUnityClass = RegisterUnityClass or function(className, class, class_id)
+local RegisterUnityClass = RegisterUnityClass or function(className, class)
     print('RegisterUnityClass', className)
 end
 
@@ -177,16 +177,10 @@ function AutoWrap.ToTable(coll)
 	local result = {}
 
 	local n = coll.Count
-    if n then
-        for i = 1, n do
-            result[i] = coll:get_Item(i - 1)
-        end
-    else
-        n = coll.Length
-        for i = 1, n do
-            result[i] = coll:Get(i - 1)
-        end
+    for i = 1, n do
+        result[i] = coll:get_Item(i - 1)
     end
+
 
 	return result
 end

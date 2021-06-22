@@ -14,11 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月16日, 边蓬
- */
-
-using bLua.Extension;
 using UnityEngine;
 using Float = bLua.AutoWrap.TypeTrait<float>;
 
@@ -40,7 +35,7 @@ namespace bLua
             state.Create();
 
             var reg = new LuaRegister();
-            Binder.Bind(reg);
+            bLua.Extension.Binder.Bind(reg);
             AutoWrap.Init(state, reg);
             state.DoFile("Binder.lua");
 
@@ -214,12 +209,21 @@ namespace bLua
         }
 
 #if UNITY_EDITOR
-        [UnityEditor.MenuItem("Tools/Lua/Collect", priority = 21, validate = false)]
-        public static void Collect()
+
+        [UnityEditor.MenuItem("Tools/Lua/Collect Garbage", priority = 21, validate = false)]
+        public static void CollectGarbage()
         {
-            LuaLib.lua_gc(LuaClient.Instance.state, LuaLib.GCOption.LUA_GCCOLLECT);
+            LuaLib.lua_gc(Instance.state, LuaLib.GCOption.LUA_GCCOLLECT);
         }
+
+        [UnityEditor.MenuItem("Tools/Lua/Count Memory", priority = 22, validate = false)]
+        public static void CountMemory()
+        {
+            Instance.state.DoString("print(collectgarbage('count'), 'kb')");
+        }
+
 #endif
+
     }
 
 }

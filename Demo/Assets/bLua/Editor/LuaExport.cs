@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月11日, 边蓬
- */
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -200,7 +196,7 @@ namespace bLua
                                 if (item.extClass != null)
                                 {
                                     fs.Write("typeof(");
-                                    fs.Write(item.extClass.FullName);
+                                    fs.Write(GetTypeName(item.extClass));
                                     fs.Write("), ");
                                 }
 
@@ -209,7 +205,7 @@ namespace bLua
                                 else
                                 {
                                     fs.Write("typeof(");
-                                    fs.Write(item.baseClass.FullName);
+                                    fs.Write(GetTypeName(item.baseClass));
                                     fs.Write("), ");
                                 }
 

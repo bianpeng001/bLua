@@ -29,7 +29,7 @@ namespace bLua
 
     public class ObjectCache
     {
-        public struct ObjectEntry
+        public struct Entry
         {
             public object value;
             public int next;
@@ -39,10 +39,10 @@ namespace bLua
 
         private int freeIndex = -1;
         private int allocIndex = 1;
-        private int deadIndex = -1, deadQueueCount = 0, halfLifeIndex = -1;
 
+        private int killIndex = -1, killCount = 0, deadIndex = -1;
         private const int ALLOC_SIZE = 2048;
-        private ObjectEntry[] cache = new ObjectEntry[ALLOC_SIZE];
+        private Entry[] cache = new Entry[ALLOC_SIZE];
 
         public object GetObject(int objIndex)
         {
@@ -68,8 +68,8 @@ namespace bLua
 
                 if (allocIndex == cache.Length)
                 {
-                    var buf = new ObjectEntry[cache.Length + ALLOC_SIZE];
-                    new Memory<ObjectEntry>(cache).CopyTo(new Memory<ObjectEntry>(buf));
+                    var buf = new Entry[cache.Length + ALLOC_SIZE];
+                    new Memory<Entry>(cache).CopyTo(new Memory<Entry>(buf));
                     cache = buf;
                 }
                 objIndex = allocIndex++;
@@ -81,20 +81,22 @@ namespace bLua
             return objIndex;
         }
 
-        private const int DeadQueueSize = 16;
+        private const int KillQueueSize = 16;
 
         public void Free(int index)
         {
-            cache[index].next = deadIndex;
-            deadIndex = index;
-            ++deadQueueCount;
+            cache[index].next = killIndex;
+            cache[index].value = null;
 
-            if (deadQueueCount >= DeadQueueSize)
+            killIndex = index;
+            ++killCount;
+
+            if (killCount >= KillQueueSize)
             {
-                if (halfLifeIndex >= 0)
+                if (deadIndex >= 0)
                 {
-                    var curr = cache[halfLifeIndex].next;
-                    cache[halfLifeIndex].next = -1;
+                    var curr = cache[deadIndex].next;
+                    cache[deadIndex].next = -1;
 
                     while (curr >= 0)
                     {
@@ -105,8 +107,8 @@ namespace bLua
                     }
                 }
 
-                halfLifeIndex = deadIndex;
-                deadQueueCount = 0;
+                deadIndex = killIndex;
+                killCount = 0;
             }
         }
 

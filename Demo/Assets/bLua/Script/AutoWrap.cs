@@ -39,7 +39,7 @@ namespace bLua
             int Call(IntPtr L);
         }
 
-        public interface IUnityMethodFromDelegate
+        private interface IUnityMethodFromDelegate
         {
             void SetDelegate(Delegate del);
         }
@@ -50,11 +50,11 @@ namespace bLua
 
         private class GenericTypeTree
         {
-            public readonly Type gType;
+            public readonly Type argType;
 
             public GenericTypeTree(Type argType)
             {
-                this.gType = argType;
+                this.argType = argType;
             }
 
             public List<GenericTypeTree> childList;
@@ -66,18 +66,21 @@ namespace bLua
             funcRoot = new GenericTypeTree(null),
             actionRoot = new GenericTypeTree(null);
 
-        private static (Type, Type) GetFuncType(GenericTypeTree node,
-            Type funcTemplate, Type cbTemplate,
-            Type[] gparams, int gindex)
+        private static (Type, Type) GetFuncType(
+            GenericTypeTree node,
+            Type funcTemplate,
+            Type cbTemplate,
+            Type[] gparams,
+            int gIndex)
         {
-            if (gindex < gparams.Length)
+            if (gIndex < gparams.Length)
             {
-                var gtype = gparams[gindex];
+                var gtype = gparams[gIndex];
                 if (node.childList == null)
                     node.childList = new List<GenericTypeTree>();
 
                 GenericTypeTree child;
-                var index = node.childList.FindIndex(a => a.gType == gtype);
+                var index = node.childList.FindIndex(a => a.argType == gtype);
                 if (index >= 0)
                     child = node.childList[index];
                 else
@@ -85,7 +88,7 @@ namespace bLua
                     child = new GenericTypeTree(gtype);
                     node.childList.Add(child);
                 }
-                return GetFuncType(child, funcTemplate, cbTemplate, gparams, gindex + 1);
+                return GetFuncType(child, funcTemplate, cbTemplate, gparams, gIndex + 1);
             }
             else
             {
@@ -182,7 +185,10 @@ namespace bLua
         private static int CallLuaDelegate(IntPtr L)
         {
             var dele = TypeTrait<LuaDelegate>.pull(L, 1);
-            return dele.Call(L);
+            if (dele != null)
+                return dele.Call(L);
+
+            return 0;
         }
 
         private static readonly List<IUnityMethod> unityMethodMap = new List<IUnityMethod>(1024) { null, };
@@ -196,7 +202,6 @@ namespace bLua
         {
             CheckArgumentCount(L, 2);
             var argumentCount = lua_gettop(L);
-
             var classId = TypeTrait<int>.pull(L, -2);
             var methodName = lua_tostring(L, -1);
 
@@ -232,31 +237,31 @@ namespace bLua
         private static IUnityMethod CreateUnityMethod(MethodInfo method)
         {
             var retType = method.ReturnType;
-            var arguments = method.GetParameters();
-            var argumentCount = arguments.Length;
+            var args = method.GetParameters();
+            var argc = args.Length;
 
             Type unityMethodType, cbType;
 
             if (retType != typeof(void))
             {
-                var gparams = gparamsCache[argumentCount + 1];
-                for (int i = 0; i < argumentCount; ++i)
-                    gparams[i] = arguments[i].ParameterType;
-                gparams[argumentCount] = retType;
+                var gparams = gparamsCache[argc + 1];
+                for (int i = 0; i < argc; ++i)
+                    gparams[i] = args[i].ParameterType;
+                gparams[argc] = retType;
 
-                var (funcTemplate, cbTemplate) = funcTypeMap[argumentCount];
+                var (funcTemplate, cbTemplate) = funcTypeMap[argc];
                 (unityMethodType, cbType) = GetFuncType(funcRoot, funcTemplate, cbTemplate, gparams, 0);
             }
             else
             {
-                var (actionTemplate, cbTemplate) = actionTypeMap[argumentCount];
-                if (argumentCount == 0)
+                var (actionTemplate, cbTemplate) = actionTypeMap[argc];
+                if (argc == 0)
                     (unityMethodType, cbType) = (actionTemplate, cbTemplate);
                 else
                 {
-                    var gparams = gparamsCache[argumentCount];
-                    for (int i = 0; i < argumentCount; ++i)
-                        gparams[i] = arguments[i].ParameterType;
+                    var gparams = gparamsCache[argc];
+                    for (int i = 0; i < argc; ++i)
+                        gparams[i] = args[i].ParameterType;
 
                     (unityMethodType, cbType) = GetFuncType(actionRoot, actionTemplate, cbTemplate, gparams, 0);
                 }
@@ -288,8 +293,7 @@ namespace bLua
         {
             CheckArgumentCount(L, 1);
 
-            if (!lua_isuserdata(L, 1))
-                throw new Exception();
+            LogUtil.Assert(lua_isuserdata(L, 1));
 
             var objIndex = UserDataGetObjIndex(L, 1);
             state.objCache.Free(objIndex);
@@ -410,11 +414,12 @@ namespace bLua
             }
 
             var notSupport = method.GetCustomAttribute<ObsoleteAttribute>(false) != null
+                || (method.GetCustomAttribute<LuaFieldAttribute>(false) is var lf && lf != null && lf.nowrap)
                 || method.IsGenericMethod
                 || method.IsGenericMethodDefinition
                 || method.ReturnType.IsGenericTypeDefinition
                 || method.ReturnType.IsByRef
-                || ((method.GetParameters() is var arguments) && Array.FindIndex(arguments, CheckArgument) >= 0);
+                || ((method.GetParameters() is var arguments && Array.FindIndex(arguments, CheckArgument) >= 0));
 
             return !notSupport;
         }

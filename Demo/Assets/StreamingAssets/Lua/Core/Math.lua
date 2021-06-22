@@ -60,13 +60,19 @@ function Vector3:Clone()
     return { self[1], self[2], self[3] }
 end
 
-function Vector3.Set(v, x, y, z)
+function Vector3.SetXYZ(v, x, y, z)
     v[1] = x
     v[2] = y
     v[3] = z
 end
+Vector3.Set = Vector3.SetXYZ
 
-function Vector3.Set1(v, v2)
+function Vector3.SetXZ(v, x, z)
+    v[1] = x
+    v[3] = z
+end
+
+function Vector3.SetV(v, v2)
     v[1] = v2[1]
     v[2] = v2[2]
     v[3] = v2[3]
@@ -115,8 +121,6 @@ end
 
 function Vector3.Lerp(a, b, factor, result)
     result = result or { 0, 0, 0 }
-    
-
     return result
 end
 
@@ -159,7 +163,7 @@ end
 
 function Ray:GetPoint(d, result)
     result = result or { 0, 0, 0 }
-    result[1], result[2], result[3] = x + d * dx , y + d * dy, z + d * dz
+    result[1], result[2], result[3] = self.x + d * self.dx , self.y + d * self.dy, self.z + d * self.dz
     return result
 end
 

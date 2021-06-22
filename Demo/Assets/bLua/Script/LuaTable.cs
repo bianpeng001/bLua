@@ -90,6 +90,11 @@ namespace bLua
             return new LuaTable(state, luaref);
         }
 
+        public void Push()
+        {
+            this.luaref.Rawget(state);
+        }
+
         public LuaTable GetMetaTable()
         {
             return null;

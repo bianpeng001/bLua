@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月21日, 边蓬
- */
-
 using System;
 using System.Collections.Generic;
 using System.Reflection;

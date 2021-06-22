@@ -137,6 +137,7 @@ namespace bLua
         {
             var curr = start;
             int loop = width + length;
+            loop *= 2;
 
             while (--loop >= 0)
             {

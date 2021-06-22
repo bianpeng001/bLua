@@ -14,42 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 using UnityEngine;
 
 namespace bLua
 {
-    public class Example05 : LuaBehaviour
+    public class Example06 : LuaBehaviour
     {
-        private static Example05 instance;
-
-        private MoveSystem moveSystem;
-
-        void Awake()
+        private void Awake()
         {
-            Application.targetFrameRate = 60;
-            instance = this;
-            moveSystem = new MoveSystem();
-
             var state = LuaClient.State;
-            Cs2Lua.Init(state, "Cs2Lua.lua");
             LoadModule(state);
-
-            module.SetField("moveSystem", moveSystem);
 
             if (onAwake != null)
                 onAwake.Call();
         }
-
-        void Update()
-        {
-            if (onUpdate != null)
-                onUpdate.Call();
-        }
-
-        
-
     }
 }
-
-

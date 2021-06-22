@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月22日, 边蓬
- */
-
 using System.Collections.Generic;
 
 namespace bLua
@@ -64,6 +60,7 @@ namespace bLua
             {
                 type = typeof(int[]),
                 baseClass = typeof(System.Array),
+                extClass = typeof(ArrayEx<int>),
                 typeName = "ArrayInt",
                 whiteList = new string[]{ "Get", "Set" },
             },
@@ -71,6 +68,7 @@ namespace bLua
             {
                 type = typeof(float[]),
                 baseClass = typeof(System.Array),
+                extClass = typeof(ArrayEx<float>),
                 typeName = "ArrayFloat",
                 whiteList = new string[]{ "Get", "Set" },
             },
@@ -78,6 +76,7 @@ namespace bLua
             {
                 type = typeof(string[]),
                 baseClass = typeof(System.Array),
+                extClass = typeof(ArrayEx<string>),
                 typeName = "ArrayString",
                 whiteList = new string[]{ "Get", "Set" },
             },
@@ -85,6 +84,7 @@ namespace bLua
             {
                 type = typeof(object[]),
                 baseClass = typeof(System.Array),
+                extClass = typeof(ArrayEx<object>),
                 typeName = "ArrayObject",
                 whiteList = new string[]{ "Get", "Set" },
             },
@@ -135,8 +135,9 @@ namespace bLua
             new ExportType()
             {
                 type = typeof(UnityEngine.GameObject),
+                blackList = new string[] { "gameObject", "GetComponent", "GetComponentInChildren", },
                 baseClass = typeof(UnityEngine.Object),
-                extClass = typeof(bLua.Extension.GameObjectEx),
+                extClass = typeof(bLua.GameObjectEx),
             },
             new ExportType()
             {
@@ -389,3 +390,5 @@ namespace bLua
         };
     }
 }
+
+

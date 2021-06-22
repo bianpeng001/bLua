@@ -130,6 +130,8 @@ local function Test8()
     module.CreateProperty('name', function() return 'xxxx' end, function (value) print(value) end)
     print(module.name)
     module.name = 'yyyy'
+
+    print('blua.hello', blua.hello())
 end
 
 Test1()

@@ -14,42 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
-using UnityEngine;
+using UnityEngine.UI;
 
 namespace bLua
 {
-    public class Example05 : LuaBehaviour
+    public class DataBind
     {
-        private static Example05 instance;
 
-        private MoveSystem moveSystem;
-
-        void Awake()
+        [LuaField(nowrap = true)]
+        public void Connect(string key, Text text)
         {
-            Application.targetFrameRate = 60;
-            instance = this;
-            moveSystem = new MoveSystem();
 
-            var state = LuaClient.State;
-            Cs2Lua.Init(state, "Cs2Lua.lua");
-            LoadModule(state);
-
-            module.SetField("moveSystem", moveSystem);
-
-            if (onAwake != null)
-                onAwake.Call();
         }
 
-        void Update()
+        public void SetValue<T>(string key, T value)
         {
-            if (onUpdate != null)
-                onUpdate.Call();
-        }
 
-        
+        }
 
     }
-}
 
+}
 

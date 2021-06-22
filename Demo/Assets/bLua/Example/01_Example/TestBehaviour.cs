@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月26日, 边蓬
- */
-
 namespace bLua
 {
     public class TestBehaviour : LuaBehaviour

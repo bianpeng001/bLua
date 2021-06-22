@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2021 边蓬(bianpeng001@163.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月26日, 边蓬
- */
-using System;
-
 namespace bLua
 {
-    public class LuaFieldAttribute : Attribute
+    public static class ArrayEx<T>
     {
-        public bool nowrap = false;
-    }
+        public static int get_Count(T[] _this) => _this.Length;
 
+        public static T get_Item(T[] _this, int index) => _this[index];
+
+        public static void set_Item(T[] _this, int index, T value) => _this[index] = value;
+    }
 }

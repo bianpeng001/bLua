@@ -67,13 +67,22 @@ namespace bLua
             return typeList[classId];
         }
 
+        private readonly Dictionary<Type, ClassDefinition> type2ClsCache = new Dictionary<Type, ClassDefinition>();
+
         public ClassDefinition GetClass(Type type)
         {
+            ClassDefinition cls;
+            if (type2ClsCache.TryGetValue(type, out cls))
+                return cls;
+
             for (int i = 1; i < typeList.Count; ++i)
             {
-                var cls = typeList[i];
+                cls = typeList[i];
                 if (cls.type == type)
+                {
+                    type2ClsCache[type] = cls;
                     return cls;
+                }
             }
             return null;
         }

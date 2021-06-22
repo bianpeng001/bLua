@@ -36,45 +36,33 @@ namespace bLua
         }
 
         public readonly AStarMap<CellData> map;
-        private Vector3 mapOffset = new Vector3(-7.5f, 0, -9.5f);
 
         public MoveSystem()
         {
             map = new AStarMap<CellData>(16, 20);
-        }
-
-        private class MoveData
-        {
-            public int pid;
-            public float speed;
-            public float time;
-            public PointXZ[] path;
-
-            public bool Move(float deltaTime)
+            for(int i = 0; i <= 2; ++i)
             {
-                return true;
+                map.GetCellData(i, 8).noPass = true;
+                map.GetCellData(i, 9).noPass = true;
+                map.GetCellData(i, 10).noPass = true;
             }
-        }
+            for (int i = 6; i <= 9; ++i)
+            {
+                map.GetCellData(i, 8).noPass = true;
+                map.GetCellData(i, 9).noPass = true;
+                map.GetCellData(i, 10).noPass = true;
+            }
+            for (int i = 13; i <= 15; ++i)
+            {
+                map.GetCellData(i, 8).noPass = true;
+                map.GetCellData(i, 9).noPass = true;
+                map.GetCellData(i, 10).noPass = true;
+            }
 
-        private readonly List<MoveData> moveList = new List<MoveData>();
+        }
 
         public void Update(float deltaTime)
         {
-            int lastIndex = moveList.Count - 1;
-            for (int i = 0; i < lastIndex;)
-            {
-                var m = moveList[i];
-                if (!m.Move(deltaTime))
-                {
-                    moveList[i] = moveList[lastIndex];
-                    --lastIndex;
-                }
-                else
-                {
-                    ++i;
-                }
-
-            }
         }
 
         public MultRet<bool, float> MoveTo(int pid, GameObject obj, float speed, int x1, int z1, int x2, int z2)
@@ -102,9 +90,13 @@ namespace bLua
 
         public MultRet<bool, int> GetMulRet()
         {
-            return (true, 1234);
+            return (true, 12345);
         }
 
+        public static int[] GetInts()
+        {
+            return new int[] { 1, 2, 3, 4, 5 };
+        }
     }
 }
 

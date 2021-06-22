@@ -6,26 +6,6 @@ namespace bLua.Extension
 {
 public static class UnityEngine_GameObject
 {
-public static UnityEngine.Component GetComponent(UnityEngine.GameObject _this, System.Type type)
-{
-	return _this.GetComponent(type);
-}
-
-public static UnityEngine.Component GetComponent(UnityEngine.GameObject _this, string type)
-{
-	return _this.GetComponent(type);
-}
-
-public static UnityEngine.Component GetComponentInChildren(UnityEngine.GameObject _this, System.Type type, bool includeInactive)
-{
-	return _this.GetComponentInChildren(type, includeInactive);
-}
-
-public static UnityEngine.Component GetComponentInChildren(UnityEngine.GameObject _this, System.Type type)
-{
-	return _this.GetComponentInChildren(type);
-}
-
 public static UnityEngine.Component GetComponentInParent(UnityEngine.GameObject _this, System.Type type, bool includeInactive)
 {
 	return _this.GetComponentInParent(type, includeInactive);
@@ -189,11 +169,6 @@ public static UnityEngine.SceneManagement.Scene get_scene(UnityEngine.GameObject
 public static ulong get_sceneCullingMask(UnityEngine.GameObject _this)
 {
 	return _this.sceneCullingMask;
-}
-
-public static UnityEngine.GameObject get_gameObject(UnityEngine.GameObject _this)
-{
-	return _this.gameObject;
 }
 
 }

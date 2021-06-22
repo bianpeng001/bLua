@@ -22,7 +22,6 @@ local LuaBehaviour = require("Core/LuaBehaviour")
 local Math = require("Core/Math")
 
 local print = print
-local Example05 = bLua.Example05
 local Vector3 = Math.Vector3
 local Quaternion = Math.Quaternion
 
@@ -31,6 +30,9 @@ local _deltaTime
 local _unitsMgr
 local _unitPrefab
 local _towerMgr = {}
+
+local _x0 = -8 + 0.5
+local _z0 = -10 + 0.5
 
 local _ring
 
@@ -45,9 +47,9 @@ function Unit.New()
 	local obj =
 	{
 		pid = _unit_pid_seed,
-		name = 'Fighter',
 		hp = 100,
-		speed = 3,
+		speed = 2,
+
 		x = 0,
 		z = 0,
 		position = { 0, 0, 0 },
@@ -59,27 +61,88 @@ function Unit.New()
 	return obj
 end
 
+local function GetWorldXZ(x, z)
+	return x + _x0, z + _z0
+end
+
+function Unit:SetXZ(x, z)
+	self.x = x
+	self.z = z
+	local x1, z1 = GetWorldXZ(x, z)
+	Vector3.SetXZ(self.position, x1, z1)
+	if self.transform then
+		self.transform.localPosition = self.position
+	end
+end
+
 function Unit:OnIdle()
 	local path
 
-	path = _moveSystem:FindPath(self.x, self.z, 0, 0)
-	print(path, path.Count)
-	for i = 0, path.Count/2-1 do
-		print(path:get_Item(i*2), path:get_Item(i*2+1))
+	path = _moveSystem:FindPath(self.x, self.z, self.x < 8 and 7 or 9, self.z + 16)
+	if not path then
+		print('noway', self.x, self.z)
+		self.state = 3
+		return
 	end
-	self.ai.path = path
-	self.ai.time = 0
-	self.ai.position = self.transform.localPosition
 
+
+	local ai = self.ai
+	ai.path = path
+	ai.index = 0
+	ai.time = 0
+
+	self:StartMove()
 	self.state = 2
 end
 
+function Unit:StartMove()
+	local ai = self.ai
+	local path = ai.path
+	local index = ai.index
+
+	ai.x0 = path:get_Item(index)
+	ai.z0 = path:get_Item(index+1)
+
+	local x1 = path:get_Item(index+2)
+	local z1 = path:get_Item(index+3)
+
+	ai.dx = x1 - ai.x0
+	ai.dz = z1 - ai.z0
+
+	ai.rec_time = math.sqrt(ai.dx*ai.dx+ai.dz*ai.dz) / self.speed
+	ai.rec_time = 1.0 / ai.rec_time
+
+	if self.gameObject then
+		local x2, z2 = GetWorldXZ(x1, z1)
+		self.gameObject:LookAt({ x2, 0, z2 })
+	end
+end
+
 function Unit:OnMove()
-	
+	local ai = self.ai
+
+	ai.time = ai.time + _deltaTime * ai.rec_time
+
+	if ai.time <= 1.0 then
+		local x = ai.x0 + ai.dx * ai.time
+		local z = ai.z0 + ai.dz * ai.time
+		self:SetXZ(x, z)
+	else
+		ai.time = ai.time - 1.0
+		ai.index = ai.index + 2
+		local count = ai.path.Count
+		if ai.index <= count - 4 then
+			self:StartMove()
+		else
+			self.state = 3
+		end
+	end
 end
 
 function Unit:OnAttack()
-
+	_unitsMgr:Remove(self)
+	GameObject.Destroy(self.gameObject)
+	self.gameObject = nil
 end
 
 Unit.actions = { Unit.OnIdle, Unit.OnMove, Unit.OnAttack }
@@ -89,7 +152,7 @@ function Unit:LoadModel()
 	self.gameObject.name = string.format('unit_%d', self.pid)
 	self.transform = self.gameObject.transform
 	self.transform.parent = nil
-	self.transform.localPosition = self.position
+	self:SetXZ(self.x, self.z)
 end
 
 function Unit:Update()
@@ -121,7 +184,7 @@ end
 
 function UnitsMgr:Remove(unit)
 	self.count = self.count - 1
-	self.unit[unit.pid] = nil
+	self.units[unit.pid] = nil
 end
 
 function UnitsMgr:Update(deltaTime)
@@ -136,7 +199,8 @@ Tower.__index = Tower
 function Tower.New()
 	local obj =
 	{
-		position = { 0, 0, 0 },
+		x = 0,
+		z = 0,
 		time = 0,
 	}
 	setmetatable(obj, Tower)
@@ -147,23 +211,18 @@ function Tower:Update()
 	local unit
 
 	self.time = self.time + _deltaTime
-	if self.time < 5 then
+	if self.time < 2 then
 		goto end_of_update
 	end
 	self.time = 0
 
 	unit = Unit.New()
-
-	Vector3.Set1(unit.position, self.position)
-	unit.position[3] = unit.position[3] + 1
-	unit.x = unit.position[1] + 8
-	unit.z = unit.position[3] + 10
-
+	unit:SetXZ(math.random(0, 15), self.z + 1)
 	unit:LoadModel()
 
 	_unitsMgr:Add(unit)
 
-	::end_of_update::
+::end_of_update::
 
 end
 
@@ -190,12 +249,15 @@ function module.Awake()
 
 	local t1
 	t1 = Tower.New()
-	Vector3.Set(t1.position, -3, 0, -8)
+	t1.x, t1.z = 3, 0
 	table.insert(_towerMgr, t1)
 
 	t1 = Tower.New()
-	Vector3.Set(t1.position, 3, 0, -8)
+	t1.x, t1.z = 13, 0
 	table.insert(_towerMgr, t1)
+
+	local ints = _moveSystem.GetInts()
+	print(ints.Count)
 end
 
 local _ringQuat
@@ -209,7 +271,7 @@ function module.Update()
 	end
 
 	_unitsMgr:Update()
-	
+
 	_ringAngle = _ringAngle + 0.5 * _deltaTime
 	while _ringAngle > math.pi*2 do
 		_ringAngle = _ringAngle - math.pi*2
