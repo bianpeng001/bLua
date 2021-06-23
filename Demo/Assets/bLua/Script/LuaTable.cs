@@ -60,21 +60,20 @@ namespace bLua
             return value;
         }
 
-        private LuaRef GetFieldRef(string name)
+        private LuaRef GetFldRef(string name)
         {
-            var L = state.L;
-
             this.luaref.Rawget(state);
-            lua_getfield(L, -1, name);
-            var luaref = new LuaRef(state);
-            lua_pop(L, 1);
+            lua_getfield(state, -1, name);
 
-            return luaref;
+            var fldref = new LuaRef(state);
+            lua_pop(state, 1);
+
+            return fldref;
         }
 
         public LuaFunction GetFunction(string name)
         {
-            var luaref = GetFieldRef(name);
+            var luaref = GetFldRef(name);
             if (!luaref.IsValidRef())
                 return null;
             
@@ -83,16 +82,34 @@ namespace bLua
 
         public LuaTable GetTable(string name)
         {
-            var luaref = GetFieldRef(name);
+            var luaref = GetFldRef(name);
             if (!luaref.IsValidRef())
                 return null;
 
             return new LuaTable(state, luaref);
         }
 
+        public T GetItem<T>(int index)
+        {
+            luaref.Rawget(state);
+            lua_rawgeti(state, -1, index);
+            var value = AutoWrap.TypeTrait<T>.pull(state, -1);
+            lua_pop(state, 2);
+
+            return value;
+        }
+
+        public void SetItem<T>(int index, T value)
+        {
+            luaref.Rawget(state);
+            AutoWrap.TypeTrait<T>.push(state, value);
+            lua_rawseti(state, -2, index);
+            lua_pop(state, 1);
+        }
+
         public void Push()
         {
-            this.luaref.Rawget(state);
+            luaref.Rawget(state);
         }
 
         public LuaTable GetMetaTable()

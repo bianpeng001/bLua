@@ -39,6 +39,7 @@ namespace bLua
             AutoWrap.Init(state, reg);
             state.DoFile("Binder.lua");
 
+            DataBind.Init(state);
             state.DoFile("StartUp.lua");
         }
 

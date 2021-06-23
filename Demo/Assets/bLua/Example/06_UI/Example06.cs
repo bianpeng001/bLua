@@ -15,18 +15,33 @@ limitations under the License.
 */
 
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace bLua
 {
     public class Example06 : LuaBehaviour
     {
+        public Text lblName;
+
         private void Awake()
         {
             var state = LuaClient.State;
             LoadModule(state);
 
-            if (onAwake != null)
-                onAwake.Call();
+            onAwake.Call();
+
+            var bind = new DataBind();
+            bind.Connect("name", lblName);
+
+            using (var t = module.GetTable("dataset"))
+            {
+                t.SetItem(2, bind);
+            }
+
+            using (var f = module.GetFunction("Test1"))
+            {
+                f.Call();
+            }
         }
     }
 }

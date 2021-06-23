@@ -16,11 +16,20 @@ limitations under the License.
 
 
 local LuaBehaviour = require("Core/LuaBehaviour")
+local DataSet = require("Core/DataSet")
 
 local module = LuaBehaviour.CreateModule()
 
 function module.Awake()
     print('example 06')
+    module.dataset = DataSet.New({
+        name = '试试',
+    })
+end
+
+function module.Test1()
+    local dataset = module.dataset
+    dataset.name = '试试就试试'
 end
 
 return module

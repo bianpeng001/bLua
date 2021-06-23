@@ -14,25 +14,94 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using AOT;
+using System;
+using System.Collections.Generic;
 using UnityEngine.UI;
+using static bLua.LuaLib;
 
 namespace bLua
 {
     public class DataBind
     {
-
-        [LuaField(nowrap = true)]
-        public void Connect(string key, Text text)
+        public enum DataType
         {
-
+            Nil,
+            Boolean,
+            Integer,
+            Number,
+            String,
+            Object,
         }
 
-        public void SetValue<T>(string key, T value)
+        public struct Data
         {
+            public DataType type;
 
+            public long ival;
+            public double number;
+            public object obj;
         }
 
+        public delegate void OnSetCallback(in Data v);
+
+        private readonly Dictionary<string, (string k, OnSetCallback cb)> dict = new Dictionary<string, (string, OnSetCallback)>();
+
+        public void Connect(string k, Text text)
+        {
+            dict[k] = (k, (in Data v) =>
+            {
+                switch (v.type)
+                {
+                    case DataType.Nil:
+                        text.text = string.Empty;
+                        break;
+
+                    case DataType.Integer:
+                        text.text = v.ival.ToString();
+                        break;
+
+                    case DataType.Number:
+                        text.text = v.number.ToString();
+                        break;
+
+                    case DataType.String:
+                        text.text = (string)v.obj;
+                        break;
+                }
+            });
+        }
+
+        public void Set(string k, in Data v)
+        {
+            if (dict.TryGetValue(k, out var it))
+                it.cb(v);
+        }
+
+        public static void Init(LuaState state)
+        {
+            lua_register(state, "DataSetWriteField", DataSetWriteField);
+        }
+
+        [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
+        private static int DataSetWriteField(IntPtr L)
+        {
+            lua_rawgeti(L, 1, 2);
+            var bind = AutoWrap.TypeTrait<DataBind>.pull(L, -1);
+            lua_pop(L, 1);
+
+            if (bind != null)
+            {
+                var k = lua_tostring(L, 2);
+                var v = lua_tostring(L, 3);
+
+                bind.Set(k, new Data() { type = DataType.String, obj = v });
+            }
+
+            return 0;
+        }
     }
 
 }
+
 

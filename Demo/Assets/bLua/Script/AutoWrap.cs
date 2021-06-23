@@ -396,6 +396,7 @@ namespace bLua
 
             lua_register(state, "typeof", TypeOf);
             lua_register(state, "cast2type", Cast2Type);
+
         }
 
         public static bool CheckMethodSupportAutoWrap(MethodInfo method)
