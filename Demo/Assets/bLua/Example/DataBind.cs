@@ -80,7 +80,7 @@ namespace bLua
 
         public static void Init(LuaState state)
         {
-            lua_register(state, "DataSetWriteField", DataSetWriteField);
+            state.Register("DataSetWriteField", DataSetWriteField);
         }
 
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]

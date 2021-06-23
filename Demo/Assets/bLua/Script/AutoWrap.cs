@@ -174,7 +174,7 @@ namespace bLua
             catch (Exception ex)
             {
                 LogUtil.Error(ex.StackTrace);
-                var traceback = state.GetTraceback(ex.Message);
+                var traceback = LuaState.GetState(L).GetTraceback(ex.Message);
                 throw new Exception(traceback);
             }
         }
@@ -276,7 +276,6 @@ namespace bLua
         }
 
         private static LuaRegister luaRegister;
-        private static LuaState state;
 
         public static readonly BindingFlags InstanceMemberFlag = BindingFlags.Public
             | BindingFlags.Instance
@@ -296,7 +295,7 @@ namespace bLua
             LogUtil.Assert(lua_isuserdata(L, 1));
 
             var objIndex = UserDataGetObjIndex(L, 1);
-            state.objCache.Free(objIndex);
+            LuaState.GetState(L).objCache.Free(objIndex);
             return 0;
         }
 
@@ -334,9 +333,9 @@ namespace bLua
 
             if (cls.luaref != LUA_NOREF)
             {
-                cls.luaref.Destroy(state);
+                cls.luaref.Destroy(LuaState.GetState(L));
             }
-            cls.luaref = new LuaRef(state);
+            cls.luaref = new LuaRef(LuaState.GetState(L));
 
             TypeTrait<int>.push(L, cls.classId);
 
@@ -375,7 +374,7 @@ namespace bLua
             var classId = TypeTrait<int>.pull(L, -1);
             lua_pop(L, 1);
 
-            var obj = state.objCache.GetObject(objIndex);
+            var obj = LuaState.GetState(L).objCache.GetObject(objIndex);
             var cls = luaRegister.GetClass(classId);
             PushObject(L, obj, cls);
 
@@ -385,18 +384,16 @@ namespace bLua
         public static void Init(LuaState state, LuaRegister luaRegister)
         {
             AutoWrap.luaRegister = luaRegister;
-            AutoWrap.state = state;
 
-            lua_register(state, "RegisterUnityClass", RegisterUnityClass);
-            lua_register(state, "RegisterUnityMethod", RegisterUnityMethod);
-            lua_register(state, "CallUnityMethod", CallUnityMethod);
-            lua_register(state, "CallLuaDelegate", CallLuaDelegate);
+            state.Register("RegisterUnityClass", RegisterUnityClass);
+            state.Register("RegisterUnityMethod", RegisterUnityMethod);
+            state.Register("CallUnityMethod", CallUnityMethod);
+            state.Register("CallLuaDelegate", CallLuaDelegate);
 
-            lua_register(state, "CollectUnityObject", CollectUnityObject);
+            state.Register("CollectUnityObject", CollectUnityObject);
 
-            lua_register(state, "typeof", TypeOf);
-            lua_register(state, "cast2type", Cast2Type);
-
+            state.Register("typeof", TypeOf);
+            state.Register("cast2type", Cast2Type);
         }
 
         public static bool CheckMethodSupportAutoWrap(MethodInfo method)

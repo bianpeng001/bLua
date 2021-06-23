@@ -124,8 +124,11 @@ namespace bLua
                 throw new Exception();
 
             lua_pushvalue(L, pos);
-            var s = LuaState.GetState(L);
-            return new LuaFunction(s, new LuaRef(s));
+            var state = LuaState.GetState(L);
+            var func = new LuaFunction(state, new LuaRef(state));
+            lua_pop(L, 1);
+
+            return func;
         }
 
         private static void PushLuaTable(IntPtr L, LuaTable value)
@@ -146,8 +149,11 @@ namespace bLua
                 throw new Exception();
 
             lua_pushvalue(L, pos);
-            var s = LuaState.GetState(L);
-            return new LuaTable(s, new LuaRef(s));
+            var state = LuaState.GetState(L);
+            var tbl = new LuaTable(state, new LuaRef(state));
+            lua_pop(L, 1);
+
+            return tbl;
         }
 
         private static void PushObject(IntPtr L, object obj, ClassDefinition cls)
@@ -161,7 +167,7 @@ namespace bLua
                 if (cls == null)
                     cls = luaRegister.GetClass(typeof(object));
 
-                var objIndex = state.objCache.Add(obj);
+                var objIndex = LuaState.GetState(L).objCache.Add(obj);
 
                 var addr = lua_newuserdatauv(L, 4, 0);
                 LogUtil.Assert(addr != IntPtr.Zero);
@@ -189,9 +195,8 @@ namespace bLua
 
             var objIndex = UserDataGetObjIndex(L, pos);
 
-            return (T)state.objCache.GetObject(objIndex);
+            return (T)LuaState.GetState(L).objCache.GetObject(objIndex);
         }
-
 
         private static void PushArray<T>(IntPtr L, T[] value)
         {

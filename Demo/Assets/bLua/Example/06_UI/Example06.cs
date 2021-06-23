@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace bLua
@@ -45,3 +44,5 @@ namespace bLua
         }
     }
 }
+
+

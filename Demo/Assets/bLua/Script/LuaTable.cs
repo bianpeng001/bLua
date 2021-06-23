@@ -62,7 +62,7 @@ namespace bLua
 
         private LuaRef GetFldRef(string name)
         {
-            this.luaref.Rawget(state);
+            luaref.Rawget(state);
             lua_getfield(state, -1, name);
 
             var fldref = new LuaRef(state);
@@ -120,6 +120,8 @@ namespace bLua
         public void SetMetaTable(LuaTable table)
         {
         }
+
+
     }
 }
 

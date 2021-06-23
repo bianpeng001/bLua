@@ -304,8 +304,11 @@ namespace bLua
             lua_pop(L, 1);
             return traceback;
         }
+
+        public void Register(string name, lua_CFunction func)
+        {
+            lua_register(this, name, func);
+        }
     }
 }
-
-
 
