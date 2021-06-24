@@ -14,6 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+#define LUA_CLIENT
+
+#if LUA_CLIENT
+
 using UnityEngine;
 using Float = bLua.AutoWrap.TypeTrait<float>;
 
@@ -229,4 +233,5 @@ namespace bLua
 
 }
 
+#endif
 

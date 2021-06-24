@@ -231,15 +231,5 @@ public static int get_loadedMipmapLevel(UnityEngine.Texture2D _this)
 	return _this.loadedMipmapLevel;
 }
 
-public static bool get_alphaIsTransparency(UnityEngine.Texture2D _this)
-{
-	return _this.alphaIsTransparency;
-}
-
-public static void set_alphaIsTransparency(UnityEngine.Texture2D _this, bool value)
-{
-	_this.alphaIsTransparency = value;
-}
-
 }
 }

@@ -73,20 +73,20 @@ namespace bLua
 
         public LuaFunction GetFunction(string name)
         {
-            var luaref = GetFldRef(name);
-            if (!luaref.IsValidRef())
+            var valref = GetFldRef(name);
+            if (!valref.IsValidRef())
                 return null;
             
-            return new LuaFunction(state, luaref);
+            return new LuaFunction(state, valref);
         }
 
         public LuaTable GetTable(string name)
         {
-            var luaref = GetFldRef(name);
-            if (!luaref.IsValidRef())
+            var valref = GetFldRef(name);
+            if (!valref.IsValidRef())
                 return null;
 
-            return new LuaTable(state, luaref);
+            return new LuaTable(state, valref);
         }
 
         public T GetItem<T>(int index)

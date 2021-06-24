@@ -307,7 +307,7 @@ namespace bLua
 
         public void Register(string name, lua_CFunction func)
         {
-            lua_register(this, name, func);
+            lua_register(L, name, func);
         }
     }
 }

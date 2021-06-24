@@ -204,12 +204,6 @@ UnityEngine.Experimental.Rendering.RayTracingMode =
 	DynamicGeometry = 3,
 }
 
-UnityEngine.ReceiveGI =
-{
-	Lightmaps = 1,
-	LightProbes = 2,
-}
-
 UnityEngine.SkinQuality =
 {
 	Auto = 0,
@@ -857,13 +851,6 @@ UnityEngine.LightRenderMode =
 	Auto = 0,
 	ForcePixel = 1,
 	ForceVertex = 2,
-}
-
-UnityEngine.LightmapBakeType =
-{
-	Mixed = 1,
-	Baked = 2,
-	Realtime = 4,
 }
 
 UnityEngine.Camera.StereoscopicEye =

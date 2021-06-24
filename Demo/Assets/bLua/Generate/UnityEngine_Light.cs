@@ -11,11 +11,6 @@ public static void Reset(UnityEngine.Light _this)
 	_this.Reset();
 }
 
-public static void SetLightDirty(UnityEngine.Light _this)
-{
-	_this.SetLightDirty();
-}
-
 public static void AddCommandBuffer(UnityEngine.Light _this, int evt, UnityEngine.Rendering.CommandBuffer buffer)
 {
 	_this.AddCommandBuffer((UnityEngine.Rendering.LightEvent)evt, buffer);
@@ -296,26 +291,6 @@ public static void set_lightShadowCasterMode(UnityEngine.Light _this, UnityEngin
 	_this.lightShadowCasterMode = value;
 }
 
-public static float get_shadowRadius(UnityEngine.Light _this)
-{
-	return _this.shadowRadius;
-}
-
-public static void set_shadowRadius(UnityEngine.Light _this, float value)
-{
-	_this.shadowRadius = value;
-}
-
-public static float get_shadowAngle(UnityEngine.Light _this)
-{
-	return _this.shadowAngle;
-}
-
-public static void set_shadowAngle(UnityEngine.Light _this, float value)
-{
-	_this.shadowAngle = value;
-}
-
 public static UnityEngine.LightShadows get_shadows(UnityEngine.Light _this)
 {
 	return _this.shadows;
@@ -384,26 +359,6 @@ public static UnityEngine.LightRenderMode get_renderMode(UnityEngine.Light _this
 public static void set_renderMode(UnityEngine.Light _this, UnityEngine.LightRenderMode value)
 {
 	_this.renderMode = value;
-}
-
-public static UnityEngine.Vector2 get_areaSize(UnityEngine.Light _this)
-{
-	return _this.areaSize;
-}
-
-public static void set_areaSize(UnityEngine.Light _this, UnityEngine.Vector2 value)
-{
-	_this.areaSize = value;
-}
-
-public static UnityEngine.LightmapBakeType get_lightmapBakeType(UnityEngine.Light _this)
-{
-	return _this.lightmapBakeType;
-}
-
-public static void set_lightmapBakeType(UnityEngine.Light _this, UnityEngine.LightmapBakeType value)
-{
-	_this.lightmapBakeType = value;
 }
 
 public static int get_commandBufferCount(UnityEngine.Light _this)

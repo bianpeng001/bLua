@@ -41,6 +41,61 @@ namespace bLua
             public long ival;
             public double number;
             public object obj;
+
+            public static implicit operator Data(long value)
+            {
+                return new Data()
+                {
+                    type = DataType.Integer,
+                    ival = value,
+                };
+            }
+
+            public static implicit operator Data(string value)
+            {
+                return new Data()
+                {
+                    type = DataType.String,
+                    obj = value,
+                };
+            }
+
+            public static implicit operator Data(double value)
+            {
+                return new Data()
+                {
+                    type = DataType.Number,
+                    number = value,
+                };
+            }
+
+            public string GetString()
+            {
+                switch (type)
+                {
+                    case DataType.Boolean:
+                        return ival != 0 ? "true" : "false";
+
+                    case DataType.Integer:
+                        return ival.ToString();
+
+                    case DataType.Number:
+                        return number.ToString();
+
+                    case DataType.String:
+                        if (obj == null)
+                            goto default;
+                        return (string)obj;
+
+                    case DataType.Object:
+                        if (obj == null)
+                            goto default;
+                        return obj.ToString();
+
+                    default:
+                        return string.Empty;
+                }
+            }
         }
 
         public delegate void OnSetCallback(in Data v);
@@ -49,27 +104,7 @@ namespace bLua
 
         public void Connect(string k, Text text)
         {
-            dict[k] = (k, (in Data v) =>
-            {
-                switch (v.type)
-                {
-                    case DataType.Nil:
-                        text.text = string.Empty;
-                        break;
-
-                    case DataType.Integer:
-                        text.text = v.ival.ToString();
-                        break;
-
-                    case DataType.Number:
-                        text.text = v.number.ToString();
-                        break;
-
-                    case DataType.String:
-                        text.text = (string)v.obj;
-                        break;
-                }
-            });
+            dict[k] = (k, (in Data v) => text.text = v.GetString());
         }
 
         public void Set(string k, in Data v)
@@ -90,13 +125,24 @@ namespace bLua
             var bind = AutoWrap.TypeTrait<DataBind>.pull(L, -1);
             lua_pop(L, 1);
 
-            if (bind != null)
-            {
-                var k = lua_tostring(L, 2);
-                var v = lua_tostring(L, 3);
+            if (bind == null)
+                return 0;
 
-                bind.Set(k, new Data() { type = DataType.String, obj = v });
-            }
+            LogUtil.Assert(lua_isstring(L, 2));
+            var k = lua_tostring(L, 2);
+
+            var v = new Data();
+
+            if (lua_isnil(L, 3))
+                v.type = DataType.Nil;
+            else if (lua_isinteger(L, 3))
+                v = lua_tointeger(L, 3);
+            else if (lua_isstring(L, 3))
+                v = lua_tostring(L, 3);
+            else if (lua_isnumber(L, 3))
+                v = lua_tonumber(L, 3);
+
+            bind.Set(k, v);
 
             return 0;
         }

@@ -141,15 +141,5 @@ public static uint get_updateCount(UnityEngine.Texture _this)
 	return _this.updateCount;
 }
 
-public static UnityEngine.Hash128 get_imageContentsHash(UnityEngine.Texture _this)
-{
-	return _this.imageContentsHash;
-}
-
-public static void set_imageContentsHash(UnityEngine.Texture _this, UnityEngine.Hash128 value)
-{
-	_this.imageContentsHash = value;
-}
-
 }
 }

@@ -121,6 +121,7 @@ namespace bLua
             {
                 type = typeof(UnityEngine.MonoBehaviour),
                 baseClass = typeof(UnityEngine.Behaviour),
+                blackList = new string[]{ "runInEditMode", },
             },
             new ExportType()
             {
@@ -203,6 +204,7 @@ namespace bLua
             {
                 type = typeof(UnityEngine.MeshRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
+                blackList = new string[]{ "scaleInLightmap", "receiveGI", "stitchLightmapSeams" },
             },
             new ExportType()
             {
@@ -223,6 +225,7 @@ namespace bLua
             {
                 type = typeof(UnityEngine.Texture),
                 baseClass = typeof(UnityEngine.Object),
+                blackList = new string[] { "imageContentsHash", },
             },
             new ExportType()
             {
@@ -233,7 +236,7 @@ namespace bLua
             {
                 type = typeof(UnityEngine.Texture2D),
                 baseClass = typeof(UnityEngine.Texture),
-                blackList = new string[]{ "Resize", "SetPixels" },
+                blackList = new string[]{ "Resize", "SetPixels", "alphaIsTransparency",  },
             },
             new ExportType()
             {
@@ -249,6 +252,7 @@ namespace bLua
             {
                 type = typeof(UnityEngine.MeshCollider),
                 baseClass = typeof(UnityEngine.Collider),
+                blackList = new string[]{ "scaleInLightmap", "receiveGI", "stitchLightmapSeams",  },
             },
             new ExportType()
             {
@@ -309,6 +313,12 @@ namespace bLua
             {
                 type = typeof(UnityEngine.Light),
                 baseClass = typeof(UnityEngine.Behaviour),
+                blackList=new string[]
+                {
+                    "SetLightDirty", "shadowRadius",
+                    "shadowAngle", "areaSize", "areaSize",
+                    "lightmapBakeType",
+                },
             },
             new ExportType()
             {

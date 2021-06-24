@@ -81,15 +81,5 @@ public static void set_useGUILayout(UnityEngine.MonoBehaviour _this, bool value)
 	_this.useGUILayout = value;
 }
 
-public static bool get_runInEditMode(UnityEngine.MonoBehaviour _this)
-{
-	return _this.runInEditMode;
-}
-
-public static void set_runInEditMode(UnityEngine.MonoBehaviour _this, bool value)
-{
-	_this.runInEditMode = value;
-}
-
 }
 }

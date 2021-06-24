@@ -25,12 +25,32 @@ end
 local DataSetMT = {}
 
 function DataSetMT.__index(obj, k)
-    return rawget(obj[1], k)
+    local v = rawget(DataSetMT, k)
+    if v then
+        return v
+    end
+
+    local store = obj[1]
+    return rawget(store, k)
 end
 
 function DataSetMT.__newindex(obj, k, v)
-    rawset(obj[1], k, v)
+    local store = obj[1]
+    rawset(store, k, v)
     DataSetWriteField(obj, k, v)
+end
+
+function DataSetMT:SetBind(bind)
+    if not bind then
+        return
+    end
+
+    local t = self[1]
+    rawset(self, 2, bind)
+    for k, v in pairs(t) do
+        DataSetWriteField(t, k, v)
+    end
+    return 0
 end
 
 local DataSet = {}
@@ -42,6 +62,7 @@ function DataSet.New(store, bind)
         [2] = bind,
     }
     setmetatable(obj, DataSetMT)
+    obj:SetBind(bind)
     return obj
 end
 
