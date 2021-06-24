@@ -299,23 +299,6 @@ namespace bLua
             return 0;
         }
 
-        /*
-#if HAS_MONO_PINVOKE
-        [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
-        private static int UnityObject2ObjIndex(IntPtr L)
-        {
-            CheckArgumentCount(L, 1);
-
-            if (!lua_isuserdata(L, 1))
-                throw new Exception();
-
-            var objIndex = UserDataGetObjIndex(L, 1);
-            TypeTrait<int>.push(L, objIndex);
-
-            return 1;
-        }
-        */
 
 #if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]

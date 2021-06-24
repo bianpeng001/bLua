@@ -492,20 +492,6 @@ namespace bLua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void UserDataSetObjIndex(IntPtr L, int pos, int value);
 
-        /*
-        private static unsafe int UserDataGetObjIndex(IntPtr L, int pos)
-        {
-            var addr = lua_touserdata(L, pos);
-            return *(int*)addr.ToPointer();
-        }
-
-        private static unsafe void UserDataSetObjIndex(IntPtr L, int pos, int value)
-        {
-            var addr = lua_touserdata(L, pos);
-            *(int*)addr.ToPointer() = value;
-        }
-        */
-
     }
 
 }
