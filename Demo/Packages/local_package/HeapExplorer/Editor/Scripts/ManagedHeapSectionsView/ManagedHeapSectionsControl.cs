@@ -1,4 +1,8 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
+//#define HEAPEXPLORER_DISPLAY_REFS
 using UnityEngine;
 using UnityEditor.IMGUI.Controls;
 
@@ -74,6 +78,7 @@ namespace HeapExplorer
             onSelectionChange.Invoke(section);
         }
 
+        //public TreeViewItem BuildTree(PackedMemorySnapshot snapshot, bool removeUnalignedSections = false)
         public TreeViewItem BuildTree(PackedMemorySnapshot snapshot, PackedMemorySection[] sections)
         {
             m_Snapshot = snapshot;
@@ -131,6 +136,9 @@ namespace HeapExplorer
             return 0;
         }
 
+        ///////////////////////////////////////////////////////////////////////////
+        // TreeViewItem's
+        ///////////////////////////////////////////////////////////////////////////
 
         class AbstractItem : AbstractTreeViewItem
         {
@@ -170,6 +178,7 @@ namespace HeapExplorer
             }
         }
 
+        // ------------------------------------------------------------------------
 
         class HeapSectionItem : AbstractItem
         {
@@ -208,5 +217,30 @@ namespace HeapExplorer
             }
         }
 
+        //class HeapGapItem : AbstractItem
+        //{
+        //    PackedMemorySnapshot m_snapshot;
+        //    public int m_arrayIndex;
+        //
+        //    public void Initialize(ManagedHeapSectionsControl owner, PackedMemorySnapshot snapshot, ulong address, ulong size)
+        //    {
+        //        m_owner = owner;
+        //        m_snapshot = snapshot;
+        //
+        //        displayName = "Waste";
+        //        m_address = address;
+        //        m_size = size;
+        //    }
+        //
+        //    public override void OnGUI(Rect position, int column)
+        //    {
+        //        var oldcolor = GUI.color;
+        //        GUI.color = new Color(1, 0, 0, 0.25f);
+        //        GUI.DrawTexture(position, EditorGUIUtility.whiteTexture, ScaleMode.StretchToFill);
+        //        GUI.color = oldcolor;
+        //
+        //        base.OnGUI(position, column);
+        //    }
+        //}
     }
 }

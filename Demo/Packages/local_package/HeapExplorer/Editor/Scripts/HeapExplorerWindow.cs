@@ -1,4 +1,7 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 #pragma warning disable 0414
 using System.Collections;
 using System.Collections.Generic;
@@ -11,12 +14,18 @@ namespace HeapExplorer
 {
     public class HeapExplorerWindow : EditorWindow
     {
+        /// <summary>
+        /// Path of the active memory snapshot or an empty string if no snapshot is active.
+        /// </summary>
         public string snapshotPath
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// The active memory snapshot or null if no snapshot is active.
+        /// </summary>
         public PackedMemorySnapshot snapshot
         {
             get
@@ -112,6 +121,10 @@ namespace HeapExplorer
             }
         }
 
+        /// <summary>
+        /// Register a view to be added to the Heap Explorer 'Views' menu.
+        /// </summary>
+        /// <typeparam name="T">The type of the HeapExplorerView to register.</typeparam>
         public static void Register<T>() where T : HeapExplorerView
         {
             var type = typeof(T);
@@ -157,6 +170,7 @@ namespace HeapExplorer
         {
             lock (m_ThreadJobs)
             {
+                // ask thread to exit
                 isClosing = true;
                 if (m_Heap != null && m_Heap.isProcessing)
                     m_Heap.abortActiveStepRequested = true;
@@ -441,6 +455,7 @@ namespace HeapExplorer
                 GUILayout.Label(snapshotPath ?? "");
             }
 
+            // Darken the status area a little
             if (Event.current.type == EventType.Repaint)
             {
                 var r = GUILayoutUtility.GetLastRect();
@@ -896,6 +911,7 @@ namespace HeapExplorer
 
             lock (m_ThreadJobs)
             {
+                // Remove unstarted jobs of same type
                 for (var n = m_ThreadJobs.Count - 1; n >= 0; --n)
                 {
                     var j = m_ThreadJobs[n];

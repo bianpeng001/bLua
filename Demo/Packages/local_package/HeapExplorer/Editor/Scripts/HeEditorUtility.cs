@@ -1,3 +1,7 @@
+//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,6 +39,9 @@ namespace HeapExplorer
                 Debug.LogErrorFormat("HeapExplorer was unable to parse the editor version '{0}'. Could you please post this message in the Heap Explorer forum thread, so I can look at the issue: {1}", version, "https://forum.unity.com/threads/wip-heap-explorer-memory-profiler-debugger-and-analyzer-for-unity.527949/");
         }
 
+        /// <summary>
+        /// Gets whether the Unity editor is the specified version or newer.
+        /// </summary>
         public static bool IsVersionOrNewer(int major, int minor)
         {
             if (s_Major > major) return true;
@@ -42,6 +49,9 @@ namespace HeapExplorer
             return false;
         }
 
+        /// <summary>
+        /// Opens the Unity Profiler window.
+        /// </summary>
         public static void OpenProfiler()
         {
             if (IsVersionOrNewer(2018, 3))
@@ -52,6 +62,9 @@ namespace HeapExplorer
                 EditorApplication.ExecuteMenuItem("Window/Profiler");
         }
 
+        /// <summary>
+        /// Search the project window using the specified filter.
+        /// </summary>
         public static void SearchProjectBrowser(string filter)
         {
             foreach (var type in typeof(EditorWindow).Assembly.GetTypes())

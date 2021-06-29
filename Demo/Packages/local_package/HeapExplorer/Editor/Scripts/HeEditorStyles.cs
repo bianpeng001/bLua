@@ -1,3 +1,7 @@
+//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -270,6 +274,7 @@ namespace HeapExplorer
             monoSpaceLabel.font = monoSpaceFont;
 
             csImage = AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath("4189a6ed6210b5748887671a3778b379"));
+            //csImage = FindBuiltinTexture("cs Script Icon");
             csStaticImage = AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath("f2c7f0914a62e8a4a8c27dbe3db17fe8"));
             cppImage = AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath("4f4f04936efd4f241820adb1ec65725c"));
             gcHandleImage = AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath("36d1676fb78c3944a91ce0426cc01fdf"));
@@ -282,6 +287,7 @@ namespace HeapExplorer
             gearImage = FindBuiltinTexture("EditorSettings Icon");
             unityImage = FindBuiltinTexture("SceneAsset Icon");
             magnifyingGlassImage = FindBuiltinTexture("ViewToolZoom On");
+            //eyeImage = FindBuiltinTexture("ViewToolOrbit On");
             eyeImage = FindBuiltinTexture(EditorGUIUtility.isProSkin ? "ViewToolOrbit On" : "ViewToolOrbit");
             loadingImageBig = FindBuiltinTexture("EditorSettings Icon");
 
@@ -348,8 +354,10 @@ namespace HeapExplorer
 
             previewButton = new GUIStyle("preButton");
 
+            //var hyperlinkColor = new Color(0 / 255.0f, 122 / 255.0f, 204 / 255.0f, 1);
             var hyperlinkColor1 = new Color(204 / 255.0f, 122 / 255.0f, 0 / 255.0f, 1);
             hyperlinkColor1 = EditorStyles.label.focused.textColor;
+            //var hyperlinkColor2 = new Color(122 / 255.0f, 204 / 255.0f, 0 / 255.0f, 1);
             hyperlink = new GUIStyle(EditorStyles.label);
             hyperlink.alignment = TextAnchor.MiddleLeft;
             hyperlink.normal.textColor = hyperlinkColor1;
@@ -371,6 +379,13 @@ namespace HeapExplorer
             backwardImage = FindBuiltinTexture("SubAssetCollapseButton");
             forwardImage = FindBuiltinTexture("SubAssetExpandButton");
 
+            //gotoObject = "Icon.ExtrapolationContinue"; // right arrow
+            //gotoObject = "Icon.ExtrapolationLoop"; // arrow in cycle
+            //gotoObject = (GUIStyle)"Icon.ExtrapolationHold"; // infinity
+            //gotoObject = (GUIStyle)"Icon.ExtrapolationPingPong";
+            //gotoObject = (GUIStyle)"U2D.dragDot";
+            //gotoObject = (GUIStyle)"flow node hex 2";
+            //gotoObject = (GUIStyle)"GridToggle";
         }
 
         static Texture2D FindBuiltinTexture(string name)

@@ -1,4 +1,7 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +11,7 @@ using System;
 
 namespace HeapExplorer
 {
+    // A large number of objects with the same value is inefficient from the point of memory usage.
     public class ManagedObjectDuplicatesView : HeapExplorerView
     {
         ManagedObjectDuplicatesControl m_ObjectsControl;
@@ -163,6 +167,7 @@ namespace HeapExplorer
             public ManagedObjectDuplicatesControl control;
             public PackedMemorySnapshot snapshot;
 
+            // Output
             TreeViewItem tree;
 
             public override void ThreadFunc()

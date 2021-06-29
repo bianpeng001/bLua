@@ -1,4 +1,7 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -47,6 +50,8 @@ namespace HeapExplorer
 
         protected override void OnBeforeBuildTree()
         {
+            // This method builds a lookup table of objects that are
+            // references by the m_target field of a System.Delegate object.
 
             var reader = new MemoryReader(m_Snapshot);
             var systemDelegate = m_Snapshot.managedTypes[m_Snapshot.coreTypes.systemDelegate];
@@ -55,6 +60,7 @@ namespace HeapExplorer
             if (!systemDelegate.TryGetField("m_target", out field))
                 return;
 
+            // Build a table that contains indices of all objects that are the "Target" of a delegate
             for (int n = 0, nend = m_Snapshot.managedObjects.Length; n < nend; ++n)
             {
                 if (window.isClosing) // the window is closing
@@ -64,18 +70,22 @@ namespace HeapExplorer
                 if (obj.address == 0)
                     continue;
 
+                // Is this a System.Delegate?
                 var type = m_Snapshot.managedTypes[obj.managedTypesArrayIndex];
                 if (!m_Snapshot.IsSubclassOf(type, m_Snapshot.coreTypes.systemDelegate))
                     continue;
 
+                // Read the delegate m_target pointer
                 var pointer = reader.ReadPointer(obj.address + (uint)field.offset);
                 if (pointer == 0)
                     continue;
 
+                // Try to find the managed object where m_target points to
                 var target = m_Snapshot.FindManagedObjectOfAddress(pointer);
                 if (target < 0)
                     continue;
 
+                // We found a managed object that is referenced by a System.Delegate
                 m_delegateObjectTable[target] = 1;
             }
         }

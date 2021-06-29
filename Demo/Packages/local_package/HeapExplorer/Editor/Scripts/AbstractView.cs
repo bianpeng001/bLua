@@ -1,4 +1,7 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,36 +13,56 @@ namespace HeapExplorer
 {
     abstract public class HeapExplorerView
     {
+        /// <summary>
+        /// The titleContent is shown in Heap Explorer's toolbar View menu.
+        /// </summary>
         public GUIContent titleContent
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Lets you control the menu item order in Heap Explorer's View menu.
+        /// Specify a negative value to not create an item in the View menu.
+        /// If two items are 100 units apart, Heap Explorer inserts a seperator item.
+        /// </summary>
         public int viewMenuOrder
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// The window in which the view is rendered to.
+        /// </summary>
         public HeapExplorerWindow window
         {
             get;
             internal set;
         }
 
+        /// <summary>
+        /// Gets whether the view is currently active.
+        /// </summary>
         public bool isVisible
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets the active memory snapshot.
+        /// </summary>
         public PackedMemorySnapshot snapshot
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The key-prefix to load and save EditorPrefs.
+        /// </summary>
         public string editorPrefsKey
         {
             get;
@@ -48,6 +71,7 @@ namespace HeapExplorer
 
         List<HeapExplorerView> m_Views = new List<HeapExplorerView>();
 
+        // This allows to pass a member variable whose name is converted to a string.
         protected string GetPrefsKey(Expression<Func<object>> exp)
         {
             var body = exp.Body as MemberExpression;
@@ -98,6 +122,7 @@ namespace HeapExplorer
 
             OnShow();
 
+            // Show any views that might have been added during OnShow()
             foreach (var v in m_Views)
                 v.Show(heap);
 
@@ -130,10 +155,16 @@ namespace HeapExplorer
             return new GotoCommand();
         }
 
+        /// <summary>
+        /// Implement your own editor GUI here.
+        /// </summary>
         public virtual void OnGUI()
         {
         }
 
+        /// <summary>
+        /// Implement the OnToolbarGUI method to draw your own GUI in Heap Explorer's toolbar menu.
+        /// </summary>
         public virtual void OnToolbarGUI()
         {
         }

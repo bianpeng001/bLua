@@ -1,4 +1,7 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -208,6 +211,7 @@ namespace HeapExplorer
                         m_SectionsControl.OnGUI();
                     }
 
+                    // Managed heap fragmentation view
                     using (new EditorGUILayout.VerticalScope(HeEditorStyles.panel))
                     {
                         var text = string.Format("{0} managed heap sections ({1}) within an {2} address space", GetMemorySections().Length, EditorUtility.FormatBytes((long)GetTotalHeapSize()), EditorUtility.FormatBytes((long)GetHeapAddressSpace()));
@@ -230,12 +234,14 @@ namespace HeapExplorer
                                 OnToggleHexViewGUI();
                             }
 
+                            //GUILayout.Space(2);
                             m_HexView.OnGUI();
                         }
                     }
                     else
                         m_ConnectionsView.OnGUI();
 
+                    // Managed heap section fragmentation view
                     using (new EditorGUILayout.VerticalScope(HeEditorStyles.panel))
                     {
                         GUILayout.Label("Memory section usage (Issue: static field memory and gchandle memory is missing due to limited MemoryProfiling API)", EditorStyles.boldLabel);
@@ -264,6 +270,9 @@ namespace HeapExplorer
         }
 
 
+        /// <summary>
+        /// Gets the size of all managed heap sections combined.
+        /// </summary>
         ulong GetTotalHeapSize()
         {
             if (m_ManagedHeapSize != ~0ul)
@@ -276,6 +285,9 @@ namespace HeapExplorer
             return m_ManagedHeapSize;
         }
 
+        /// <summary>
+        /// The address space from the operating system in which the managed heap sections are located.
+        /// </summary>
         ulong GetHeapAddressSpace()
         {
             if (m_ManagedHeapAddressSpace != ~0ul)

@@ -1,4 +1,7 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 
 using System;
 using System.Collections.Generic;
@@ -282,6 +285,7 @@ namespace HeapExplorer
             m_Search = new SearchTextParser.Result();
             base.searchString = "";
 
+            // If the same item is selected already, nothing to do
             var currentSelection = GetSelection();
             if (currentSelection != null && currentSelection.Count > 0 && currentSelection[0] == item.id)
             {
@@ -358,6 +362,7 @@ namespace HeapExplorer
                     rect.x += extraSpaceBeforeIconAndLabel;
                     rect.width -= extraSpaceBeforeIconAndLabel;
 
+                    // Display the tree as a flat list when content is filtered
                     if (hasSearch)
                         rect = TreeViewUtility.IndentByDepth(0, rect);
                     else
@@ -399,6 +404,7 @@ namespace HeapExplorer
             save.columnsWidths = widths.ToArray();
 
             var json = JsonUtility.ToJson(save, true);
+            //Debug.Log("Save\n" + json);
             EditorPrefs.SetString(m_EditorPrefsKey, json);
         }
 

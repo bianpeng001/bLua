@@ -1,3 +1,7 @@
+//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +24,7 @@ namespace HeapExplorer
         public static bool LinkButton(GUIContent content, GUIStyle guiStyle = null, params GUILayoutOption[] options)
         {
             var color = GUI.color;
+            //GUI.color = new Color(1, 0, 0, 1);
             var result = GUILayout.Button(content, guiStyle == null ? HeEditorStyles.hyperlink : guiStyle, options);
             GUI.color = color;
 
@@ -111,6 +116,7 @@ namespace HeapExplorer
 
         public static bool DelayedSearchField(SearchField searchField, ref string searchString)
         {
+            // check keydown before processing the search field, because it swallows them
             var isEnter = Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter);
             var isESC = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
 
@@ -231,6 +237,7 @@ namespace HeapExplorer
                 }, stringAddress);
                 menu.ShowAsContext();
             }
+            //EditorGUI.TextField(position, string.Format(StringFormat.Address, address), EditorStyles.label);
         }
 
         public static void TypeName(Rect position, string text, string tooltip = "")
@@ -263,6 +270,7 @@ namespace HeapExplorer
                     continue;
                 }
 
+                // Skip the ... sequence
                 if (typeName[n] == '.' && n + 1 < typeName.Length && typeName[n + 1] == '.')
                 {
                     while (typeName[n] == '.' && n + 1 < typeName.Length && typeName[n + 1] == '.')
@@ -276,11 +284,13 @@ namespace HeapExplorer
 
                 ++n; // skip the '.'
 
+                // Copy chars over to dest
                 s_StringBuilder.Append("...");
                 s_StringBuilder.Append(typeName, n, typeName.Length - n);
                 return s_StringBuilder.ToString();
             }
 
+            // We are here if the string could not be shortened
             s_StringBuilder.Append(typeName);
             return s_StringBuilder.ToString();
         }

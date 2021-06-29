@@ -1,4 +1,7 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -83,6 +86,7 @@ namespace HeapExplorer
                 item.Initialize(this, m_Snapshot, type.managedTypesArrayIndex);
                 root.AddChild(item);
 
+                // Add its base-classes
                 var loopGuard = 0;
                 var baseType = type;
                 var itemDepth = 1;
@@ -108,6 +112,7 @@ namespace HeapExplorer
                 }
             }
 
+            // remove groups if it contains one item only
             for (int n = root.children.Count - 1; n >= 0; --n)
             {
                 var group = root.children[n];
@@ -124,6 +129,7 @@ namespace HeapExplorer
 
         protected override int OnSortItem(TreeViewItem aa, TreeViewItem bb)
         {
+            // Sort base class visualization always the same
             if (aa.parent == bb.parent && !aa.hasChildren && !bb.hasChildren)
             {
                 var a = aa as AbstractItem;
@@ -150,6 +156,7 @@ namespace HeapExplorer
             return 0;
         }
 
+        ///////////////////////////////////////////////////////////////////////////
 
         abstract class AbstractItem : AbstractTreeViewItem
         {
@@ -176,6 +183,7 @@ namespace HeapExplorer
             }
         }
 
+        ///////////////////////////////////////////////////////////////////////////
 
         class ManagedTypeItem : AbstractItem
         {

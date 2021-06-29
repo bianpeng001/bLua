@@ -1,3 +1,7 @@
+//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -8,6 +12,7 @@ namespace HeapExplorer
 {
 	public class CompareSnapshotsControl : AbstractTreeView
     {
+        //public System.Action<GotoCommand> gotoCB;
 
         enum EColumn
         {
@@ -209,6 +214,7 @@ namespace HeapExplorer
                 }
             }
 
+            // Remove all items that are identical between both snapshots
             for (int n = 0, nend = items.Count; n < nend; ++n)
             {
                 if (items[n].countDiff != 0 && items[n].sizeDiff != 0)
@@ -285,6 +291,7 @@ namespace HeapExplorer
                 }
             }
 
+            // Remove all items that are identical between both snapshots
             for (int n = 0, nend = items.Count; n < nend; ++n)
             {
                 if (items[n].countDiff != 0 && items[n].sizeDiff != 0)

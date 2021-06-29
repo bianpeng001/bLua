@@ -1,4 +1,7 @@
 ﻿//
+// Heap Explorer for Unity. Copyright (c) 2019-2020 Peter Schraut (www.console-dev.de). See LICENSE.md
+// https://github.com/pschraut/UnityHeapExplorer/
+//
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -84,6 +87,7 @@ namespace HeapExplorer
             return base.GetRestoreCommand();
         }
 
+        // Called if the selection changed in the list that contains the managed objects overview.
         void OnListViewSelectionChange(PackedGCHandle? packedGCHandle)
         {
             m_Selected = packedGCHandle;
