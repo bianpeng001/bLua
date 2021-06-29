@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,6 +22,13 @@ namespace bLua
 {
     public class Builder
     {
+        public static List<string> levels = new List<string>()
+        {
+            "Assets/bLua/Example/01_Example/ExampleScene.unity",
+            "Assets/bLua/Example/02_War/WarScene.unity",
+            "Assets/bLua/Example/05_Tower/TowerScene.unity",
+            "Assets/bLua/Example/06_UI/UIScene.unity",
+        };
 
         [MenuItem("Tools/Build/Bundle")]
         public static void BuildBundle()

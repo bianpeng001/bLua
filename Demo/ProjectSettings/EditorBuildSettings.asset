@@ -4,5 +4,17 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/bLua/Example/05_Tower/TowerScene.unity
+    guid: ba8b57c363fb5b4428226ea6090d43e4
+  - enabled: 1
+    path: Assets/bLua/Example/06_UI/UIScene.unity
+    guid: 70d7258f648a7b9488e915ee26d1b0a4
+  - enabled: 1
+    path: Assets/bLua/Example/02_War/WarScene.unity
+    guid: 42339e92590aadb49a08dd87f854b710
+  - enabled: 1
+    path: Assets/bLua/Example/01_Example/ExampleScene.unity
+    guid: cfe4010b024f7b64296eeb1e455ba41a
   m_configObjects: {}
