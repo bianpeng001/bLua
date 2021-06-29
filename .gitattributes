@@ -1,4 +1,4 @@
-*.cs linguist-language=csharp
+* linguist-language=csharp
 *.lua linguist-language=lua
-*.meta linguist-detectable=false
+
 
