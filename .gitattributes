@@ -1,1 +1,4 @@
-* linguist-language=csharp
+Demo/Assets/* linguist-vendored
+*.cs linguist-language=csharp
+*.lua linguist-language=lua
+*.meta linguist-vendored=false
