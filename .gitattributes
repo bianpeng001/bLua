@@ -1,4 +1,3 @@
-*.cs linguist-detectable=true
-*.lua linguist-detectable=true
+Demo/Assets/* linguist-vendored
 *.meta linguist-detectable=false
 
