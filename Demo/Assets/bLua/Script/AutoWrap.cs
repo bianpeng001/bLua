@@ -14,14 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月11日, 边蓬
- */
-
-
-#if HAS_MONO_PINVOKE
 using AOT;
-#endif
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -42,63 +35,6 @@ namespace bLua
         private interface IUnityMethodFromDelegate
         {
             void SetDelegate(Delegate del);
-        }
-
-        private static readonly Type[][] gparamsCache;
-
-        private static readonly (Type, Type)[] funcTypeMap, actionTypeMap;
-
-        private class GenericTypeTree
-        {
-            public readonly Type argType;
-
-            public GenericTypeTree(Type argType)
-            {
-                this.argType = argType;
-            }
-
-            public List<GenericTypeTree> childList;
-
-            public Type funcType, cbType;
-        }
-
-        private static readonly GenericTypeTree
-            funcRoot = new GenericTypeTree(null),
-            actionRoot = new GenericTypeTree(null);
-
-        private static (Type, Type) GetFuncType(
-            GenericTypeTree node,
-            Type funcTemplate,
-            Type cbTemplate,
-            Type[] gparams,
-            int gIndex)
-        {
-            if (gIndex < gparams.Length)
-            {
-                var gtype = gparams[gIndex];
-                if (node.childList == null)
-                    node.childList = new List<GenericTypeTree>();
-
-                GenericTypeTree child;
-                var index = node.childList.FindIndex(a => a.argType == gtype);
-                if (index >= 0)
-                    child = node.childList[index];
-                else
-                {
-                    child = new GenericTypeTree(gtype);
-                    node.childList.Add(child);
-                }
-                return GetFuncType(child, funcTemplate, cbTemplate, gparams, gIndex + 1);
-            }
-            else
-            {
-                if (node.funcType == null)
-                {
-                    node.funcType = funcTemplate.MakeGenericType(gparams);
-                    node.cbType = cbTemplate.MakeGenericType(gparams);
-                }
-                return (node.funcType, node.cbType);
-            }
         }
 
         static AutoWrap()
@@ -150,9 +86,7 @@ namespace bLua
             }
         }
 
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
         private static int CallUnityMethod(IntPtr L)
         {
             CheckArgumentCount(L, 1);
@@ -161,7 +95,7 @@ namespace bLua
             var methodId = (int)lua_tointeger(L, 1);
 
 
-            var method = unityMethodMap[methodId];
+            var method = globalUnityMethodTable[methodId];
             if (method == null)
             {
                 LogUtil.Error($"method not found: methodId={methodId}, args={argumentCount} {lua_type(L, 1)}");
@@ -179,9 +113,7 @@ namespace bLua
             }
         }
 
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
         private static int CallLuaDelegate(IntPtr L)
         {
             var dele = TypeTrait<LuaDelegate>.pull(L, 1);
@@ -191,13 +123,11 @@ namespace bLua
             return 0;
         }
 
-        private static readonly List<IUnityMethod> unityMethodMap = new List<IUnityMethod>(1024) { null, };
+        private static readonly List<IUnityMethod> globalUnityMethodTable = new List<IUnityMethod>(1024) { null, };
 
-        private static readonly List<MethodInfo> methodList = new List<MethodInfo>(8);
+        private static readonly List<MethodInfo> tempMethodList = new List<MethodInfo>(8);
 
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
         private static int RegisterUnityMethod(IntPtr L)
         {
             CheckArgumentCount(L, 2);
@@ -206,17 +136,19 @@ namespace bLua
             var methodName = lua_tostring(L, -1);
 
             var cls = luaRegister.GetClass(classId);
-            luaRegister.FindAllMethods(cls, methodName, methodList);
+            luaRegister.FindAllMethods(cls, methodName, tempMethodList);
 
-            if (methodList.Count == 0)
+            LogUtil.Debug($"{cls.name}::{methodName} {tempMethodList.Count}");
+
+            if (tempMethodList.Count == 0)
             {
                 return 0;
             }
-            else if (methodList.Count == 1)
+            else if (tempMethodList.Count == 1)
             {
-                var method = CreateUnityMethod(methodList[0]);
-                var methodId = unityMethodMap.Count;
-                unityMethodMap.Add(method);
+                var method = CreateUnityMethod(tempMethodList[0]);
+                var methodId = globalUnityMethodTable.Count;
+                globalUnityMethodTable.Add(method);
 
                 lua_pushinteger(L, methodId);
                 return 1;
@@ -224,55 +156,14 @@ namespace bLua
             else
             {
 
-                var method = new OverloadResolver(methodList);
-                var methodId = unityMethodMap.Count;
-                unityMethodMap.Add(method);
-                methodList.Clear();
+                var method = new OverloadResolver(tempMethodList);
+                var methodId = globalUnityMethodTable.Count;
+                globalUnityMethodTable.Add(method);
+                tempMethodList.Clear();
 
                 lua_pushinteger(L, methodId);
                 return 1;
             }
-        }
-
-        private static IUnityMethod CreateUnityMethod(MethodInfo method)
-        {
-            var retType = method.ReturnType;
-            var args = method.GetParameters();
-            var argc = args.Length;
-
-            Type unityMethodType, cbType;
-
-            if (retType != typeof(void))
-            {
-                var gparams = gparamsCache[argc + 1];
-                for (int i = 0; i < argc; ++i)
-                    gparams[i] = args[i].ParameterType;
-                gparams[argc] = retType;
-
-                var (funcTemplate, cbTemplate) = funcTypeMap[argc];
-                (unityMethodType, cbType) = GetFuncType(funcRoot, funcTemplate, cbTemplate, gparams, 0);
-            }
-            else
-            {
-                var (actionTemplate, cbTemplate) = actionTypeMap[argc];
-                if (argc == 0)
-                    (unityMethodType, cbType) = (actionTemplate, cbTemplate);
-                else
-                {
-                    var gparams = gparamsCache[argc];
-                    for (int i = 0; i < argc; ++i)
-                        gparams[i] = args[i].ParameterType;
-
-                    (unityMethodType, cbType) = GetFuncType(actionRoot, actionTemplate, cbTemplate, gparams, 0);
-                }
-            }
-
-            var obj = Activator.CreateInstance(unityMethodType) as IUnityMethod;
-            var cb = Delegate.CreateDelegate(cbType, null, method);
-
-            (obj as IUnityMethodFromDelegate).SetDelegate(cb);
-
-            return obj;
         }
 
         private static LuaRegister luaRegister;
@@ -285,13 +176,10 @@ namespace bLua
             | BindingFlags.DeclaredOnly;
 
 
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
         private static int CollectUnityObject(IntPtr L)
         {
             CheckArgumentCount(L, 1);
-
             LogUtil.Assert(lua_isuserdata(L, 1));
 
             var objIndex = UserDataGetObjIndex(L, 1);
@@ -299,10 +187,7 @@ namespace bLua
             return 0;
         }
 
-
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
         private static int RegisterUnityClass(IntPtr L)
         {
             CheckArgumentCount(L, 2);
@@ -316,7 +201,7 @@ namespace bLua
 
             if (cls.luaref != LUA_NOREF)
             {
-                cls.luaref.Destroy(LuaState.GetState(L));
+                cls.luaref.Dispose(LuaState.GetState(L));
             }
             cls.luaref = new LuaRef(LuaState.GetState(L));
 
@@ -325,9 +210,7 @@ namespace bLua
             return 1;
         }
 
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
         private static int TypeOf(IntPtr L)
         {
             CheckArgumentCount(L, 1);
@@ -343,13 +226,10 @@ namespace bLua
             return 1;
         }
 
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
         private static int Cast2Type(IntPtr L)
         {
-            if (!lua_isuserdata(L, 1))
-                throw new Exception();
+            LogUtil.Assert(lua_isuserdata(L, 1));
 
             var objIndex = UserDataGetObjIndex(L, 1);
             

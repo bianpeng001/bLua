@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年6月13日, 边蓬
- */
-
 using System.Collections.Generic;
 
 namespace bLua
@@ -75,9 +71,7 @@ namespace bLua
 
     public interface ICellData
     {
-        bool CanWalk { get; }
-
-        int RevNumber { get; set; }
+        bool CheckPass();
     }
 
     public class AStarMap<TCellData> where TCellData : ICellData
@@ -87,6 +81,7 @@ namespace bLua
             public PointXZ prev;
             public int F, G, H;
             public TCellData data;
+            public int revNumber;
         }
 
         private readonly int width, length;
@@ -209,7 +204,7 @@ namespace bLua
 
             ref var currCell = ref this[currPos];
             ref var nextCell = ref this[nextPos];
-            if (nextCell.data.RevNumber == revNumber)
+            if (nextCell.revNumber == revNumber)
             {
                 if (nextCell.G > currCell.G + distance)
                 {
@@ -227,7 +222,7 @@ namespace bLua
                 var g = currCell.G + distance;
                 var h = CalcH(nextPos, stop);
 
-                nextCell.data.RevNumber = revNumber;
+                nextCell.revNumber = revNumber;
                 nextCell.prev = currPos;
                 nextCell.G = g;
                 nextCell.H = h;
@@ -252,7 +247,7 @@ namespace bLua
             if (!(point.x >= 0 && point.x < width
                     && point.z >= 0 && point.z < length))
                 return false;
-            return this[point].data.CanWalk;
+            return this[point].data.CheckPass();
         }
 
         public ref Cell this[in PointXZ p] => ref map[p.x, p.z];

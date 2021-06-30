@@ -16,7 +16,7 @@ PlayerSettings:
   productName: bLua
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
-  m_SplashScreenBackgroundColor: {r: 0.16981131, g: 0.16981131, b: 0.16981131, a: 1}
+  m_SplashScreenBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
   m_ShowUnitySplashScreen: 1
   m_ShowUnitySplashLogo: 0
   m_SplashScreenOverlayOpacity: 1
@@ -146,7 +146,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.NewUnityProject
+    Standalone: com.BianPeng.bLua
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -519,14 +519,16 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    1: HAS_MONO_PINVOKE
+    1: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 1
   il2cppCompilerConfiguration: {}
-  managedStrippingLevel: {}
-  incrementalIl2cppBuild: {}
+  managedStrippingLevel:
+    Standalone: 1
+  incrementalIl2cppBuild:
+    Standalone: 0
   suppressCommonWarnings: 1
   allowUnsafeCode: 1
   useDeterministicCompilation: 1

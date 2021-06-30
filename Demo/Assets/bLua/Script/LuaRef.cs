@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月24日, 边蓬
- */
-
 using System;
 
 namespace bLua
@@ -40,7 +36,7 @@ namespace bLua
                 && luaref != LuaLib.LUA_REFNIL;
         }
 
-        public void Destroy(LuaState state)
+        public void Dispose(LuaState state)
         {
             LuaLib.luaL_unref(state, REGISTRYINDEX, luaref);
             luaref = LuaLib.LUA_NOREF;

@@ -24,23 +24,58 @@ namespace bLua
     {
         public static List<string> levels = new List<string>()
         {
+            "Assets/bLua/Example/05_Tower/TowerScene.unity",
             "Assets/bLua/Example/01_Example/ExampleScene.unity",
             "Assets/bLua/Example/02_War/WarScene.unity",
-            "Assets/bLua/Example/05_Tower/TowerScene.unity",
             "Assets/bLua/Example/06_UI/UIScene.unity",
         };
 
         [MenuItem("Tools/Build/Bundle")]
         public static void BuildBundle()
         {
-            
+        }
+
+        private static void Build(BuildTargetGroup group,
+            BuildTarget target,
+            string outputPath,
+            bool isRelase)
+        {
+            BuildOptions options = BuildOptions.None;
+            if (!isRelase)
+            {
+                options = BuildOptions.Development
+                    | BuildOptions.AllowDebugging
+                    | BuildOptions.ConnectWithProfiler;
+            }
+            var activeTarget = EditorUserBuildSettings.activeBuildTarget;
+            Debug.Log($"activeTarget:{activeTarget}");
+
+            PlayerSettings.SplashScreen.showUnityLogo = false;
+            PlayerSettings.SplashScreen.show = true;
+            PlayerSettings.SplashScreen.backgroundColor = Color.white;
+
+            PlayerSettings.SetManagedStrippingLevel(group, ManagedStrippingLevel.Low);
+            PlayerSettings.SetScriptingBackend(group, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetApiCompatibilityLevel(group, ApiCompatibilityLevel.NET_Standard_2_0);
+            PlayerSettings.SetIncrementalIl2CppBuild(group, false);
+            PlayerSettings.gcIncremental = true;
+            PlayerSettings.runInBackground = true;
+            PlayerSettings.usePlayerLog = true;
+
+            var report = BuildPipeline.BuildPlayer(levels.ToArray(), outputPath, target, options);
+
+            Debug.Log(report.summary.result);
         }
 
         [MenuItem("Tools/Build/Win64")]
         public static void BuildWin64()
         {
-
+            Build(BuildTargetGroup.Standalone,
+                BuildTarget.StandaloneWindows64,
+                "BuildWin64/Demo.exe",
+                false);
         }
+
     }
 }
 

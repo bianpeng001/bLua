@@ -263,7 +263,7 @@ void f(object, string);
 呆想想, 这几种是最多的, 参数越多的方法越少, 毕竟代码规范里面, 从来都是以少为美, 一个方法上来10个参数, 远超人类承受力. 换言之, 上面说到的上万个wrap方法里面. 有相当一部分会是参数的类型一模一样的. 按照我之前的经验数值, 只有几百种. 相比于1.5w个, 重复的代码就有上万项, 哪怕每项对应的只有10行, 就10w行代码省出来了.
 
 ### MonoPInvokeCallback在il2cpp里面的开销
-然后关于MonoPInvokeCallbackAttribute, il2cpp需要有这个属性标记, 用来允许从非托管代码里调用这个方法. 这个标记本身, 也是有开销的, 并且计算这里的开销要x10000, 所以还是要抠一抠. 从il2cpp的目录里, 截一段代码出来, 大约长这样:
+MonoPInvokeCallbackAttribute是il2cpp要求有的, 用来标记允许从非托管代码里调用这个方法. 这个标记本身, 也是有一点点开销的, 并且计算这里的开销要x10000, 于是最终结果还是很大的. 下面是从il2cpp的目录里, 截一段有MonoPInvokeCallbackAttribute的方法代码出来:
 ```C++
 static void AutoWrap_CustomAttributesCacheGenerator_AutoWrap_CallUnityMethod_m(CustomAttributesCache* cache)
 {
@@ -279,6 +279,6 @@ static void AutoWrap_CustomAttributesCacheGenerator_AutoWrap_CallUnityMethod_m(C
 	}
 }
 ```
-在g_ReversePInvokeWrapperPointers里面, 每一个MonoPInvokeCallback的方法, 都要占一项.
+在g_ReversePInvokeWrapperPointers里面, 每一个MonoPInvokeCallback的方法要占一项.
 
 

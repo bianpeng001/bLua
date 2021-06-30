@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace bLua
 {
     public static partial class LuaExport
     {
-        public struct ExportType
+        public struct ExportDefinition
         {
             public Type type, baseClass;
             public Type extClass;
@@ -215,39 +216,127 @@ namespace bLua
                             }
                         });
 
-                        fs.WriteLine("public static void DoNotCallMe()");
+                        fs.WriteLine("public static void ListFuncType()");
                         WriteBlock(fs, () =>
                         {
+                            fs.WriteLine("var L = IntPtr.Zero;");
+                            var set = new HashSet<string>();
+                            var methodList = new List<MethodInfo>();
+                            var propList = new List<PropertyInfo>();
+
+                            for (int i = 0; i < typeList.Length; ++i)
+                            {
+                                var (methods, props) = GetMethodsProps(typeList[i]);
+
+                                methodList.AddRange(methods);
+                                propList.AddRange(props);
+
+                                propList.AddRange(typeList[i].type.GetProperties(AutoWrap.StaticMemberFlag));
+                                if (typeList[i].extClass is var extClass && extClass != null)
+                                {
+                                    methodList.AddRange(extClass.GetMethods(AutoWrap.StaticMemberFlag));
+                                    propList.AddRange(extClass.GetProperties(AutoWrap.StaticMemberFlag));
+                                }
+
+                                for (int j = 0; j < propList.Count; ++j)
+                                {
+                                    var p = propList[j];
+                                    if (p.CanRead)
+                                        methodList.Add(p.GetGetMethod());
+                                    if (p.CanWrite)
+                                        methodList.Add(p.GetSetMethod());
+                                }
+
+                                for (int j = 0; j < methodList.Count; ++j)
+                                {
+                                    var m = methodList[j];
+                                    set.Add(GetFuncDescAOT(m));
+                                    if (m.ReturnType != typeof(void)
+                                        && typeof(AutoWrap.IMultRet).IsAssignableFrom(m.ReturnType))
+                                        set.Add(MakeMultRet(m.ReturnType));
+                                }
+                                
+                                methodList.Clear();
+                                propList.Clear();
+                            }
+
+                            var mList = new List<string>(set);
+                            mList.Sort();
+                            foreach (var line in mList)
+                            {
+                                fs.WriteLine(line);
+                            }
                         });
                     });
                 });
             }
         }
 
-        private static void GenHelper(in ExportType item)
+        #region AOT
+
+        private static readonly StringBuilder sb = new StringBuilder();
+        private static readonly List<Type> argList = new List<Type>();
+        private static string GetFuncDescAOT(MethodInfo mi)
+        {
+            var isVoid = mi.ReturnType == typeof(void);
+            var args = mi.GetParameters();
+
+            argList.Clear();
+            if (!mi.IsStatic)
+                argList.Add(typeof(object));
+            for (int i = 0; i < args.Length; ++i)
+                argList.Add(args[i].ParameterType);
+            if (!isVoid)
+                argList.Add(mi.ReturnType);
+
+            if (isVoid && argList.Count == 0)
+                return "new AutoWrap.Action().Call(L);";
+
+            sb.Clear();
+            sb.Append("new AutoWrap.");
+
+            if (isVoid)
+                sb.Append("Action<");
+            else
+            {
+                sb.Append("Func<");
+            }
+            for (int i = 0; i < argList.Count; ++i)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                sb.Append(GetTypeLabel(argList[i]));
+            }
+            sb.Append(">().Call(L);");
+
+            return sb.ToString();
+
+            static string GetTypeLabel(Type pType)
+            {
+                if (pType.IsEnum)
+                    return "int";
+                else if (pType.IsPrimitive || pType.IsValueType)
+                    return GetTypeName(pType);
+                else if (pType.IsClass)
+                    return "object";
+                else
+                    return "object";
+            }
+        }
+
+        public static string MakeMultRet(Type type)
+        {
+            var label = GetTypeName(type);
+            return $"AutoWrap.PushMultRetNoGC(L, new {label}());";
+        }
+
+        #endregion
+
+        private static void GenHelper(in ExportDefinition item)
         {
             var thisType = item.type;
             var helpClassName = item.GetHelpClassName();
-            var methods = Array.FindAll(
-                item.type.GetMethods(AutoWrap.InstanceMemberFlag),
-                AutoWrap.CheckMethodSupportAutoWrap);
-            
-            var props = Array.FindAll(
-                item.type.GetProperties(AutoWrap.InstanceMemberFlag),
-                AutoWrap.CheckPropSupportAutoWrap);
-
-            if (item.whiteList != null)
-            {
-                var whilteList = item.whiteList;
-                methods = Array.FindAll(methods, a => Array.IndexOf(whilteList, a.Name) >= 0);
-                props = Array.FindAll(props, a => Array.IndexOf(whilteList, a.Name) >= 0);
-            }
-            else if (item.blackList != null)
-            {
-                var blackList = item.blackList;
-                methods = Array.FindAll(methods, a=> Array.IndexOf(blackList, a.Name) < 0);
-                props = Array.FindAll(props, a => Array.IndexOf(blackList, a.Name) < 0);
-            }
+            var (methods, props) = GetMethodsProps(item);
 
             totalMethodCount += methods.Length;
             totalPropCount += props.Length;
@@ -257,7 +346,7 @@ namespace bLua
                 fs.WriteLine("// auto generate");
                 fs.WriteLine();
 
-                for(int i = 0; i < usingBlock.Length; ++i)
+                for (int i = 0; i < usingBlock.Length; ++i)
                     fs.WriteLine(usingBlock[i]);
                 fs.WriteLine();
 
@@ -275,6 +364,29 @@ namespace bLua
                     });
                 });
             }
+        }
+
+        private static (MethodInfo[], PropertyInfo[]) GetMethodsProps(in ExportDefinition item)
+        {
+            var methods = Array.FindAll(
+                            item.type.GetMethods(AutoWrap.InstanceMemberFlag),
+                            AutoWrap.CheckMethodSupportAutoWrap);
+            var  props = Array.FindAll(
+                item.type.GetProperties(AutoWrap.InstanceMemberFlag),
+                AutoWrap.CheckPropSupportAutoWrap);
+            if (item.whiteList != null)
+            {
+                var whilteList = item.whiteList;
+                methods = Array.FindAll(methods, a => Array.IndexOf(whilteList, a.Name) >= 0);
+                props = Array.FindAll(props, a => Array.IndexOf(whilteList, a.Name) >= 0);
+            }
+            else if (item.blackList != null)
+            {
+                var blackList = item.blackList;
+                methods = Array.FindAll(methods, a => Array.IndexOf(blackList, a.Name) < 0);
+                props = Array.FindAll(props, a => Array.IndexOf(blackList, a.Name) < 0);
+            }
+            return (methods, props);
         }
 
         private static void WriteProps(Type thisType, PropertyInfo[] props, StreamWriter fs)
@@ -523,6 +635,7 @@ namespace bLua
                 var tname = type.Name;
                 var idx = tname.LastIndexOf('`');
                 tname = tname.Substring(0, idx);
+
                 var gargs = string.Join(", ", Array.ConvertAll(type.GetGenericArguments(), GetTypeName));
 
                 string ns;

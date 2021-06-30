@@ -41,6 +41,11 @@ namespace bLua
             _this.transform.LookAt(point, Vector3.up);
         }
 
+        public static void Dummy()
+        {
+            
+        }
+
     }
 
 }

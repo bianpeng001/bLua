@@ -311,28 +311,29 @@ namespace bLua
             }
         }
 
-        private static void PushMultRetNoGC<T>(IntPtr L, T value) where T : struct, IMultRet
+        public static void PushMultRetNoGC<T>(IntPtr L, T value) where T : struct, IMultRet
         {
             value.Push(L);
         }
 
         private static MethodInfo mPushMultRet;
-        private static readonly Dictionary<Type, Delegate> multRetCache = new Dictionary<Type, Delegate>();
+        private static readonly List<(Type, Delegate)> multRetCache = new List<(Type, Delegate)>();
         private static Delegate MakePushMultRet(Type pushType, Type valueType)
         {
             Delegate dele;
-            if (multRetCache.TryGetValue(valueType, out dele))
-                return dele;
+            var idx = multRetCache.FindIndex(a => a.Item1 == valueType);
+            if (idx >= 0)
+                return multRetCache[idx].Item2;
 
             if (mPushMultRet == null)
             {
                 mPushMultRet = typeof(AutoWrap).GetMethod(
                     "PushMultRetNoGC",
-                     BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                     BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
             }
 
             dele = Delegate.CreateDelegate(pushType, null, mPushMultRet.MakeGenericMethod(valueType));
-            multRetCache[valueType] = dele;
+            multRetCache.Add((valueType, dele));
             return dele;
         }
 

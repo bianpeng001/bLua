@@ -32,31 +32,31 @@ namespace bLua
 
         public const string _this = "_this";
 
-        public static ExportType[] typeList = new ExportType[]
+        public static ExportDefinition[] typeList = new ExportDefinition[]
         {
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(System.Object),
                 baseClass = null,
                 blackList = new string[] { "Equals" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(System.Type),
                 baseClass = null,
                 whiteList = new string[] { "FullName", "BaseType", "IsClass", "IsEnum", "IsArray" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(System.Array),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(System.Random),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(int[]),
                 baseClass = typeof(System.Array),
@@ -64,7 +64,7 @@ namespace bLua
                 typeName = "ArrayInt",
                 whiteList = new string[]{ "Get", "Set" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(float[]),
                 baseClass = typeof(System.Array),
@@ -72,7 +72,7 @@ namespace bLua
                 typeName = "ArrayFloat",
                 whiteList = new string[]{ "Get", "Set" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(string[]),
                 baseClass = typeof(System.Array),
@@ -80,7 +80,7 @@ namespace bLua
                 typeName = "ArrayString",
                 whiteList = new string[]{ "Get", "Set" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(object[]),
                 baseClass = typeof(System.Array),
@@ -88,228 +88,228 @@ namespace bLua
                 typeName = "ArrayObject",
                 whiteList = new string[]{ "Get", "Set" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(List<int>),
                 typeName = "ListInt",
                 blackList = new string[]{ "GetEnumerator" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(List<float>),
                 typeName = "ListFloat",
                 blackList = new string[]{ "GetEnumerator" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(List<string>),
                 typeName = "ListString",
                 blackList = new string[]{ "GetEnumerator" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(List<object>),
                 typeName = "ListObject",
                 blackList = new string[]{ "GetEnumerator" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Object),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.MonoBehaviour),
                 baseClass = typeof(UnityEngine.Behaviour),
                 blackList = new string[]{ "runInEditMode", },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Behaviour),
                 baseClass = typeof(UnityEngine.Component),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Component),
                 baseClass = typeof(UnityEngine.Object),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.GameObject),
                 blackList = new string[] { "gameObject", "GetComponent", "GetComponentInChildren", },
                 baseClass = typeof(UnityEngine.Object),
                 extClass = typeof(bLua.GameObjectEx),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Debug),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Input),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Time),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Graphics),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Screen),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Application),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.AssetBundle),
                 baseClass = typeof(UnityEngine.Object),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Transform),
                 baseClass = typeof(UnityEngine.Component),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Shader),
                 baseClass = typeof(UnityEngine.Object),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Material),
                 baseClass = typeof(UnityEngine.Object),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.MaterialPropertyBlock),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Renderer),
                 baseClass = typeof(UnityEngine.Component),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.MeshRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
                 blackList = new string[]{ "scaleInLightmap", "receiveGI", "stitchLightmapSeams" },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.SkinnedMeshRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.MeshFilter),
                 baseClass = typeof(UnityEngine.Component),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Mesh),
                 baseClass = typeof(UnityEngine.Object),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Texture),
                 baseClass = typeof(UnityEngine.Object),
                 blackList = new string[] { "imageContentsHash", },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.RenderTexture),
                 baseClass = typeof(UnityEngine.Texture),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Texture2D),
                 baseClass = typeof(UnityEngine.Texture),
                 blackList = new string[]{ "Resize", "SetPixels", "alphaIsTransparency",  },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Physics),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Collider),
                 baseClass = typeof(UnityEngine.Component),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.MeshCollider),
                 baseClass = typeof(UnityEngine.Collider),
                 blackList = new string[]{ "scaleInLightmap", "receiveGI", "stitchLightmapSeams",  },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.TrailRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.LineRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.BoxCollider),
                 baseClass = typeof(UnityEngine.Collider),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.CapsuleCollider),
                 baseClass = typeof(UnityEngine.Collider),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.SphereCollider),
                 baseClass = typeof(UnityEngine.Collider),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.CharacterController),
                 baseClass = typeof(UnityEngine.Collider),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Rigidbody),
                 baseClass = typeof(UnityEngine.Component),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Animator),
                 baseClass = typeof(UnityEngine.Behaviour),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Animation),
                 baseClass = typeof(UnityEngine.Behaviour),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.AnimationClip),
                 baseClass = typeof(UnityEngine.Motion),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Motion),
                 baseClass = typeof(UnityEngine.Object),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Light),
                 baseClass = typeof(UnityEngine.Behaviour),
@@ -320,79 +320,79 @@ namespace bLua
                     "lightmapBakeType",
                 },
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Camera),
                 baseClass = typeof(UnityEngine.Behaviour),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.ParticleSystem),
                 baseClass = typeof(UnityEngine.Component),
             },
             
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Canvas),
                 baseClass = typeof(UnityEngine.Behaviour),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Mathf),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Color),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Quaternion),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Vector4),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Vector3),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Vector2),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(UnityEngine.Matrix4x4),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(bLua.LuaDelegate),
                 baseClass = null,
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(bLua.LogUtil),
                 baseClass = null,
             },
 
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(bLua.Example),
                 baseClass = typeof(UnityEngine.MonoBehaviour),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(bLua.Example02),
                 baseClass = typeof(UnityEngine.MonoBehaviour),
             },
-            new ExportType()
+            new ExportDefinition()
             {
                 type = typeof(bLua.MoveSystem),
                 baseClass = null,

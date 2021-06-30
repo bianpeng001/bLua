@@ -14,13 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月11日, 边蓬
- */
-
-#if HAS_MONO_PINVOKE
 using AOT;
-#endif
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -106,9 +100,7 @@ namespace bLua
             lua_pop(L, 2);
         }
 
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-#endif
         private static int Loader(IntPtr L)
         {
             var state = GetState(L);
@@ -129,9 +121,7 @@ namespace bLua
 
         private static readonly StringBuilder sb = new StringBuilder();
 
-#if HAS_MONO_PINVOKE
         [MonoPInvokeCallbackAttribute(typeof(LuaLib.lua_CFunction))]
-#endif
         private static int Print(IntPtr L)
         {
             var top = lua_gettop(L);

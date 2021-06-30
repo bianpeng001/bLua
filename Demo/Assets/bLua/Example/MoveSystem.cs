@@ -28,10 +28,10 @@ namespace bLua
     {
         public struct CellData : ICellData
         {
-            public bool noPass;
             public int pid;
+            public bool nopass;
 
-            public bool CanWalk => !noPass;
+            public bool CheckPass() => !nopass;
             public int RevNumber { get; set; }
         }
 
@@ -42,21 +42,21 @@ namespace bLua
             map = new AStarMap<CellData>(16, 20);
             for(int i = 0; i <= 2; ++i)
             {
-                map.GetCellData(i, 8).noPass = true;
-                map.GetCellData(i, 9).noPass = true;
-                map.GetCellData(i, 10).noPass = true;
+                map.GetCellData(i, 8).nopass = true;
+                map.GetCellData(i, 9).nopass = true;
+                map.GetCellData(i, 10).nopass = true;
             }
             for (int i = 6; i <= 9; ++i)
             {
-                map.GetCellData(i, 8).noPass = true;
-                map.GetCellData(i, 9).noPass = true;
-                map.GetCellData(i, 10).noPass = true;
+                map.GetCellData(i, 8).nopass = true;
+                map.GetCellData(i, 9).nopass = true;
+                map.GetCellData(i, 10).nopass = true;
             }
             for (int i = 13; i <= 15; ++i)
             {
-                map.GetCellData(i, 8).noPass = true;
-                map.GetCellData(i, 9).noPass = true;
-                map.GetCellData(i, 10).noPass = true;
+                map.GetCellData(i, 8).nopass = true;
+                map.GetCellData(i, 9).nopass = true;
+                map.GetCellData(i, 10).nopass = true;
             }
 
         }

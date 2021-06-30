@@ -19,14 +19,14 @@ local rawset = rawset
 local rawget = rawget
 local setmetatable = setmetatable
 
+local RegisterUnityClass = RegisterUnityClass or function(className, class)
+    print('RegisterUnityClass', className)
+end
+
 local RegisterUnityMethod = RegisterUnityMethod or function(class_id, methodName)
     local methodId = 101
     print('RegisterUnityMethod', class_id, methodName, '->', methodId)
     return methodId
-end
-
-local RegisterUnityClass = RegisterUnityClass or function(className, class)
-    print('RegisterUnityClass', className)
 end
 
 local CallUnityMethod = CallUnityMethod or function(methodId, ...)
@@ -39,6 +39,7 @@ end
 
 local UnityObject2ObjIndex = UnityObject2ObjIndex or function(obj)
     print('UnityObject2ObjIndex')
+    return 1234
 end
 
 local function MakeIndexFunction(class)

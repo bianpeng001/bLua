@@ -31,11 +31,11 @@ state.DoString("print('Hello World!')");
 
 ## 示例
 1. 01_Example, 快速功能展示  [(详情)](http://aa/bb/cc)
-1. 02_War, 实现MonoBehaviour的简单游戏逻辑  [(详情)](http://aa/bb/cc)
+1. 02_War, 实现LuaBehaviour的简单游戏逻辑  [(详情)](http://aa/bb/cc)
 1. 03_Reload
 1. 04_HotFix
 1. 05_Tower
-1. 04_UI
+1. 06_UI
 
 
 ## 致谢

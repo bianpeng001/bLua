@@ -39,7 +39,7 @@ namespace bLua
         protected override void OnDispose()
         {
             state.RemoveLuaObject(this);
-            luaref.Destroy(state);
+            luaref.Dispose(state);
         }
 
         public void SetField<T>(string name, T value)
