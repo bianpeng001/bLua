@@ -1,3 +1,4 @@
 Demo/Assets/* linguist-vendored
-*.meta linguist-detectable=false
-
+*.cs linguist-language=csharp
+*.lua linguist-language=lua
+*.meta linguist-vendored=false
