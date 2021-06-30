@@ -44,38 +44,38 @@ end
 
 local function MakeIndexFunction(class)
     local className = class.class
-    local class_id = class[1]
-    local _cache = class._cache
+    local classId = class[1]
+    local cache = class._cache
 
     return function(obj, methodName)
-        local type
+        local etype
 
-        local entry = rawget(_cache, methodName)
+        local entry = rawget(cache, methodName)
         if not entry then
-            local methodId = RegisterUnityMethod(class_id, methodName)
+            local methodId = RegisterUnityMethod(classId, methodName)
             if methodId then
                 local method = function(...)
                     return CallUnityMethod(methodId, ...)
                 end
-                type = 1
+                etype = 1
                 entry = { 1, method, methodId, }
-                rawset(class, methodName, method)
+                rawset(cache, methodName, entry)
             else
-                local get_methodId = RegisterUnityMethod(class_id, 'get_' .. methodName)
-                local set_methodId = RegisterUnityMethod(class_id, 'set_' .. methodName)
+                local get_methodId = RegisterUnityMethod(classId, 'get_' .. methodName)
+                local set_methodId = RegisterUnityMethod(classId, 'set_' .. methodName)
                 if get_methodId or set_methodId then
-                    type = 2
+                    etype = 2
                     entry = { 2, get_methodId, set_methodId, }
-                    rawset(_cache, methodName, entry)
+                    rawset(cache, methodName, entry)
                 end
             end
         else
-            type = entry[1]
+            etype = entry[1]
         end
 
-        if type == 1 then
+        if etype == 1 then
             return entry[2]
-        elseif type == 2 then
+        elseif etype == 2 then
 
             return CallUnityMethod(entry[2], obj)
         end
@@ -86,16 +86,16 @@ end
 
 local function MakeNewIndexFunction(class)
     local className = class.class
-    local class_id = class[1]
-    local _cache = class._cache
+    local classId = class[1]
+    local cache = class._cache
 
     return function(obj, methodName, value)
-        local entry = rawget(_cache, methodName)
+        local entry = rawget(cache, methodName)
         if not entry then
-            local get_methodId = RegisterUnityMethod(class_id, 'get_' .. methodName)
-            local set_methodId = RegisterUnityMethod(class_id, 'set_' .. methodName)
+            local get_methodId = RegisterUnityMethod(classId, 'get_' .. methodName)
+            local set_methodId = RegisterUnityMethod(classId, 'set_' .. methodName)
             entry = { 2, get_methodId, set_methodId, }
-            rawset(_cache, methodName, entry)
+            rawset(cache, methodName, entry)
         end
         
         CallUnityMethod(entry[3], obj, value)

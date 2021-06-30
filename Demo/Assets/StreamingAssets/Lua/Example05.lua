@@ -26,7 +26,7 @@ local Vector3 = Math.Vector3
 local Quaternion = Math.Quaternion
 
 local _moveSystem
-local _deltaTime
+local _deltaTime = 0
 local _unitsMgr
 local _unitPrefab
 local _towerMgr = {}
@@ -236,6 +236,9 @@ function module.Awake()
 
 	local a, b = _moveSystem:GetMulRet()
 	print(a, b)
+
+	print(1, GameObject.Find)
+	print(2, type(GameObject.Find))
 
 	_unitPrefab =
 	{

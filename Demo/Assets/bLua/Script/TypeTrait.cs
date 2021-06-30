@@ -355,6 +355,7 @@ namespace bLua
             static TypeTrait()
             {
                 var type = typeof(T);
+                
                 if (type.IsPrimitive)
                 {
                     InitPrimitive(type);
@@ -388,20 +389,16 @@ namespace bLua
                 {
                     InitList(type);
                 }
-                else if (type.IsEnum)
-                {
-                    throw new NotSupportedException();
-                }
-                else if (type == typeof(object))
-                {
-                    push = (Push<object>)PushObject<object> as Push<T>;
-                }
                 else if (type.IsValueType)
                 {
                     push = (Push<T>)PushValueType<T>;
                     pull = (Pull<T>)PullValueType<T>;
                 }
-                else if (type.IsClass)
+                else if (type.IsEnum)
+                {
+                    throw new NotSupportedException();
+                }
+                else if (type == typeof(object) || type.IsClass)
                 {
                     push = (Push<T>)PushObject<T>;
                     pull = (Pull<T>)PullObject<T>;

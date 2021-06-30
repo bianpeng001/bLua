@@ -769,7 +769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195c762c0422578479272295f64eaa78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 1
+  mode: 0
   path: Example02
 --- !u!4 &1481241579
 Transform:

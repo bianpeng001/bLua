@@ -8,6 +8,7 @@ local module = LuaBehaviour.CreateModule()
 
 function module.Awake()
     print('gameObject:', module.gameObject, module.gameObject:ToString())
+    print(module.luaBehaviour, type(module.luaBehaviour), module.luaBehaviour ~= nil)
     print('luaBehaviour:', module.luaBehaviour, module.luaBehaviour:ToString())
     print('path:', module.path)
     print('name:', module.name)

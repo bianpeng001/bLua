@@ -137,31 +137,41 @@ namespace bLua
                     case DataType.LUA_TNIL:
                         sb.Append("nil");
                         break;
+
                     case DataType.LUA_TBOOLEAN:
                         {
                             var value = AutoWrap.TypeTrait<bool>.pull(L, i);
                             sb.Append(value ? "true" : "false");
                         }
                         break;
+
                     case DataType.LUA_TNUMBER:
                     case DataType.LUA_TSTRING:
-                    case DataType.LUA_TFUNCTION:
                         sb.Append(lua_tostring(L, i));
                         break;
+
+                    case DataType.LUA_TFUNCTION:
+                        sb.Append("<fun>");
+                        break;
+
                     case DataType.LUA_TTABLE:
                         sb.Append(luaL_tostring(L, i));
                         break;
+
                     case DataType.LUA_TLIGHTUSERDATA:
                         sb.Append("<litudata>");
                         break;
+
                     case DataType.LUA_TUSERDATA:
                         sb.Append("<udata:");
                         sb.Append(luaL_tostring(L, i));
                         sb.Append('>');
                         break;
+
                     case DataType.LUA_TNONE:
                         sb.Append("<none>");
                         break;
+
                     default:
                         sb.Append("<unkown>");
                         break;

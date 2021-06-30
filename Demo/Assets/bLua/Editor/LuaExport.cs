@@ -227,11 +227,14 @@ namespace bLua
                             for (int i = 0; i < typeList.Length; ++i)
                             {
                                 var (methods, props) = GetMethodsProps(typeList[i]);
+                                var (staticMethods, staticProps) = GetStaticMethodsProps(typeList[i]);
 
                                 methodList.AddRange(methods);
                                 propList.AddRange(props);
 
-                                propList.AddRange(typeList[i].type.GetProperties(AutoWrap.StaticMemberFlag));
+                                methodList.AddRange(staticMethods);
+                                propList.AddRange(staticProps);
+
                                 if (typeList[i].extClass is var extClass && extClass != null)
                                 {
                                     methodList.AddRange(extClass.GetMethods(AutoWrap.StaticMemberFlag));
@@ -374,6 +377,31 @@ namespace bLua
             var  props = Array.FindAll(
                 item.type.GetProperties(AutoWrap.InstanceMemberFlag),
                 AutoWrap.CheckPropSupportAutoWrap);
+
+            if (item.whiteList != null)
+            {
+                var whilteList = item.whiteList;
+                methods = Array.FindAll(methods, a => Array.IndexOf(whilteList, a.Name) >= 0);
+                props = Array.FindAll(props, a => Array.IndexOf(whilteList, a.Name) >= 0);
+            }
+            else if (item.blackList != null)
+            {
+                var blackList = item.blackList;
+                methods = Array.FindAll(methods, a => Array.IndexOf(blackList, a.Name) < 0);
+                props = Array.FindAll(props, a => Array.IndexOf(blackList, a.Name) < 0);
+            }
+            return (methods, props);
+        }
+
+        private static (MethodInfo[], PropertyInfo[]) GetStaticMethodsProps(in ExportDefinition item)
+        {
+            var methods = Array.FindAll(
+                            item.type.GetMethods(AutoWrap.StaticMemberFlag),
+                            AutoWrap.CheckMethodSupportAutoWrap);
+            var props = Array.FindAll(
+                item.type.GetProperties(AutoWrap.StaticMemberFlag),
+                AutoWrap.CheckPropSupportAutoWrap);
+
             if (item.whiteList != null)
             {
                 var whilteList = item.whiteList;

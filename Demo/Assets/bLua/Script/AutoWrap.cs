@@ -138,7 +138,7 @@ namespace bLua
             var cls = luaRegister.GetClass(classId);
             luaRegister.FindAllMethods(cls, methodName, tempMethodList);
 
-            LogUtil.Debug($"{cls.name}::{methodName} {tempMethodList.Count}");
+            LogUtil.Debug($"{cls.name}::{methodName} {tempMethodList.Count} {globalUnityMethodTable.Count}");
 
             if (tempMethodList.Count == 0)
             {
@@ -264,6 +264,8 @@ namespace bLua
             return !method.IsSpecialName && CheckPropMethodSupportAutoWrap(method);
         }
 
+        public const int MaxArgumentCount = 10;
+
         public static bool CheckPropMethodSupportAutoWrap(MethodInfo method)
         {
             static bool CheckArgument(ParameterInfo a)
@@ -274,13 +276,17 @@ namespace bLua
                     || a.ParameterType.IsByRef;
             }
 
+            var args = method.GetParameters();
+            if (args.Length > MaxArgumentCount)
+                return false;
+
             var notSupport = method.GetCustomAttribute<ObsoleteAttribute>(false) != null
                 || (method.GetCustomAttribute<LuaFieldAttribute>(false) is var lf && lf != null && lf.nowrap)
                 || method.IsGenericMethod
                 || method.IsGenericMethodDefinition
                 || method.ReturnType.IsGenericTypeDefinition
                 || method.ReturnType.IsByRef
-                || ((method.GetParameters() is var arguments && Array.FindIndex(arguments, CheckArgument) >= 0));
+                || Array.FindIndex(args, CheckArgument) >= 0;
 
             return !notSupport;
         }

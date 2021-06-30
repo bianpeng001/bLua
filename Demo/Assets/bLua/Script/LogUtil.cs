@@ -19,6 +19,7 @@ limitations under the License.
  */
 
 using System;
+using System.Diagnostics;
 
 namespace bLua
 {
@@ -59,11 +60,13 @@ namespace bLua
             logCallback(LogLevel.Error, message);
         }
 
+        [Conditional("ENABLE_ASSERT")]
         public static void Assert(bool success)
         {
             Assert(success, "asset failed");
         }
 
+        [Conditional("ENABLE_ASSERT")]
         public static void Assert(bool success, string message)
         {
             if (!success)

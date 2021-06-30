@@ -73,7 +73,7 @@ namespace bLua
             Build(BuildTargetGroup.Standalone,
                 BuildTarget.StandaloneWindows64,
                 "BuildWin64/Demo.exe",
-                false);
+                true);
         }
 
     }

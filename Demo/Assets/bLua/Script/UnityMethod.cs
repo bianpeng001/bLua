@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+#define ENABLE_ASSERT
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -46,6 +48,8 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -1);
 
                 var result = cb(t1);
@@ -66,6 +70,9 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -2);
                 var t2 = TypeTrait<T2>.pull(L, -1);
 
@@ -87,6 +94,10 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -3);
                 var t2 = TypeTrait<T2>.pull(L, -2);
                 var t3 = TypeTrait<T3>.pull(L, -1);
@@ -109,6 +120,11 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -4);
                 var t2 = TypeTrait<T2>.pull(L, -3);
                 var t3 = TypeTrait<T3>.pull(L, -2);
@@ -132,6 +148,12 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -5);
                 var t2 = TypeTrait<T2>.pull(L, -4);
                 var t3 = TypeTrait<T3>.pull(L, -3);
@@ -156,6 +178,13 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -6);
                 var t2 = TypeTrait<T2>.pull(L, -5);
                 var t3 = TypeTrait<T3>.pull(L, -4);
@@ -181,6 +210,14 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+                LogUtil.Assert(TypeTrait<T7>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -7);
                 var t2 = TypeTrait<T2>.pull(L, -6);
                 var t3 = TypeTrait<T3>.pull(L, -5);
@@ -207,6 +244,15 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+                LogUtil.Assert(TypeTrait<T7>.pull != null);
+                LogUtil.Assert(TypeTrait<T8>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -8);
                 var t2 = TypeTrait<T2>.pull(L, -7);
                 var t3 = TypeTrait<T3>.pull(L, -6);
@@ -234,6 +280,16 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+                LogUtil.Assert(TypeTrait<T7>.pull != null);
+                LogUtil.Assert(TypeTrait<T8>.pull != null);
+                LogUtil.Assert(TypeTrait<T9>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -9);
                 var t2 = TypeTrait<T2>.pull(L, -8);
                 var t3 = TypeTrait<T3>.pull(L, -7);
@@ -262,6 +318,17 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+                LogUtil.Assert(TypeTrait<T7>.pull != null);
+                LogUtil.Assert(TypeTrait<T8>.pull != null);
+                LogUtil.Assert(TypeTrait<T9>.pull != null);
+                LogUtil.Assert(TypeTrait<T10>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -10);
                 var t2 = TypeTrait<T2>.pull(L, -9);
                 var t3 = TypeTrait<T3>.pull(L, -8);
@@ -308,6 +375,8 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -1);
 
                 cb(t1);
@@ -327,6 +396,9 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -2);
                 var t2 = TypeTrait<T2>.pull(L, -1);
 
@@ -347,6 +419,10 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -3);
                 var t2 = TypeTrait<T2>.pull(L, -2);
                 var t3 = TypeTrait<T3>.pull(L, -1);
@@ -368,6 +444,11 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -4);
                 var t2 = TypeTrait<T2>.pull(L, -3);
                 var t3 = TypeTrait<T3>.pull(L, -2);
@@ -390,6 +471,12 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -5);
                 var t2 = TypeTrait<T2>.pull(L, -4);
                 var t3 = TypeTrait<T3>.pull(L, -3);
@@ -413,6 +500,13 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -6);
                 var t2 = TypeTrait<T2>.pull(L, -5);
                 var t3 = TypeTrait<T3>.pull(L, -4);
@@ -437,6 +531,14 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+                LogUtil.Assert(TypeTrait<T7>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -7);
                 var t2 = TypeTrait<T2>.pull(L, -6);
                 var t3 = TypeTrait<T3>.pull(L, -5);
@@ -462,6 +564,15 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+                LogUtil.Assert(TypeTrait<T7>.pull != null);
+                LogUtil.Assert(TypeTrait<T8>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -8);
                 var t2 = TypeTrait<T2>.pull(L, -7);
                 var t3 = TypeTrait<T3>.pull(L, -6);
@@ -488,6 +599,16 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+                LogUtil.Assert(TypeTrait<T7>.pull != null);
+                LogUtil.Assert(TypeTrait<T8>.pull != null);
+                LogUtil.Assert(TypeTrait<T9>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -9);
                 var t2 = TypeTrait<T2>.pull(L, -8);
                 var t3 = TypeTrait<T3>.pull(L, -7);
@@ -515,6 +636,17 @@ namespace bLua
 
             public int Call(IntPtr L)
             {
+                LogUtil.Assert(TypeTrait<T1>.pull != null);
+                LogUtil.Assert(TypeTrait<T2>.pull != null);
+                LogUtil.Assert(TypeTrait<T3>.pull != null);
+                LogUtil.Assert(TypeTrait<T4>.pull != null);
+                LogUtil.Assert(TypeTrait<T5>.pull != null);
+                LogUtil.Assert(TypeTrait<T6>.pull != null);
+                LogUtil.Assert(TypeTrait<T7>.pull != null);
+                LogUtil.Assert(TypeTrait<T8>.pull != null);
+                LogUtil.Assert(TypeTrait<T9>.pull != null);
+                LogUtil.Assert(TypeTrait<T10>.pull != null);
+
                 var t1 = TypeTrait<T1>.pull(L, -10);
                 var t2 = TypeTrait<T2>.pull(L, -9);
                 var t3 = TypeTrait<T3>.pull(L, -8);
