@@ -33,7 +33,7 @@ namespace bLua
         }
     }
 
-    public class AndroidLuaFileLoader : ILoader
+    public class LuaFileLoaderAndroid : ILoader
     {
         public byte[] Load(string path)
         {

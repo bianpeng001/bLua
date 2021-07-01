@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -40,6 +41,11 @@ namespace bLua
             string outputPath,
             bool isRelase)
         {
+            var activeTarget = EditorUserBuildSettings.activeBuildTarget;
+            if (target != activeTarget)
+                throw new Exception($"{target}");
+
+            var t0 = DateTime.Now;
             BuildOptions options = BuildOptions.None;
             if (!isRelase)
             {
@@ -47,9 +53,7 @@ namespace bLua
                     | BuildOptions.AllowDebugging
                     | BuildOptions.ConnectWithProfiler;
             }
-            var activeTarget = EditorUserBuildSettings.activeBuildTarget;
-            Debug.Log($"activeTarget:{activeTarget}");
-
+            
             PlayerSettings.SplashScreen.showUnityLogo = false;
             PlayerSettings.SplashScreen.show = true;
             PlayerSettings.SplashScreen.backgroundColor = Color.white;
@@ -62,18 +66,63 @@ namespace bLua
             PlayerSettings.runInBackground = true;
             PlayerSettings.usePlayerLog = true;
 
+            var symbols = new HashSet<string>();
+            if (!isRelase)
+            {
+                symbols.Add("ENABLE_ASSERT");
+            }
+            symbols.UnionWith(PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';'));
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", symbols));
+
+            switch(target)
+            {
+                case BuildTarget.Android:
+                    PlayerSettings.SetMobileMTRendering(group, true);
+
+                    PlayerSettings.Android.androidIsGame = true;
+                    PlayerSettings.Android.startInFullscreen = true;
+                    PlayerSettings.Android.blitType = AndroidBlitType.Auto;
+                    PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+                    PlayerSettings.Android.splashScreenScale = AndroidSplashScreenScale.Center;
+                    
+                    EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
+                    EditorUserBuildSettings.androidCreateSymbolsZip = false;
+                    PlayerSettings.Android.bundleVersionCode = 100;
+                    break;
+
+                case BuildTarget.iOS:
+                    PlayerSettings.SetMobileMTRendering(group, true);
+
+                    PlayerSettings.iOS.requiresFullScreen = true;
+                    PlayerSettings.iOS.appInBackgroundBehavior = iOSAppInBackgroundBehavior.Custom;
+                    PlayerSettings.SetArchitecture(BuildTargetGroup.iOS, 1);
+                    PlayerSettings.iOS.buildNumber = "100";
+                    break;
+            }
+
             var report = BuildPipeline.BuildPlayer(levels.ToArray(), outputPath, target, options);
 
-            Debug.Log(report.summary.result);
+            var t1 = DateTime.Now;
+            var t = Mathf.RoundToInt((float)(t1 - t0).TotalSeconds);
+            Debug.Log($"{target} {report.summary.result} in {t}s");
         }
 
-        [MenuItem("Tools/Build/Win64")]
+        [MenuItem("Tools/Build/Win64 Debug")]
         public static void BuildWin64()
         {
             Build(BuildTargetGroup.Standalone,
                 BuildTarget.StandaloneWindows64,
                 "BuildWin64/Demo.exe",
-                true);
+                false);
+        }
+
+        [MenuItem("Tools/Build/Android Debug")]
+        public static void BuildAndroid()
+        {
+            Build(BuildTargetGroup.Android,
+                BuildTarget.Android,
+                "BuildAndroid/Demo.apk",
+                false);
         }
 
     }

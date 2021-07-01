@@ -337,6 +337,11 @@ namespace bLua
             return dele;
         }
 
+        public static void RegisterMultRet<T>(System.Action<IntPtr, T> fun) where T : struct, IMultRet
+        {
+            multRetCache.Add((typeof(T), fun));
+        }
+
         #endregion
 
         public static class TypeTrait<T>
@@ -384,10 +389,12 @@ namespace bLua
                     InitArray(type);
                 }
                 else if (type.IsGenericType
-                    && type.GetGenericTypeDefinition() is var gd
-                    && gd == typeof(List<>))
+                    && type.GetGenericTypeDefinition() is var gd)
                 {
-                    InitList(type);
+                    if (gd == typeof(List<>))
+                        InitList(type);
+                    else if (gd == typeof(HashSet<>))
+                        InitSet(type);
                 }
                 else if (type.IsValueType)
                 {
@@ -470,6 +477,11 @@ namespace bLua
                     push = PushMultRet<T>;
                     pull = null;
                 }
+            }
+
+            private static void InitSet(Type type)
+            {
+
             }
 
             private static void InitList(Type type)

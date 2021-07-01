@@ -214,9 +214,10 @@ namespace bLua
                                 fs.Write(item.GetHelpClassName());
                                 fs.WriteLine("));");
                             }
+
                         });
 
-                        fs.WriteLine("public static void ListFuncType()");
+                        fs.WriteLine("public static void TouchWrapFuncs()");
                         WriteBlock(fs, () =>
                         {
                             fs.WriteLine("var L = IntPtr.Zero;");

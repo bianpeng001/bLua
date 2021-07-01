@@ -35,7 +35,11 @@ namespace bLua
         {
             InitUnityTypes();
 
+#if UNITY_ANDROID
+            state = new LuaState(new LuaFileLoaderAndroid());
+#else
             state = new LuaState(new LuaFileLoader());
+#endif
             state.Create();
 
             var reg = new LuaRegister();
