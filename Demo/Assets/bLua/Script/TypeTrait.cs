@@ -100,20 +100,21 @@ namespace bLua
 
         private static void PushValueType<T>(IntPtr L, T value)
         {
-            lua_pushnil(L);
+            PushObject<Box<T>>(L, new Box<T>() { value = value });
         }
 
         private static T PullValueType<T>(IntPtr L, int pos)
         {
-            return default(T);
+            var box = PullObject<Box<T>>(L, pos);
+            return box.value;
         }
 
-        private static void PushLuaFunction(IntPtr L, LuaFunction value)
+        private static void PushLuaFunction(IntPtr L, LuaFunction func)
         {
-            if (value == null)
+            if (func == null)
                 lua_pushnil(L);
             else
-                value.Prepare();
+                func.Prepare();
         }
 
         private static LuaFunction PullLuaFunction(IntPtr L, int pos)
@@ -131,14 +132,12 @@ namespace bLua
             return func;
         }
 
-        private static void PushLuaTable(IntPtr L, LuaTable value)
+        private static void PushLuaTable(IntPtr L, LuaTable table)
         {
-            if (value == null)
-            {
+            if (table == null)
                 lua_pushnil(L);
-                return;
-            }
-            value.Push();
+            else
+                table.Push();
         }
 
         private static LuaTable PullLuaTable(IntPtr L, int pos)
@@ -150,10 +149,10 @@ namespace bLua
 
             lua_pushvalue(L, pos);
             var state = LuaState.GetState(L);
-            var tbl = new LuaTable(state, new LuaRef(state));
+            var table = new LuaTable(state, new LuaRef(state));
             lua_pop(L, 1);
 
-            return tbl;
+            return table;
         }
 
         private static void PushObject(IntPtr L, object obj, ClassDefinition cls)

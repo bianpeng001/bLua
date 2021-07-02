@@ -42,6 +42,27 @@ local UnityObject2ObjIndex = UnityObject2ObjIndex or function(obj)
     return 1234
 end
 
+local UnityObjectEqual = UnityObjectEqual or function(a, b)
+    return false
+end
+
+local function ObjectEqual(a, b)
+    if not b then
+        return false
+    end
+    
+    local t = type(b)
+    if t ~= 'userdata' then
+        return false
+    end
+
+    if getmetatable(a) ~= getmetatable(b) then
+        return false
+    end
+
+    return UnityObjectEqual(a, b)
+end
+
 local function MakeIndexFunction(class)
     local className = class.class
     local classId = class[1]
@@ -117,6 +138,7 @@ function AutoWrap.DefineClass(class)
     class.__newindex = MakeNewIndexFunction(class)
 
     class.__gc = CollectUnityObject
+    class.__eq = ObjectEqual
 
     class.__tostring = function(obj)
         return string.format('%s@%d', className, UnityObject2ObjIndex(obj))

@@ -79,8 +79,8 @@ namespace bLua
 
         private static void CheckArgumentCount(IntPtr L, int count)
         {
-            int cnt = lua_gettop(L);
-            if (!(cnt >= count))
+            int actualCount = lua_gettop(L);
+            if (!(actualCount >= count))
             {
                 throw new Exception("argument count not match");
             }
@@ -101,15 +101,22 @@ namespace bLua
                 LogUtil.Error($"method not found: methodId={methodId}, args={argumentCount} {lua_type(L, 1)}");
                 throw new Exception();
             }
+
+            return ProtectCallMethod(L, method);
+        }
+
+        private static int ProtectCallMethod(IntPtr L, IUnityMethod method)
+        {
             try
             {
                 return method.Call(L);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 LogUtil.Error(ex.StackTrace);
                 var traceback = LuaState.GetState(L).GetTraceback(ex.Message);
-                throw new Exception(traceback);
+                LuaError(L, ex.Message);
+                return 0;
             }
         }
 
@@ -118,7 +125,7 @@ namespace bLua
         {
             var dele = TypeTrait<LuaDelegate>.pull(L, 1);
             if (dele != null)
-                return dele.Call(L);
+                return ProtectCallMethod(L, dele.Method);
 
             return 0;
         }
@@ -188,6 +195,25 @@ namespace bLua
         }
 
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
+        private static int UnityObjectEqual(IntPtr L)
+        {
+            CheckArgumentCount(L, 1);
+
+            LogUtil.Assert(lua_isuserdata(L, 1));
+            LogUtil.Assert(lua_isuserdata(L, 2));
+
+            var aIndex = UserDataGetObjIndex(L, 1);
+            var bIndex = UserDataGetObjIndex(L, 2);
+
+            var objCache = LuaState.GetState(L).objCache;
+            var result = aIndex == bIndex
+                || objCache.GetObject(aIndex) == objCache.GetObject(bIndex);
+
+            TypeTrait<bool>.push(L, result);
+            return 1;
+        }
+
+        [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
         private static int RegisterUnityClass(IntPtr L)
         {
             CheckArgumentCount(L, 2);
@@ -254,6 +280,7 @@ namespace bLua
             state.Register("CallLuaDelegate", CallLuaDelegate);
 
             state.Register("CollectUnityObject", CollectUnityObject);
+            state.Register("UnityObjectEqual", UnityObjectEqual);
 
             state.Register("typeof", TypeOf);
             state.Register("cast2type", Cast2Type);

@@ -19,7 +19,7 @@ using System;
 
 namespace bLua
 {
-    public class Box<T> where T : struct
+    public class Box<T>
     {
         public T value;
     }

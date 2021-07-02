@@ -14,9 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年6月15日, 边蓬
- */
 
 using System.Collections.Generic;
 using UnityEngine;

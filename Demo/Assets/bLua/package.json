@@ -1,0 +1,23 @@
+{
+  "name": "com.bianpeng.blua",
+  "version": "0.2.0",
+  "displayName": "bLua",
+  "description": "Unity3d+lua, game script solution, support reload and hotfix",
+  "documentationUrl": "https://github.com/bianpeng001/bLua",
+  "unity": "2019.4",
+  "dependencies": {
+  },
+  "keywords": [
+    "unity3d",
+    "lua",
+	  "script"
+  ],
+  "author": {
+    "name": "唐三藏",
+    "url": "email:bianpeng001@163.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bianpeng001/bLua.git"
+  } 
+}

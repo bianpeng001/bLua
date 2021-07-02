@@ -14,11 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月26日, 边蓬
- */
 
-using System;
 using static bLua.AutoWrap;
 
 namespace bLua
@@ -32,10 +28,7 @@ namespace bLua
             this.method = method;
         }
 
-        internal int Call(IntPtr L)
-        {
-            return method.Call(L);
-        }
+        internal IUnityMethod Method => method;
     }
 }
 

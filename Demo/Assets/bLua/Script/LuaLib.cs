@@ -14,9 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月11日, 边蓬
- */
 
 using System;
 using System.Runtime.InteropServices;
@@ -437,6 +434,15 @@ namespace bLua
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr luaL_tolstring(IntPtr L, int idx, out int len);
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_error(IntPtr L);
+
+        public static void LuaError(IntPtr L, string message)
+        {
+            lua_pushstring(L, message);
+            lua_error(L);
+        }
 
         public static string luaL_tostring(IntPtr L, int idx)
         {

@@ -32,5 +32,11 @@ function module.Test1()
     dataset.name = '试试就试试'
 end
 
+function module.Test2()
+    print('Test2 start')
+    module.MethodRaiseError(11)
+    print('Test2 end')
+end
+
 return module
 

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -88,7 +89,7 @@ namespace bLua
                 fs.WriteLine();
 
                 fs.WriteLine("------------------------------------------------------------");
-                fs.WriteLine("-- c# types ");
+                fs.WriteLine("-- csharp types ");
                 fs.WriteLine("------------------------------------------------------------");
 
                 void EnsureNs(string fullname)
@@ -167,7 +168,7 @@ namespace bLua
             }
         }
 
-        private static void GenBinder()
+        public static void GenBinder()
         {
             using (var fs = File.CreateText(Path.Combine(outputPath, "Binder.cs")))
             {
@@ -180,98 +181,107 @@ namespace bLua
                     fs.WriteLine("public static class Binder");
                     WriteBlock(fs, () =>
                     {
-                        fs.WriteLine("public static void Bind(LuaRegister reg)");
-                        WriteBlock(fs, () =>
-                        {
-                            for (int i = 0; i < typeList.Length; ++i)
-                            {
-                                var item = typeList[i];
-                                fs.Write("reg.Add(\"");
-                                fs.Write(item.GetFullName());
-                                fs.Write("\", ");
-
-                                fs.Write("typeof(");
-                                fs.Write(GetTypeName(item.type));
-                                fs.Write("), ");
-
-                                if (item.extClass != null)
-                                {
-                                    fs.Write("typeof(");
-                                    fs.Write(GetTypeName(item.extClass));
-                                    fs.Write("), ");
-                                }
-
-                                if (item.baseClass == null)
-                                    fs.Write("null, ");
-                                else
-                                {
-                                    fs.Write("typeof(");
-                                    fs.Write(GetTypeName(item.baseClass));
-                                    fs.Write("), ");
-                                }
-
-                                fs.Write("typeof(");
-                                fs.Write(item.GetHelpClassName());
-                                fs.WriteLine("));");
-                            }
-
-                        });
-
-                        fs.WriteLine("public static void TouchWrapFuncs()");
-                        WriteBlock(fs, () =>
-                        {
-                            fs.WriteLine("var L = IntPtr.Zero;");
-                            var set = new HashSet<string>();
-                            var methodList = new List<MethodInfo>();
-                            var propList = new List<PropertyInfo>();
-
-                            for (int i = 0; i < typeList.Length; ++i)
-                            {
-                                var (methods, props) = GetMethodsProps(typeList[i]);
-                                var (staticMethods, staticProps) = GetStaticMethodsProps(typeList[i]);
-
-                                methodList.AddRange(methods);
-                                propList.AddRange(props);
-
-                                methodList.AddRange(staticMethods);
-                                propList.AddRange(staticProps);
-
-                                if (typeList[i].extClass is var extClass && extClass != null)
-                                {
-                                    methodList.AddRange(extClass.GetMethods(AutoWrap.StaticMemberFlag));
-                                    propList.AddRange(extClass.GetProperties(AutoWrap.StaticMemberFlag));
-                                }
-
-                                for (int j = 0; j < propList.Count; ++j)
-                                {
-                                    var p = propList[j];
-                                    if (p.CanRead)
-                                        methodList.Add(p.GetGetMethod());
-                                    if (p.CanWrite)
-                                        methodList.Add(p.GetSetMethod());
-                                }
-
-                                for (int j = 0; j < methodList.Count; ++j)
-                                {
-                                    var m = methodList[j];
-                                    set.Add(GetFuncDescAOT(m));
-                                    if (m.ReturnType != typeof(void)
-                                        && typeof(AutoWrap.IMultRet).IsAssignableFrom(m.ReturnType))
-                                        set.Add(MakeMultRet(m.ReturnType));
-                                }
-                                
-                                methodList.Clear();
-                                propList.Clear();
-                            }
-
-                            var mList = new List<string>(set);
-                            mList.Sort();
-                            foreach (var line in mList)
-                            {
-                                fs.WriteLine(line);
-                            }
-                        });
+                        WriteBind(fs);
+                        WriteAOT(fs);
                     });
+                });
+            }
+
+            static void WriteBind(StreamWriter fs)
+            {
+                fs.WriteLine("public static void Bind(LuaRegister reg)");
+                WriteBlock(fs, () =>
+                {
+                    for (int i = 0; i < typeList.Length; ++i)
+                    {
+                        var item = typeList[i];
+                        fs.Write("reg.Add(\"");
+                        fs.Write(item.GetFullName());
+                        fs.Write("\", ");
+
+                        fs.Write("typeof(");
+                        fs.Write(GetTypeName(item.type));
+                        fs.Write("), ");
+
+                        if (item.extClass != null)
+                        {
+                            fs.Write("typeof(");
+                            fs.Write(GetTypeName(item.extClass));
+                            fs.Write("), ");
+                        }
+
+                        if (item.baseClass == null)
+                            fs.Write("null, ");
+                        else
+                        {
+                            fs.Write("typeof(");
+                            fs.Write(GetTypeName(item.baseClass));
+                            fs.Write("), ");
+                        }
+
+                        fs.Write("typeof(");
+                        fs.Write(item.GetHelpClassName());
+                        fs.WriteLine("));");
+                    }
+
+                });
+            }
+
+            static void WriteAOT(StreamWriter fs)
+            {
+                fs.WriteLine("public static void TouchWrapFuncs()");
+                WriteBlock(fs, () =>
+                {
+                    fs.WriteLine("var L = IntPtr.Zero;");
+                    var set = new HashSet<string>();
+                    var methodList = new List<MethodInfo>();
+                    var propList = new List<PropertyInfo>();
+
+                    for (int i = 0; i < typeList.Length; ++i)
+                    {
+                        var (methods, props) = GetMethodsProps(typeList[i]);
+                        var (staticMethods, staticProps) = GetStaticMethodsProps(typeList[i]);
+
+                        methodList.AddRange(methods);
+                        propList.AddRange(props);
+
+                        methodList.AddRange(staticMethods);
+                        propList.AddRange(staticProps);
+
+                        if (typeList[i].extClass is var extClass && extClass != null)
+                        {
+                            methodList.AddRange(extClass.GetMethods(AutoWrap.StaticMemberFlag));
+                            propList.AddRange(extClass.GetProperties(AutoWrap.StaticMemberFlag));
+                        }
+
+                        for (int j = 0; j < propList.Count; ++j)
+                        {
+                            var p = propList[j];
+                            if (p.CanRead)
+                                methodList.Add(p.GetGetMethod());
+                            if (p.CanWrite)
+                                methodList.Add(p.GetSetMethod());
+                        }
+
+                        for (int j = 0; j < methodList.Count; ++j)
+                        {
+                            var m = methodList[j];
+                            set.Add(GetFuncDescAOT(m));
+                            if (m.ReturnType != typeof(void)
+                                && typeof(AutoWrap.IMultRet).IsAssignableFrom(m.ReturnType))
+                                set.Add(MakeMultRet(m.ReturnType));
+                        }
+
+                        methodList.Clear();
+                        propList.Clear();
+                    }
+
+                    var mList = new List<string>(set);
+                    mList.Sort();
+                    foreach (var line in mList)
+                    {
+                        fs.WriteLine(line);
+                    }
                 });
             }
         }

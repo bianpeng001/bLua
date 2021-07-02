@@ -51,6 +51,8 @@ namespace bLua
                 f.Call();
             }
 
+            module.SetField("MethodRaiseError", new LuaDelegate(AutoWrap.CreateFunc<int, int>(MethodRaiseError)));
+
             PrintInfo(imgCircle);
             PrintInfo(imgRect);
 
@@ -82,6 +84,21 @@ namespace bLua
             Debug.Log(UnityEditor.Sprites.SpriteUtility.GetSpriteTexture(image.sprite, true));
             Debug.Log(UnityEditor.Sprites.SpriteUtility.GetSpriteTexture(image.sprite, false));
 #endif
+        }
+
+        private int MethodRaiseError(int a)
+        {
+            LogUtil.Debug("11");
+            throw new Exception($"MethodRaiseError: {a}");
+        }
+
+        public void OnButtonClick(GameObject sender)
+        {
+            LogUtil.Debug($"sender: {sender}");
+            using(var f = module.GetFunction("Test2"))
+            {
+                f.Call();
+            }
         }
     }
 }
