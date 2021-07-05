@@ -14,9 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月15日, 边蓬
- */
 
 using System;
 using System.Collections.Generic;
@@ -67,12 +64,12 @@ namespace bLua
             return typeList[classId];
         }
 
-        private readonly Dictionary<Type, ClassDefinition> type2ClsCache = new Dictionary<Type, ClassDefinition>();
+        private readonly Dictionary<Type, ClassDefinition> type2clsCache = new Dictionary<Type, ClassDefinition>();
 
         public ClassDefinition GetClass(Type type)
         {
             ClassDefinition cls;
-            if (type2ClsCache.TryGetValue(type, out cls))
+            if (type2clsCache.TryGetValue(type, out cls))
                 return cls;
 
             for (int i = 1; i < typeList.Count; ++i)
@@ -80,7 +77,7 @@ namespace bLua
                 cls = typeList[i];
                 if (cls.type == type)
                 {
-                    type2ClsCache[type] = cls;
+                    type2clsCache[type] = cls;
                     return cls;
                 }
             }
@@ -99,9 +96,7 @@ namespace bLua
                 var flag = AutoWrap.StaticMemberFlag;
                 cls.methodList = new List<MethodInfo>();
                 if (cls.extClass != null)
-                {
                     cls.methodList.AddRange(cls.extClass.GetMethods(flag));
-                }
                 cls.methodList.AddRange(cls.helpClass.GetMethods(flag));
                 cls.methodList.AddRange(cls.type.GetMethods(flag));
             }

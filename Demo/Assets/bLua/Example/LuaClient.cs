@@ -18,6 +18,7 @@ limitations under the License.
 
 #if LUA_CLIENT
 
+
 using UnityEngine;
 using Float = bLua.AutoWrap.TypeTrait<float>;
 

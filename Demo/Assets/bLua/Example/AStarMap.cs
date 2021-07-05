@@ -21,7 +21,7 @@ namespace bLua
 {
     public struct PointXZ
     {
-        public static PointXZ zero = new PointXZ(0, 0);
+        public static readonly PointXZ zero = new PointXZ(0, 0);
 
         public readonly int x, z;
 
@@ -286,4 +286,6 @@ namespace bLua
 
     }
 }
+
+
 

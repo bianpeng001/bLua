@@ -19,7 +19,7 @@ using System;
 
 namespace bLua
 {
-    public class Box<T>
+    public class Box<T> /*where T : struct*/
     {
         public T value;
 
@@ -34,6 +34,7 @@ namespace bLua
         public struct Entry
         {
             public object value;
+
             public int next;
 
             public bool isLive => next == -2;
@@ -46,9 +47,9 @@ namespace bLua
         private const int ALLOC_SIZE = 2048;
         private Entry[] cache = new Entry[ALLOC_SIZE];
 
-        public object GetObject(int objIndex)
+        public object GetObject(int objHandle)
         {
-            return cache[objIndex].value;
+            return cache[objHandle].value;
         }
 
         public int Add(object value)
@@ -56,12 +57,12 @@ namespace bLua
             if (value == null)
                 throw new Exception();
 
-            int objIndex;
+            int objHandle;
 
             if (freeIndex >= 0)
             {
-                objIndex = freeIndex;
-                freeIndex = cache[objIndex].next;
+                objHandle = freeIndex;
+                freeIndex = cache[objHandle].next;
             }
             else
             {
@@ -74,13 +75,13 @@ namespace bLua
                     new Memory<Entry>(cache).CopyTo(new Memory<Entry>(buf));
                     cache = buf;
                 }
-                objIndex = allocIndex++;
+                objHandle = allocIndex++;
             }
 
-            cache[objIndex].value = value;
-            cache[objIndex].next = -2;
+            cache[objHandle].value = value;
+            cache[objHandle].next = -2;
 
-            return objIndex;
+            return objHandle;
         }
 
         private const int KillQueueSize = 16;
