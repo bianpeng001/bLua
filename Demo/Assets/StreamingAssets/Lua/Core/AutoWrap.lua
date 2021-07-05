@@ -37,8 +37,8 @@ local CollectUnityObject = CollectUnityObject or function(obj)
     print('CollectUnityObject')
 end
 
-local UnityObject2ObjIndex = UnityObject2ObjIndex or function(obj)
-    print('UnityObject2ObjIndex')
+local UnityObject2ObjHandle = UnityObject2ObjHandle or function(obj)
+    print('UnityObject2ObjHandle')
     return 1234
 end
 
@@ -138,7 +138,7 @@ function AutoWrap.DefineClass(class)
     class.__eq = ObjectEqual
 
     class.__tostring = function(obj)
-        return string.format('%s@%d', className, UnityObject2ObjIndex(obj))
+        return string.format('%s@%d', className, UnityObject2ObjHandle(obj))
     end
 
     local mt = { __index = indexFunc }

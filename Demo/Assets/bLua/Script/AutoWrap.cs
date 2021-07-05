@@ -86,32 +86,28 @@ namespace bLua
             }
         }
 
-        private static int ProtectCallMethod(IntPtr L, IUnityMethod method)
-        {
-            try
-            {
-                return method.Call(L);
-            }
-            catch(Exception ex)
-            {
-                LogUtil.Error(ex.StackTrace);
-                var traceback = LuaState.GetState(L).GetTraceback(ex.Message);
-                LogUtil.Error(traceback);
-                LuaError(L, ex.Message);
-                return 0;
-            }
-        }
-
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
         private static int CallUnityMethod(IntPtr L)
         {
             var method = TypeTrait<IUnityMethod>.pull(L, 1);
             if (method != null)
-                return ProtectCallMethod(L, method);
+            {
+                try
+                {
+                    return method.Call(L);
+                }
+                catch (Exception ex)
+                {
+                    LogUtil.Error(ex.StackTrace);
+                    var traceback = LuaState.GetState(L).GetTraceback(ex.Message);
+                    LogUtil.Error(traceback);
+                    LuaError(L, ex.Message);
+                    return 0;
+                }
+            }
 
             return 0;
         }
-
 
         private static readonly List<MethodInfo> tempMethodList = new List<MethodInfo>(8);
 
@@ -126,7 +122,6 @@ namespace bLua
             var cls = luaRegister.GetClass(classId);
             luaRegister.FindAllMethods(cls, methodName, tempMethodList);
 
-
             if (tempMethodList.Count == 0)
             {
                 return 0;
@@ -140,10 +135,8 @@ namespace bLua
             }
             else
             {
-
                 var method = new OverloadResolver(tempMethodList);
                 tempMethodList.Clear();
-
                 TypeTrait<IUnityMethod>.push(L, method);
                 return 1;
             }
@@ -165,8 +158,8 @@ namespace bLua
             CheckArgumentCount(L, 1);
             LogUtil.Assert(lua_isuserdata(L, 1));
 
-            var objIndex = UserDataGetObjIndex(L, 1);
-            LuaState.GetState(L).objCache.Free(objIndex);
+            var objHandle = UserDataGetObjHandle(L, 1);
+            LuaState.GetState(L).objCache.Free(objHandle);
             return 0;
         }
 
@@ -178,12 +171,12 @@ namespace bLua
             LogUtil.Assert(lua_isuserdata(L, 1));
             LogUtil.Assert(lua_isuserdata(L, 2));
 
-            var aIndex = UserDataGetObjIndex(L, 1);
-            var bIndex = UserDataGetObjIndex(L, 2);
+            var aHandle = UserDataGetObjHandle(L, 1);
+            var bHandle = UserDataGetObjHandle(L, 2);
 
             var objCache = LuaState.GetState(L).objCache;
-            var result = aIndex == bIndex
-                || objCache.GetObject(aIndex) == objCache.GetObject(bIndex);
+            var result = aHandle == bHandle
+                || objCache.GetObject(aHandle) == objCache.GetObject(bHandle);
 
             TypeTrait<bool>.push(L, result);
             return 1;
@@ -242,13 +235,13 @@ namespace bLua
         {
             LogUtil.Assert(lua_isuserdata(L, 1));
 
-            var objIndex = UserDataGetObjIndex(L, 1);
+            var objHandle = UserDataGetObjHandle(L, 1);
             
             lua_rawgeti(L, 2, 1);
             var classId = TypeTrait<int>.pull(L, -1);
             lua_pop(L, 1);
 
-            var obj = LuaState.GetState(L).objCache.GetObject(objIndex);
+            var obj = LuaState.GetState(L).objCache.GetObject(objHandle);
             var cls = luaRegister.GetClass(classId);
             PushObject(L, obj, cls);
 

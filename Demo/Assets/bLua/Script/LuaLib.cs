@@ -493,10 +493,10 @@ namespace bLua
         public static extern void blua_openlib(IntPtr L);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int UserDataGetObjIndex(IntPtr L, int pos);
+        public static extern int UserDataGetObjHandle(IntPtr L, int pos);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void UserDataSetObjIndex(IntPtr L, int pos, int value);
+        public static extern void UserDataSetObjHandle(IntPtr L, int pos, int value);
 
     }
 

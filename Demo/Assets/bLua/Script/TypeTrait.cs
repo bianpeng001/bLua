@@ -166,11 +166,11 @@ namespace bLua
                 if (cls == null)
                     cls = luaRegister.GetClass(typeof(object));
 
-                var objIndex = LuaState.GetState(L).objCache.Add(obj);
+                var objHandle = LuaState.GetState(L).objCache.Add(obj);
 
                 var addr = lua_newuserdatauv(L, 4, 0);
                 LogUtil.Assert(addr != IntPtr.Zero);
-                UserDataSetObjIndex(L, -1, objIndex);
+                UserDataSetObjHandle(L, -1, objHandle);
 
                 lua_rawgeti(L, LUA_REGISTRYINDEX, cls.luaref);
                 lua_setmetatable(L, -2);
@@ -192,9 +192,9 @@ namespace bLua
             if (!lua_isuserdata(L, pos))
                 throw new Exception();
 
-            var objIndex = UserDataGetObjIndex(L, pos);
+            var objHandle = UserDataGetObjHandle(L, pos);
 
-            return (T)LuaState.GetState(L).objCache.GetObject(objIndex);
+            return (T)LuaState.GetState(L).objCache.GetObject(objHandle);
         }
 
         private static void PushArray<T>(IntPtr L, T[] value)

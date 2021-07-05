@@ -262,6 +262,7 @@ namespace bLua
                                 methodList.Add(p.GetSetMethod());
                         }
 
+
                         for (int j = 0; j < methodList.Count; ++j)
                         {
                             var m = methodList[j];
@@ -270,7 +271,6 @@ namespace bLua
                                 && typeof(AutoWrap.IMultRet).IsAssignableFrom(m.ReturnType))
                                 set.Add(MakeMultRet(m.ReturnType));
                         }
-
                         methodList.Clear();
                         propList.Clear();
                     }
