@@ -27,7 +27,7 @@ namespace bLua
 {
     public static partial class LuaExport
     {
-        public struct ExportDefinition
+        public class ExportDefinition
         {
             public Type type, baseClass;
             public Type extClass;
@@ -35,17 +35,19 @@ namespace bLua
             public string[] blackList, whiteList;
             public string typeName;
 
+            public bool exportCtors = true;
+
             public string GetHelpClassName()
             {
                 if (typeName != null)
                     return $"{type.Namespace.Replace('.', '_')}_{typeName}";
-                return type.FullName.Replace('.', '_');
+                return type.FullName.Replace('.', '_').Replace('+', '_');
             }
 
             public string GetFullName()
             {
                 if (string.IsNullOrEmpty(typeName))
-                    return type.FullName;
+                    return type.FullName.Replace('+', '.');
                 return $"{type.Namespace}.{typeName}";
             }
         }
@@ -130,13 +132,10 @@ namespace bLua
                 }
                 fs.WriteLine();
 
-                if (Array.FindIndex(typeList, a => a.type == typeof(LuaDelegate)) >= 0)
-                {
-                    fs.WriteLine("bLua.LuaDelegate.__call = CallLuaDelegate or function(obj, ...)");
-                    fs.WriteLine("\tprint(obj, ...)");
-                    fs.WriteLine("end");
-                    fs.WriteLine();
-                }
+                fs.WriteLine("bLua.IUnityMethod.__call = CallUnityMethod or function(...)");
+                fs.WriteLine("\tprint(...)");
+                fs.WriteLine("end");
+                fs.WriteLine();
 
                 fs.WriteLine("------------------------------------------------------------");
                 fs.WriteLine("-- enum types");
@@ -346,9 +345,9 @@ namespace bLua
 
         #endregion
 
-        private static void GenHelper(in ExportDefinition item)
+        private static void GenHelper(ExportDefinition item)
         {
-            var thisType = item.type;
+            var type = item.type;
             var helpClassName = item.GetHelpClassName();
             var (methods, props) = GetMethodsProps(item);
 
@@ -367,15 +366,79 @@ namespace bLua
                 fs.WriteLine(outputNs);
                 WriteBlock(fs, () =>
                 {
-                    fs.WriteLine($"// {GetTypeName(thisType)}");
+                    fs.WriteLine($"// {GetTypeName(type)}");
                     fs.WriteLine($"// {methods.Length} methods");
                     fs.WriteLine($"// {props.Length} properties");
                     fs.WriteLine($"public static class {helpClassName}");
                     WriteBlock(fs, () =>
                     {
-                        WriteMethods(thisType, methods, fs);
-                        WriteProps(thisType, props, fs);
+                        WriteMethods(type, methods, fs);
+                        WriteProps(type, props, fs);
+                        WriteFlds(type, fs);
+
+                        if (item.exportCtors
+                                && !type.IsAbstract
+                                && !typeof(UnityEngine.Component).IsAssignableFrom(type))
+                            WriteCtors(type, fs);
                     });
+                });
+            }
+        }
+
+        private static void WriteFlds(Type type, StreamWriter fs)
+        {
+            var flds = type.GetFields(AutoWrap.InstanceMemberFlag);
+            for(int i = 0; i < flds.Length; ++i)
+            {
+                var fld = flds[i];
+                fs.WriteLine($"// {fld.Name}");
+
+                fs.Write($"public static {GetTypeName(fld.FieldType)} get_{fld.Name}(");
+                fs.Write($"{GetTypeName(type)} {_this}) => ");
+                fs.WriteLine($"{_this}.{fld.Name};");
+
+                if (!fld.IsInitOnly)
+                {
+                    fs.Write($"public static void set_{fld.Name}({GetTypeName(type)} {_this}, {GetTypeName(fld.FieldType)} value) => ");
+                    fs.WriteLine($"{_this}.{fld.Name} = value;");
+                }
+                fs.WriteLine();
+            }
+        }
+
+        private static void WriteCtors(Type type, StreamWriter fs)
+        {
+            var ctors = type.GetConstructors(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+            for(int i = 0; i < ctors.Length; ++i)
+            {
+                var ctor = ctors[i];
+                if (ctor.GetCustomAttribute<ObsoleteAttribute>() != null)
+                    continue;
+
+                var args = ctor.GetParameters();
+                fs.Write($"public static ");
+
+                if (type.IsValueType)
+                    fs.Write($"bLua.Box<{GetTypeName(type)}>");
+                else
+                    fs.Write(GetTypeName(type));
+
+                fs.Write(" New(");
+                WriteArgsDecl(fs, args);
+                fs.WriteLine(")");
+
+                WriteBlock(fs, ()=>
+                {
+                    if (type.IsArray)
+                    {
+                        fs.WriteLine($"\treturn new {GetTypeName(type.GetElementType())}[arg0];");
+                    }
+                    else
+                    {
+                        fs.Write($"\treturn new {GetTypeName(type)}(");
+                        WriteArgsPass(fs, args);
+                        fs.WriteLine(");");
+                    }
                 });
             }
         }
@@ -428,7 +491,7 @@ namespace bLua
             return (methods, props);
         }
 
-        private static void WriteProps(Type thisType, PropertyInfo[] props, StreamWriter fs)
+        private static void WriteProps(Type type, PropertyInfo[] props, StreamWriter fs)
         {
             foreach(var prop in props)
             {
@@ -436,11 +499,11 @@ namespace bLua
 
                 var propTypeName = GetTypeName(prop.PropertyType);
 
-                var thisTypeName = GetTypeName(thisType);
+                var typeName = GetTypeName(type);
                 var thisName = _this;
-                if (!thisType.IsClass)
+                if (type.IsValueType)
                 {
-                    thisTypeName = $"Box<{thisTypeName}>";
+                    typeName = $"Box<{typeName}>";
                     thisName = $"{_this}.value";
                 }
 
@@ -456,7 +519,7 @@ namespace bLua
                         {
                             fs.Write("public static ");
                             fs.Write(propTypeName);
-                            fs.WriteLine($" get_Item({thisTypeName} {_this}, {indexTypeName} index)");
+                            fs.WriteLine($" get_Item({typeName} {_this}, {indexTypeName} index)");
                             WriteBlock(fs, () =>
                             {
                                 fs.WriteLine($"\treturn {thisName}[index];");
@@ -467,7 +530,7 @@ namespace bLua
                         {
                             fs.Write("public static ");
                             fs.Write(propTypeName);
-                            fs.WriteLine($" set_Item({thisTypeName} {_this}, {indexTypeName} index, {propTypeName} value)");
+                            fs.WriteLine($" set_Item({typeName} {_this}, {indexTypeName} index, {propTypeName} value)");
                             WriteBlock(fs, () =>
                             {
                                 fs.WriteLine($"\treturn {thisName}[index] = value;");
@@ -482,7 +545,7 @@ namespace bLua
                 {
                     fs.Write("public static ");
                     fs.Write(propTypeName);
-                    fs.WriteLine($" get_{prop.Name}({thisTypeName} {_this})");
+                    fs.WriteLine($" get_{prop.Name}({typeName} {_this})");
                     WriteBlock(fs, ()=>
                     {
                         fs.WriteLine($"\treturn {thisName}.{prop.Name};");
@@ -493,7 +556,7 @@ namespace bLua
                 if (prop.CanWrite)
                 {
                     fs.Write("public static void set_");
-                    fs.WriteLine($"{prop.Name}({thisTypeName} {_this}, {propTypeName} value)");
+                    fs.WriteLine($"{prop.Name}({typeName} {_this}, {propTypeName} value)");
                     WriteBlock(fs, () =>
                     {
                         fs.WriteLine($"\t{thisName}.{prop.Name} = value;");
@@ -504,11 +567,11 @@ namespace bLua
             }
         }
 
-        private static void WriteMethods(Type thisType, MethodInfo[] methods, StreamWriter fs)
+        private static void WriteMethods(Type type, MethodInfo[] methods, StreamWriter fs)
         {
             foreach (var method in methods)
             {
-                var arguments = method.GetParameters();
+                var args = method.GetParameters();
                 var isVoid = method.ReturnType == typeof(void);
 
                 fs.WriteLine($"// {method.Name}");
@@ -517,20 +580,20 @@ namespace bLua
                 fs.Write(GetTypeName(method.ReturnType));
                 fs.Write(' ');
                 fs.Write(method.Name);
-                WriteArguments(fs, thisType, arguments);
+                WriteInstanceMethodArgsDecl(fs, type, args);
                 fs.WriteLine();
 
                 WriteBlock(fs, () =>
                 {
-                    if (thisType.IsArray)
+                    if (type.IsArray)
                     {
-                        switch(method.Name)
+                        switch (method.Name)
                         {
                             case "Get":
-                                fs.WriteLine($"\treturn {_this}[{GetArgName(arguments[0], 0)}];");
+                                fs.WriteLine($"\treturn {_this}[{GetArgName(args[0], 0)}];");
                                 break;
                             case "Set":
-                                fs.WriteLine($"\t{_this}[{GetArgName(arguments[0], 0)}] = {GetArgName(arguments[1], 1)};");
+                                fs.WriteLine($"\t{_this}[{GetArgName(args[0], 0)}] = {GetArgName(args[1], 1)};");
                                 break;
                         }
                         return;
@@ -541,76 +604,89 @@ namespace bLua
                     if (!isVoid)
                         fs.Write("return ");
 
-                    if (thisType.IsClass)
-                        fs.Write(_this);
-                    else
+                    if (type.IsValueType)
                         fs.Write($"{_this}.value");
+                    else
+                        fs.Write(_this);
 
                     fs.Write('.');
                     fs.Write(method.Name);
                     fs.Write('(');
-                    for (int i = 0; i < arguments.Length; ++i)
-                    {
-                        if (i > 0)
-                            fs.Write(", ");
-                        var arg = arguments[i];
-
-                        if (arg.IsOut)
-                            fs.Write("out ");
-
-                        if (arg.ParameterType.IsEnum)
-                        {
-                            fs.Write('(');
-                            fs.Write(GetTypeName(arg.ParameterType));
-                            fs.Write(')');
-                        }
-                        fs.Write(GetArgName(arg, i));
-                    }
+                    WriteArgsPass(fs, args);
                     fs.WriteLine(");");
                 });
                 fs.WriteLine();
             }
         }
 
-        private static void WriteArguments(StreamWriter fs, Type thisType, ParameterInfo[] arguments)
+        private static void WriteArgsPass(StreamWriter fs, ParameterInfo[] args)
+        {
+            int lastIndex = args.Length - 1;
+            for (int i = 0; i <= lastIndex; ++i)
+            {
+                var arg = args[i];
+
+                if (arg.IsOut)
+                    fs.Write("out ");
+
+                if (arg.ParameterType.IsEnum)
+                {
+                    fs.Write('(');
+                    fs.Write(GetTypeName(arg.ParameterType));
+                    fs.Write(')');
+                }
+                fs.Write(GetArgName(arg, i));
+
+                if (i != lastIndex)
+                    fs.Write(", ");
+            }
+        }
+
+        private static void WriteInstanceMethodArgsDecl(StreamWriter fs, Type type, ParameterInfo[] args)
         {
             fs.Write('(');
-            if (thisType.IsClass)
-                fs.Write(GetTypeName(thisType));
+            if (type.IsValueType)
+                fs.Write($"Box<{GetTypeName(type)}>"); 
             else
-                fs.Write($"Box<{GetTypeName(thisType)}>");
+                fs.Write(GetTypeName(type));
 
-            fs.Write(' ');
-            fs.Write(_this);
-
-            for(int i = 0; i < arguments.Length; ++i)
-            {
+            fs.Write($" {_this}");
+            if (args.Length > 0)
                 fs.Write(", ");
+            WriteArgsDecl(fs, args);
+            fs.Write(')');
+        }
 
-                var arg = arguments[i];
-                var argType = arg.ParameterType;
+        private static void WriteArgsDecl(StreamWriter fs, ParameterInfo[] args)
+        {
+            int lastIndex = args.Length - 1;
+            for (int i = 0; i <= lastIndex; ++i)
+            {
+                var arg = args[i];
+                var argtype = arg.ParameterType;
 
                 if (arg.IsIn)
                 {
                     fs.Write("in ");
-                    argType = argType.GetElementType();
+                    argtype = argtype.GetElementType();
                 }
                 else if (arg.IsOut)
                 {
                     fs.Write("out ");
-                    argType = argType.GetElementType();
+                    argtype = argtype.GetElementType();
                 }
-                
-                if (!argType.IsEnum)
-                    fs.Write(GetTypeName(argType));
+
+                if (!argtype.IsEnum)
+                    fs.Write(GetTypeName(argtype));
                 else
                     fs.Write("int");
 
                 fs.Write(' ');
                 fs.Write(GetArgName(arg, i));
-            }
 
-            fs.Write(')');
+                if (i < lastIndex)
+                    fs.Write(", ");
+            }
         }
 
         private static string GetArgName(ParameterInfo arg, int i)

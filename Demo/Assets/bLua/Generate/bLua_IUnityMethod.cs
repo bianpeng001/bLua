@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace bLua.Extension
 {
-public static class bLua_LuaDelegate
+public static class bLua_IUnityMethod
 {
-
 }
 }

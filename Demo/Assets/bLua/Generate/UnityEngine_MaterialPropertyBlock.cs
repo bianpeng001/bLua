@@ -266,5 +266,9 @@ public static bool get_isEmpty(UnityEngine.MaterialPropertyBlock _this)
 	return _this.isEmpty;
 }
 
+public static UnityEngine.MaterialPropertyBlock New()
+{
+	return new UnityEngine.MaterialPropertyBlock();
+}
 }
 }

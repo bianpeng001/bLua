@@ -22,6 +22,11 @@ namespace bLua
     public class Box<T>
     {
         public T value;
+
+        public static implicit operator Box<T>(T value)
+        {
+            return new Box<T>() { value = value };
+        }
     }
 
     public class ObjectCache

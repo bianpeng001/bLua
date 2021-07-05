@@ -59,5 +59,22 @@ public static float set_Item(Box<UnityEngine.Vector3> _this, int index, float va
 {
 	return _this.value[index] = value;
 }
+public static float get_x(UnityEngine.Vector3 _this) => _this.x;
+public static void set_x(UnityEngine.Vector3 _this, float value) => _this.x = value;
+
+public static float get_y(UnityEngine.Vector3 _this) => _this.y;
+public static void set_y(UnityEngine.Vector3 _this, float value) => _this.y = value;
+
+public static float get_z(UnityEngine.Vector3 _this) => _this.z;
+public static void set_z(UnityEngine.Vector3 _this, float value) => _this.z = value;
+
+public static bLua.Box<UnityEngine.Vector3> New(float x, float y, float z)
+{
+	return new UnityEngine.Vector3(x, y, z);
+}
+public static bLua.Box<UnityEngine.Vector3> New(float x, float y)
+{
+	return new UnityEngine.Vector3(x, y);
+}
 }
 }

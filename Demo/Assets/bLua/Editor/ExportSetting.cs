@@ -116,22 +116,26 @@ namespace bLua
             {
                 type = typeof(UnityEngine.Object),
                 baseClass = null,
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.MonoBehaviour),
                 baseClass = typeof(UnityEngine.Behaviour),
                 blackList = new string[]{ "runInEditMode", },
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Behaviour),
                 baseClass = typeof(UnityEngine.Component),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Component),
                 baseClass = typeof(UnityEngine.Object),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
@@ -139,16 +143,19 @@ namespace bLua
                 blackList = new string[] { "gameObject", "GetComponent", "GetComponentInChildren", },
                 baseClass = typeof(UnityEngine.Object),
                 extClass = typeof(bLua.GameObjectEx),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Debug),
                 baseClass = null,
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Input),
                 baseClass = null,
+                exportCtors = false,
             },
             new ExportDefinition()
             {
@@ -159,26 +166,31 @@ namespace bLua
             {
                 type = typeof(UnityEngine.Graphics),
                 baseClass = null,
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Screen),
                 baseClass = null,
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Application),
                 baseClass = null,
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.AssetBundle),
                 baseClass = typeof(UnityEngine.Object),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Transform),
                 baseClass = typeof(UnityEngine.Component),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
@@ -199,22 +211,26 @@ namespace bLua
             {
                 type = typeof(UnityEngine.Renderer),
                 baseClass = typeof(UnityEngine.Component),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.MeshRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
                 blackList = new string[]{ "scaleInLightmap", "receiveGI", "stitchLightmapSeams" },
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.SkinnedMeshRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.MeshFilter),
                 baseClass = typeof(UnityEngine.Component),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
@@ -226,78 +242,93 @@ namespace bLua
                 type = typeof(UnityEngine.Texture),
                 baseClass = typeof(UnityEngine.Object),
                 blackList = new string[] { "imageContentsHash", },
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.RenderTexture),
                 baseClass = typeof(UnityEngine.Texture),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Texture2D),
                 baseClass = typeof(UnityEngine.Texture),
                 blackList = new string[]{ "Resize", "SetPixels", "alphaIsTransparency",  },
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Physics),
                 baseClass = null,
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Collider),
                 baseClass = typeof(UnityEngine.Component),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.MeshCollider),
                 baseClass = typeof(UnityEngine.Collider),
                 blackList = new string[]{ "scaleInLightmap", "receiveGI", "stitchLightmapSeams",  },
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.TrailRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.LineRenderer),
                 baseClass = typeof(UnityEngine.Renderer),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.BoxCollider),
                 baseClass = typeof(UnityEngine.Collider),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.CapsuleCollider),
                 baseClass = typeof(UnityEngine.Collider),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.SphereCollider),
                 baseClass = typeof(UnityEngine.Collider),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.CharacterController),
                 baseClass = typeof(UnityEngine.Collider),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Rigidbody),
                 baseClass = typeof(UnityEngine.Component),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Animator),
                 baseClass = typeof(UnityEngine.Behaviour),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Animation),
                 baseClass = typeof(UnityEngine.Behaviour),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
@@ -319,22 +350,26 @@ namespace bLua
                     "shadowAngle", "areaSize", "areaSize",
                     "lightmapBakeType",
                 },
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Camera),
                 baseClass = typeof(UnityEngine.Behaviour),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.ParticleSystem),
                 baseClass = typeof(UnityEngine.Component),
+                exportCtors = false,
             },
             
             new ExportDefinition()
             {
                 type = typeof(UnityEngine.Canvas),
                 baseClass = typeof(UnityEngine.Behaviour),
+                exportCtors = false,
             },
             new ExportDefinition()
             {
@@ -373,13 +408,16 @@ namespace bLua
             },
             new ExportDefinition()
             {
-                type = typeof(bLua.LuaDelegate),
+                type = typeof(bLua.AutoWrap.IUnityMethod),
+                typeName = "IUnityMethod",
                 baseClass = null,
+                whiteList = new string[]{ },
             },
             new ExportDefinition()
             {
                 type = typeof(bLua.LogUtil),
                 baseClass = null,
+                exportCtors = false,
             },
 
             new ExportDefinition()

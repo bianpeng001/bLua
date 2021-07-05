@@ -86,25 +86,6 @@ namespace bLua
             }
         }
 
-        [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-        private static int CallUnityMethod(IntPtr L)
-        {
-            CheckArgumentCount(L, 1);
-
-            var argumentCount = lua_gettop(L) - 1;
-            var methodId = (int)lua_tointeger(L, 1);
-
-
-            var method = globalUnityMethodTable[methodId];
-            if (method == null)
-            {
-                LogUtil.Error($"method not found: methodId={methodId}, args={argumentCount} {lua_type(L, 1)}");
-                throw new Exception();
-            }
-
-            return ProtectCallMethod(L, method);
-        }
-
         private static int ProtectCallMethod(IntPtr L, IUnityMethod method)
         {
             try
@@ -115,22 +96,22 @@ namespace bLua
             {
                 LogUtil.Error(ex.StackTrace);
                 var traceback = LuaState.GetState(L).GetTraceback(ex.Message);
+                LogUtil.Error(traceback);
                 LuaError(L, ex.Message);
                 return 0;
             }
         }
 
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
-        private static int CallLuaDelegate(IntPtr L)
+        private static int CallUnityMethod(IntPtr L)
         {
-            var dele = TypeTrait<LuaDelegate>.pull(L, 1);
-            if (dele != null)
-                return ProtectCallMethod(L, dele.Method);
+            var method = TypeTrait<IUnityMethod>.pull(L, 1);
+            if (method != null)
+                return ProtectCallMethod(L, method);
 
             return 0;
         }
 
-        private static readonly List<IUnityMethod> globalUnityMethodTable = new List<IUnityMethod>(1024) { null, };
 
         private static readonly List<MethodInfo> tempMethodList = new List<MethodInfo>(8);
 
@@ -145,7 +126,6 @@ namespace bLua
             var cls = luaRegister.GetClass(classId);
             luaRegister.FindAllMethods(cls, methodName, tempMethodList);
 
-            LogUtil.Debug($"{cls.name}::{methodName} {tempMethodList.Count} {globalUnityMethodTable.Count}");
 
             if (tempMethodList.Count == 0)
             {
@@ -153,22 +133,18 @@ namespace bLua
             }
             else if (tempMethodList.Count == 1)
             {
-                var method = CreateUnityMethod(tempMethodList[0]);
-                var methodId = globalUnityMethodTable.Count;
-                globalUnityMethodTable.Add(method);
 
-                lua_pushinteger(L, methodId);
+                var method = CreateUnityMethod(tempMethodList[0]);
+                TypeTrait<IUnityMethod>.push(L, method);
                 return 1;
             }
             else
             {
 
                 var method = new OverloadResolver(tempMethodList);
-                var methodId = globalUnityMethodTable.Count;
-                globalUnityMethodTable.Add(method);
                 tempMethodList.Clear();
 
-                lua_pushinteger(L, methodId);
+                TypeTrait<IUnityMethod>.push(L, method);
                 return 1;
             }
         }
@@ -240,11 +216,20 @@ namespace bLua
         private static int TypeOf(IntPtr L)
         {
             CheckArgumentCount(L, 1);
-            LogUtil.Assert(lua_istable(L, 1));
+            bool isUserData = false;
+            if (lua_isuserdata(L, 1))
+            {
+                lua_getmetatable(L, 1);
+                isUserData = true;
+            }
 
-            lua_rawgeti(L, 1, 1);
+            LogUtil.Assert(lua_istable(L, -1));
+            lua_rawgeti(L, -1, 1);
             var classId = TypeTrait<int>.pull(L, -1);
-            lua_pop(L, 1);
+            if (isUserData)
+                lua_pop(L, 2);
+            else
+                lua_pop(L, 1);
 
             var cls = luaRegister.GetClass(classId);
             TypeTrait<Type>.push(L, cls.type);
@@ -276,8 +261,7 @@ namespace bLua
 
             state.Register("RegisterUnityClass", RegisterUnityClass);
             state.Register("RegisterUnityMethod", RegisterUnityMethod);
-            state.Register("CallUnityMethod", CallUnityMethod);
-            state.Register("CallLuaDelegate", CallLuaDelegate);
+            state.Register("CallUnityMethod", CallUnityMethod); 
 
             state.Register("CollectUnityObject", CollectUnityObject);
             state.Register("UnityObjectEqual", UnityObjectEqual);

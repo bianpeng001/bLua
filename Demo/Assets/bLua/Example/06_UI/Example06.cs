@@ -51,7 +51,7 @@ namespace bLua
                 f.Call();
             }
 
-            module.SetField("MethodRaiseError", new LuaDelegate(AutoWrap.CreateFunc<int, int>(MethodRaiseError)));
+            module.SetField("MethodRaiseError", AutoWrap.CreateFunc<int, int>(MethodRaiseError));
 
             PrintInfo(imgCircle);
             PrintInfo(imgRect);

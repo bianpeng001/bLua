@@ -149,5 +149,17 @@ public static float set_Item(System.Collections.Generic.List<float> _this, int i
 {
 	return _this[index] = value;
 }
+public static System.Collections.Generic.List<float> New()
+{
+	return new System.Collections.Generic.List<float>();
+}
+public static System.Collections.Generic.List<float> New(int capacity)
+{
+	return new System.Collections.Generic.List<float>(capacity);
+}
+public static System.Collections.Generic.List<float> New(System.Collections.Generic.IEnumerable<float> collection)
+{
+	return new System.Collections.Generic.List<float>(collection);
+}
 }
 }

@@ -64,5 +64,15 @@ public static float set_Item(Box<UnityEngine.Vector2> _this, int index, float va
 {
 	return _this.value[index] = value;
 }
+public static float get_x(UnityEngine.Vector2 _this) => _this.x;
+public static void set_x(UnityEngine.Vector2 _this, float value) => _this.x = value;
+
+public static float get_y(UnityEngine.Vector2 _this) => _this.y;
+public static void set_y(UnityEngine.Vector2 _this, float value) => _this.y = value;
+
+public static bLua.Box<UnityEngine.Vector2> New(float x, float y)
+{
+	return new UnityEngine.Vector2(x, y);
+}
 }
 }

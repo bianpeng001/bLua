@@ -26,5 +26,11 @@ public static bLua.AutoWrap.MultRet<bool, int> GetMulRet(bLua.MoveSystem _this)
 	return _this.GetMulRet();
 }
 
+public static bLua.AStarMap<bLua.MoveSystem.CellData> get_map(bLua.MoveSystem _this) => _this.map;
+
+public static bLua.MoveSystem New()
+{
+	return new bLua.MoveSystem();
+}
 }
 }

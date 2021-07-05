@@ -81,8 +81,9 @@ namespace bLua
         {
             public PointXZ prev;
             public int F, G, H;
-            public TCellData data;
             public int revNumber;
+
+            public TCellData data;
         }
 
         private readonly int width, length;

@@ -64,5 +64,25 @@ public static float set_Item(Box<UnityEngine.Color> _this, int index, float valu
 {
 	return _this.value[index] = value;
 }
+public static float get_r(UnityEngine.Color _this) => _this.r;
+public static void set_r(UnityEngine.Color _this, float value) => _this.r = value;
+
+public static float get_g(UnityEngine.Color _this) => _this.g;
+public static void set_g(UnityEngine.Color _this, float value) => _this.g = value;
+
+public static float get_b(UnityEngine.Color _this) => _this.b;
+public static void set_b(UnityEngine.Color _this, float value) => _this.b = value;
+
+public static float get_a(UnityEngine.Color _this) => _this.a;
+public static void set_a(UnityEngine.Color _this, float value) => _this.a = value;
+
+public static bLua.Box<UnityEngine.Color> New(float r, float g, float b, float a)
+{
+	return new UnityEngine.Color(r, g, b, a);
+}
+public static bLua.Box<UnityEngine.Color> New(float r, float g, float b)
+{
+	return new UnityEngine.Color(r, g, b);
+}
 }
 }

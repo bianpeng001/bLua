@@ -34,6 +34,7 @@ end
 
 function module.Test2()
     print('Test2 start')
+    print(module.MethodRaiseError:ToString())
     module.MethodRaiseError(11)
     print('Test2 end')
 end

@@ -16,5 +16,9 @@ public static void Set(string[] _this, int arg0, string arg1)
 	_this[arg0] = arg1;
 }
 
+public static string[] New(int arg0)
+{
+	return new string[arg0];
+}
 }
 }

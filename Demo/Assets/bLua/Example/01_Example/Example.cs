@@ -116,11 +116,11 @@ namespace bLua
             set => time = value;
         }
 
-        public static LuaDelegate GetDelegate()
+        public static AutoWrap.IUnityMethod GetDelegate()
         {
-            return new LuaDelegate(AutoWrap.CreateFunc(
+            return AutoWrap.CreateFunc(
                 (int a, int b, int c) => a + b + c
-            ));
+            );
         }
 
         public static int[] GetIntArray()

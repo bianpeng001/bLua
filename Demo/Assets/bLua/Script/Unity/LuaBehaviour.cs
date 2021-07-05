@@ -16,6 +16,7 @@ limitations under the License.
 
 
 using UnityEngine;
+using static bLua.AutoWrap;
 
 namespace bLua
 {
@@ -43,10 +44,10 @@ namespace bLua
         {
             using (var f = module.GetFunction("CreateProperty"))
             {
-                f.Call<string, LuaDelegate, LuaDelegate, int>(
+                f.Call<string, IUnityMethod, IUnityMethod, int>(
                     name,
-                    new LuaDelegate(new AutoWrap.Func<T>() { cb = getter }),
-                    new LuaDelegate(new AutoWrap.Action<T>() { cb = setter })
+                    new AutoWrap.Func<T>() { cb = getter },
+                    new AutoWrap.Action<T>() { cb = setter }
                 );
             }
         }

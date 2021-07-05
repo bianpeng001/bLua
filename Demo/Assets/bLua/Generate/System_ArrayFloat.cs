@@ -16,5 +16,9 @@ public static void Set(float[] _this, int arg0, float arg1)
 	_this[arg0] = arg1;
 }
 
+public static float[] New(int arg0)
+{
+	return new float[arg0];
+}
 }
 }

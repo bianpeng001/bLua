@@ -31,5 +31,13 @@ public static void NextBytes(System.Random _this, System.Byte[] buffer)
 	_this.NextBytes(buffer);
 }
 
+public static System.Random New()
+{
+	return new System.Random();
+}
+public static System.Random New(int Seed)
+{
+	return new System.Random(Seed);
+}
 }
 }

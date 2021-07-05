@@ -29,8 +29,8 @@ local RegisterUnityMethod = RegisterUnityMethod or function(class_id, methodName
     return methodId
 end
 
-local CallUnityMethod = CallUnityMethod or function(methodId, ...)
-    print('CallUnityMethod', methodId, ...)
+local CallUnityMethod = CallUnityMethod or function(...)
+    print('CallUnityMethod', ...)
 end
 
 local CollectUnityObject = CollectUnityObject or function(obj)
@@ -73,20 +73,17 @@ local function MakeIndexFunction(class)
 
         local entry = rawget(cache, methodName)
         if not entry then
-            local methodId = RegisterUnityMethod(classId, methodName)
-            if methodId then
-                local method = function(...)
-                    return CallUnityMethod(methodId, ...)
-                end
+            local method = RegisterUnityMethod(classId, methodName)
+            if method then
                 etype = 1
-                entry = { 1, method, methodId, }
+                entry = { 1, method, }
                 rawset(cache, methodName, entry)
             else
-                local get_methodId = RegisterUnityMethod(classId, 'get_' .. methodName)
-                local set_methodId = RegisterUnityMethod(classId, 'set_' .. methodName)
-                if get_methodId or set_methodId then
+                local get_method = RegisterUnityMethod(classId, 'get_' .. methodName)
+                local set_method = RegisterUnityMethod(classId, 'set_' .. methodName)
+                if get_method or set_method then
                     etype = 2
-                    entry = { 2, get_methodId, set_methodId, }
+                    entry = { 2, get_method, set_method, }
                     rawset(cache, methodName, entry)
                 end
             end
@@ -113,9 +110,9 @@ local function MakeNewIndexFunction(class)
     return function(obj, methodName, value)
         local entry = rawget(cache, methodName)
         if not entry then
-            local get_methodId = RegisterUnityMethod(classId, 'get_' .. methodName)
-            local set_methodId = RegisterUnityMethod(classId, 'set_' .. methodName)
-            entry = { 2, get_methodId, set_methodId, }
+            local get_method = RegisterUnityMethod(classId, 'get_' .. methodName)
+            local set_method = RegisterUnityMethod(classId, 'set_' .. methodName)
+            entry = { 2, get_method, set_method, }
             rawset(cache, methodName, entry)
         end
         
@@ -129,8 +126,8 @@ function AutoWrap.DefineClass(class)
     class._cache = {}
 
     local className = class.class
-    local class_id = RegisterUnityClass(className, class)
-    class[1] = class_id
+    local classId = RegisterUnityClass(className, class)
+    class[1] = classId
 
     local indexFunc = MakeIndexFunction(class)
 

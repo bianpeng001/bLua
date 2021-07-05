@@ -404,7 +404,7 @@ namespace bLua
                 {
                     throw new NotSupportedException();
                 }
-                else if (type == typeof(object) || type.IsClass)
+                else if (type == typeof(object) || type.IsClass || type.IsInterface)
                 {
                     push = (Push<T>)PushObject<T>;
                     pull = (Pull<T>)PullObject<T>;

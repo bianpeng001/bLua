@@ -15,10 +15,12 @@ limitations under the License.
 */
 
 
+using System;
 using static bLua.AutoWrap;
 
 namespace bLua
 {
+    [Obsolete]
     public class LuaDelegate
     {
         private readonly IUnityMethod method;

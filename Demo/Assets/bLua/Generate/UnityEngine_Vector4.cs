@@ -64,5 +64,29 @@ public static float set_Item(Box<UnityEngine.Vector4> _this, int index, float va
 {
 	return _this.value[index] = value;
 }
+public static float get_x(UnityEngine.Vector4 _this) => _this.x;
+public static void set_x(UnityEngine.Vector4 _this, float value) => _this.x = value;
+
+public static float get_y(UnityEngine.Vector4 _this) => _this.y;
+public static void set_y(UnityEngine.Vector4 _this, float value) => _this.y = value;
+
+public static float get_z(UnityEngine.Vector4 _this) => _this.z;
+public static void set_z(UnityEngine.Vector4 _this, float value) => _this.z = value;
+
+public static float get_w(UnityEngine.Vector4 _this) => _this.w;
+public static void set_w(UnityEngine.Vector4 _this, float value) => _this.w = value;
+
+public static bLua.Box<UnityEngine.Vector4> New(float x, float y, float z, float w)
+{
+	return new UnityEngine.Vector4(x, y, z, w);
+}
+public static bLua.Box<UnityEngine.Vector4> New(float x, float y, float z)
+{
+	return new UnityEngine.Vector4(x, y, z);
+}
+public static bLua.Box<UnityEngine.Vector4> New(float x, float y)
+{
+	return new UnityEngine.Vector4(x, y);
+}
 }
 }

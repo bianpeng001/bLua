@@ -21,5 +21,9 @@ public static string ToString(object _this)
 	return _this.ToString();
 }
 
+public static object New()
+{
+	return new object();
+}
 }
 }

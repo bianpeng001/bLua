@@ -491,5 +491,13 @@ public static void set_shaderKeywords(UnityEngine.Material _this, string[] value
 	_this.shaderKeywords = value;
 }
 
+public static UnityEngine.Material New(UnityEngine.Shader shader)
+{
+	return new UnityEngine.Material(shader);
+}
+public static UnityEngine.Material New(UnityEngine.Material source)
+{
+	return new UnityEngine.Material(source);
+}
 }
 }

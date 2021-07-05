@@ -116,5 +116,9 @@ public static void set_events(UnityEngine.AnimationClip _this, UnityEngine.Anima
 	_this.events = value;
 }
 
+public static UnityEngine.AnimationClip New()
+{
+	return new UnityEngine.AnimationClip();
+}
 }
 }

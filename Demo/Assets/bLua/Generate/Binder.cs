@@ -67,7 +67,7 @@ reg.Add("UnityEngine.Vector4", typeof(UnityEngine.Vector4), null, typeof(UnityEn
 reg.Add("UnityEngine.Vector3", typeof(UnityEngine.Vector3), null, typeof(UnityEngine_Vector3));
 reg.Add("UnityEngine.Vector2", typeof(UnityEngine.Vector2), null, typeof(UnityEngine_Vector2));
 reg.Add("UnityEngine.Matrix4x4", typeof(UnityEngine.Matrix4x4), null, typeof(UnityEngine_Matrix4x4));
-reg.Add("bLua.LuaDelegate", typeof(bLua.LuaDelegate), null, typeof(bLua_LuaDelegate));
+reg.Add("bLua.IUnityMethod", typeof(bLua.AutoWrap.IUnityMethod), null, typeof(bLua_IUnityMethod));
 reg.Add("bLua.LogUtil", typeof(bLua.LogUtil), null, typeof(bLua_LogUtil));
 reg.Add("bLua.Example", typeof(bLua.Example), typeof(UnityEngine.MonoBehaviour), typeof(bLua_Example));
 reg.Add("bLua.Example02", typeof(bLua.Example02), typeof(UnityEngine.MonoBehaviour), typeof(bLua_Example02));

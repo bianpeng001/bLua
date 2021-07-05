@@ -72,14 +72,14 @@ UnityEngine.Vector2 = DefineClass({ class = "UnityEngine.Vector2" })
 UnityEngine.Matrix4x4 = DefineClass({ class = "UnityEngine.Matrix4x4" })
 
 bLua = {}
-bLua.LuaDelegate = DefineClass({ class = "bLua.LuaDelegate" })
+bLua.IUnityMethod = DefineClass({ class = "bLua.IUnityMethod" })
 bLua.LogUtil = DefineClass({ class = "bLua.LogUtil" })
 bLua.Example = DefineClass({ class = "bLua.Example", baseClass = "UnityEngine.MonoBehaviour" })
 bLua.Example02 = DefineClass({ class = "bLua.Example02", baseClass = "UnityEngine.MonoBehaviour" })
 bLua.MoveSystem = DefineClass({ class = "bLua.MoveSystem" })
 
-bLua.LuaDelegate.__call = CallLuaDelegate or function(obj, ...)
-	print(obj, ...)
+bLua.IUnityMethod.__call = CallUnityMethod or function(...)
+	print(...)
 end
 
 UnityEngine.HideFlags =

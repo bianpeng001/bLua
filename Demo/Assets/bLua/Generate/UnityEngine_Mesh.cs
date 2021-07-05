@@ -661,5 +661,9 @@ public static void set_boneWeights(UnityEngine.Mesh _this, UnityEngine.BoneWeigh
 	_this.boneWeights = value;
 }
 
+public static UnityEngine.Mesh New()
+{
+	return new UnityEngine.Mesh();
+}
 }
 }

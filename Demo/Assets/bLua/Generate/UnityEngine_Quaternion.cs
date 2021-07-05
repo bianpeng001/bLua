@@ -69,5 +69,21 @@ public static float set_Item(Box<UnityEngine.Quaternion> _this, int index, float
 {
 	return _this.value[index] = value;
 }
+public static float get_x(UnityEngine.Quaternion _this) => _this.x;
+public static void set_x(UnityEngine.Quaternion _this, float value) => _this.x = value;
+
+public static float get_y(UnityEngine.Quaternion _this) => _this.y;
+public static void set_y(UnityEngine.Quaternion _this, float value) => _this.y = value;
+
+public static float get_z(UnityEngine.Quaternion _this) => _this.z;
+public static void set_z(UnityEngine.Quaternion _this, float value) => _this.z = value;
+
+public static float get_w(UnityEngine.Quaternion _this) => _this.w;
+public static void set_w(UnityEngine.Quaternion _this, float value) => _this.w = value;
+
+public static bLua.Box<UnityEngine.Quaternion> New(float x, float y, float z, float w)
+{
+	return new UnityEngine.Quaternion(x, y, z, w);
+}
 }
 }
