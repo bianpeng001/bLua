@@ -70,6 +70,11 @@ namespace bLua
                 };
             }
 
+            public override string ToString()
+            {
+                return GetString();
+            }
+
             public string GetString()
             {
                 switch (type)
@@ -99,19 +104,20 @@ namespace bLua
             }
         }
 
-        public delegate void OnSetCallback(in Data v);
+        public delegate void OnSetCallback(Data v);
 
-        private readonly Dictionary<string, (string k, OnSetCallback cb)> dict = new Dictionary<string, (string, OnSetCallback)>();
+        private readonly List<(string, OnSetCallback)> bindList = new List<(string, OnSetCallback)>();
 
         public void Connect(string k, Text text)
         {
-            dict[k] = (k, (in Data v) => text.text = v.GetString());
+            bindList.Add((k, (Data v) => text.text = v.GetString()));
         }
 
-        public void Set(string k, in Data v)
+        public void Set(string k, Data v)
         {
-            if (dict.TryGetValue(k, out var it))
-                it.cb(v);
+            var idx = bindList.FindIndex(a => a.Item1 == k);
+            if (idx >= 0)
+                bindList[idx].Item2(v);
         }
 
         public static void Init(LuaState state)
@@ -133,7 +139,6 @@ namespace bLua
             var k = lua_tostring(L, 2);
 
             var v = new Data();
-
             if (lua_isnil(L, 3))
                 v.type = DataType.Nil;
             else if (lua_isinteger(L, 3))

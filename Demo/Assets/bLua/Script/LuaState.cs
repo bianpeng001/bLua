@@ -27,14 +27,14 @@ namespace bLua
 
     public sealed class LuaState : IDisposable
     {
-        private static (IntPtr L, LuaState state)[] stateList;
+        private static (IntPtr, LuaState)[] stateList;
 
         public static LuaState GetState(IntPtr L)
         {
             for (int i = 0; i < stateList.Length; ++i)
             {
-                if (stateList[i].L == L)
-                    return stateList[i].state;
+                if (stateList[i].Item1 == L)
+                    return stateList[i].Item2;
             }
 
             return null;
@@ -104,9 +104,9 @@ namespace bLua
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
         private static int Loader(IntPtr L)
         {
-            var state = GetState(L);
-
             var path = lua_tostring(L, 1);
+
+            var state = GetState(L);
             var buffer = state.loader.Load(path);
 
             var nameLength = Encoding.UTF8.GetBytes(path, 0, path.Length, chunkName, 0);

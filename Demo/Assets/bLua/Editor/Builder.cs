@@ -25,10 +25,10 @@ namespace bLua
     {
         public static List<string> levels = new List<string>()
         {
+            "Assets/bLua/Example/06_UI/UIScene.unity",
             "Assets/bLua/Example/05_Tower/TowerScene.unity",
             "Assets/bLua/Example/01_Example/ExampleScene.unity",
             "Assets/bLua/Example/02_War/WarScene.unity",
-            "Assets/bLua/Example/06_UI/UIScene.unity",
         };
 
         [MenuItem("Tools/Build/Bundle")]
@@ -36,38 +36,51 @@ namespace bLua
         {
         }
 
-        private static void Build(BuildTargetGroup group,
+        private static void DoBuild(BuildTargetGroup group,
             BuildTarget target,
             string outputPath,
-            bool isRelase)
+            bool isRelease)
         {
             var activeTarget = EditorUserBuildSettings.activeBuildTarget;
             if (target != activeTarget)
                 throw new Exception($"{target}");
 
             var t0 = DateTime.Now;
+            Debug.Log($"{t0} start build");
+
             BuildOptions options = BuildOptions.None;
-            if (!isRelase)
+            if (!isRelease)
             {
-                options = BuildOptions.Development
-                    | BuildOptions.AllowDebugging
-                    | BuildOptions.ConnectWithProfiler;
+                options |= BuildOptions.Development;
+                options |= BuildOptions.AllowDebugging;
+                options |= BuildOptions.ConnectWithProfiler;
             }
             
             PlayerSettings.SplashScreen.showUnityLogo = false;
-            PlayerSettings.SplashScreen.show = true;
+            PlayerSettings.SplashScreen.show = false;
             PlayerSettings.SplashScreen.backgroundColor = Color.white;
 
+            PlayerSettings.SetApiCompatibilityLevel(group, ApiCompatibilityLevel.NET_Standard_2_0);
             PlayerSettings.SetManagedStrippingLevel(group, ManagedStrippingLevel.Low);
             PlayerSettings.SetScriptingBackend(group, ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetApiCompatibilityLevel(group, ApiCompatibilityLevel.NET_Standard_2_0);
             PlayerSettings.SetIncrementalIl2CppBuild(group, false);
+
+            if (isRelease)
+            {
+                PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Master);
+            }
+            else
+            {
+                PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Debug);
+                PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-O0\" --linker-flags=\"-O0\"");
+            }
+
             PlayerSettings.gcIncremental = true;
             PlayerSettings.runInBackground = true;
             PlayerSettings.usePlayerLog = true;
 
             var symbols = new HashSet<string>();
-            if (!isRelase)
+            if (!isRelease)
             {
                 symbols.Add("ENABLE_ASSERT");
             }
@@ -86,7 +99,7 @@ namespace bLua
                     PlayerSettings.Android.splashScreenScale = AndroidSplashScreenScale.Center;
                     
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
-                    EditorUserBuildSettings.androidCreateSymbolsZip = false;
+                    EditorUserBuildSettings.androidCreateSymbolsZip = true;
                     PlayerSettings.Android.bundleVersionCode = 100;
                     break;
 
@@ -103,14 +116,16 @@ namespace bLua
             var report = BuildPipeline.BuildPlayer(levels.ToArray(), outputPath, target, options);
 
             var t1 = DateTime.Now;
+            Debug.Log($"{t1} build ok");
+
             var t = Mathf.RoundToInt((float)(t1 - t0).TotalSeconds);
-            Debug.Log($"{target} {report.summary.result} in {t}s");
+            Debug.Log($"{target} release:{isRelease} {report.summary.result} in {t}s");
         }
 
         [MenuItem("Tools/Build/Win64 Debug")]
         public static void BuildWin64()
         {
-            Build(BuildTargetGroup.Standalone,
+            DoBuild(BuildTargetGroup.Standalone,
                 BuildTarget.StandaloneWindows64,
                 "BuildWin64/Demo.exe",
                 false);
@@ -119,10 +134,10 @@ namespace bLua
         [MenuItem("Tools/Build/Android Debug")]
         public static void BuildAndroid()
         {
-            Build(BuildTargetGroup.Android,
+            DoBuild(BuildTargetGroup.Android,
                 BuildTarget.Android,
                 "BuildAndroid/Demo.apk",
-                false);
+                true);
         }
 
     }

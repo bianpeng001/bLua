@@ -186,7 +186,7 @@ namespace bLua
         private static int RegisterUnityClass(IntPtr L)
         {
             CheckArgumentCount(L, 2);
-
+            
             var className = lua_tostring(L, 1);
             var cls = luaRegister.GetClass(className);
 
@@ -199,7 +199,6 @@ namespace bLua
                 cls.luaref.Dispose(LuaState.GetState(L));
             }
             cls.luaref = new LuaRef(LuaState.GetState(L));
-
             TypeTrait<int>.push(L, cls.classId);
 
             return 1;

@@ -115,7 +115,9 @@ namespace bLua
             if (func == null)
                 lua_pushnil(L);
             else
+            {
                 func.Prepare();
+            }
         }
 
         private static LuaFunction PullLuaFunction(IntPtr L, int pos)
@@ -138,7 +140,9 @@ namespace bLua
             if (table == null)
                 lua_pushnil(L);
             else
+            {
                 table.Push();
+            }
         }
 
         private static LuaTable PullLuaTable(IntPtr L, int pos)
@@ -194,7 +198,6 @@ namespace bLua
                 throw new Exception();
 
             var objHandle = UserDataGetObjHandle(L, pos);
-
             return (T)LuaState.GetState(L).objCache.GetObject(objHandle);
         }
 

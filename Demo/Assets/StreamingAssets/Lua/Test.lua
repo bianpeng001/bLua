@@ -131,7 +131,7 @@ local function Test8()
     print(module.name)
     module.name = 'yyyy'
 
-    print('blua.hello', blua.hello())
+    print('blua.hello', blua.version())
 end
 
 Test1()

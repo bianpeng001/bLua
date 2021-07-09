@@ -289,8 +289,11 @@ namespace bLua
 
             unsafe
             {
-                byte* a = (byte*)ptr.ToPointer();
-                return System.Text.Encoding.UTF8.GetString(a, len);
+
+
+                sbyte* a = (sbyte*)ptr.ToPointer();
+                return new string(a, 0, len, System.Text.Encoding.UTF8);
+
             }
         }
 

@@ -44,11 +44,10 @@ namespace bLua
         {
             using (var f = module.GetFunction("CreateProperty"))
             {
-                f.Call<string, IUnityMethod, IUnityMethod, int>(
-                    name,
-                    new AutoWrap.Func<T>() { cb = getter },
-                    new AutoWrap.Action<T>() { cb = setter }
-                );
+                
+                f.Call<string, IUnityMethod, IUnityMethod, int>(name,
+                    AutoWrap.CreateFunc<T>(getter),
+                    AutoWrap.CreateAction<T>(setter));
             }
         }
 
