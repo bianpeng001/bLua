@@ -15,23 +15,13 @@ limitations under the License.
 */
 
 using System.Collections.Generic;
+using UnityEditor;
+using static bLua.LuaExport;
 
 namespace bLua
 {
-    public static partial class LuaExport
+    public static class ExportSetting
     {
-        public static readonly string outputNs = "namespace bLua.Extension";
-        public static readonly string[] usingBlock = new string[]
-        {
-            "using System;",
-            "using UnityEngine;",
-        };
-
-        public static readonly string outputPath = @"Assets\bLua\Generate";
-        public static readonly string outputPathLua = @"Assets\StreamingAssets\Lua";
-
-        public const string _this = "_this";
-
         public static ExportDefinition[] typeList = new ExportDefinition[]
         {
             new ExportDefinition()
@@ -436,6 +426,19 @@ namespace bLua
                 baseClass = null,
             },
         };
+
+        [MenuItem("Tools/bLua/Gen Binder")]
+        public static void Gen()
+        {
+            LuaExport.typeList = typeList;
+            LuaExport.Gen();
+        }
+
+        [MenuItem("Tools/bLua/Clear")]
+        public static void Clear()
+        {
+            LuaExport.Clear();
+        }
     }
 }
 

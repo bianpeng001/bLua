@@ -222,13 +222,13 @@ namespace bLua
 
 #if UNITY_EDITOR
 
-        [UnityEditor.MenuItem("Tools/Lua/Collect Garbage", priority = 21, validate = false)]
+        [UnityEditor.MenuItem("Tools/bLua/Collect Garbage", priority = 21, validate = false)]
         public static void CollectGarbage()
         {
             LuaLib.lua_gc(Instance.state, LuaLib.GCOption.LUA_GCCOLLECT);
         }
 
-        [UnityEditor.MenuItem("Tools/Lua/Count Memory", priority = 22, validate = false)]
+        [UnityEditor.MenuItem("Tools/bLua/Count Memory", priority = 22, validate = false)]
         public static void CountMemory()
         {
             Instance.state.DoString("print(collectgarbage('count'), 'kb')");

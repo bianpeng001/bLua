@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.bianpeng.blua": {
+      "version": "file:../../bLua",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.oddworm.heapexplorer": {
       "version": "file:./local_package/HeapExplorer",
       "depth": 0,

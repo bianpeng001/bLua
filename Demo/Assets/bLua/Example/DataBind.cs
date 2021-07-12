@@ -106,18 +106,17 @@ namespace bLua
 
         public delegate void OnSetCallback(Data v);
 
-        private readonly List<(string, OnSetCallback)> bindList = new List<(string, OnSetCallback)>();
+        private readonly Dictionary<string, OnSetCallback> bindmap = new Dictionary<string, OnSetCallback>();
 
         public void Connect(string k, Text text)
         {
-            bindList.Add((k, (Data v) => text.text = v.GetString()));
+            bindmap.Add(k, (Data v) => text.text = v.GetString());
         }
 
         public void Set(string k, Data v)
         {
-            var idx = bindList.FindIndex(a => a.Item1 == k);
-            if (idx >= 0)
-                bindList[idx].Item2(v);
+            if (bindmap.TryGetValue(k, out var cb))
+                cb(v);
         }
 
         public static void Init(LuaState state)

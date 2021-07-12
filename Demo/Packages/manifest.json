@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.bianpeng.blua": "file:../../bLua",
     "com.oddworm.heapexplorer": "file:./local_package/HeapExplorer",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.assetbundlebrowser": "1.7.0",

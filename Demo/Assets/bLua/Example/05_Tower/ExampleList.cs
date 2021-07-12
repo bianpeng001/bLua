@@ -39,7 +39,7 @@ namespace bLua
         {
             for(int i = 0;  i <  sceneList.Count; ++i)
             {
-                if (GUI.Button(new Rect(10, 10 + i * 32, 100, 28),  sceneList[i]))
+                if (GUI.Button(new Rect(15, 60 + i * 32, 100, 28),  sceneList[i]))
                 {
                     SceneManager.LoadScene(sceneList[i], LoadSceneMode.Single);
                     break;
