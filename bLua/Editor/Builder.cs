@@ -32,6 +32,7 @@ namespace bLua
             "Assets/bLua/Example/05_Tower/TowerScene.unity",
             "Assets/bLua/Example/01_Example/ExampleScene.unity",
             "Assets/bLua/Example/02_War/WarScene.unity",
+            "Assets/bLua/Example/07_LuanDou/LuanDouScene.unity",
         };
 
         [MenuItem("Tools/bLua/Build/Bundle")]
@@ -47,7 +48,7 @@ namespace bLua
         {
             var activeTarget = EditorUserBuildSettings.activeBuildTarget;
             if (target != activeTarget)
-                throw new Exception($"{target}");
+                throw new Exception($"Editor Enviroment not match: {target}");
 
             var t0 = DateTime.Now;
             Debug.Log($"{t0} start build");
@@ -71,7 +72,7 @@ namespace bLua
             PlayerSettings.SetScriptingBackend(group, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetIncrementalIl2CppBuild(group, false);
 
-            // 水平
+            // 朝向
             PlayerSettings.allowedAutorotateToLandscapeRight = true;
             PlayerSettings.allowedAutorotateToLandscapeLeft = true;
             PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
@@ -96,10 +97,7 @@ namespace bLua
                 PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-O0\" --linker-flags=\"-O0\"");
             }
 
-            PlayerSettings.gcIncremental = true;
-            PlayerSettings.runInBackground = true;
-            PlayerSettings.usePlayerLog = true;
-
+            // symbols
             var symbols = new HashSet<string>();
             if (!isRelease)
             {
@@ -108,11 +106,19 @@ namespace bLua
             symbols.UnionWith(PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';'));
             PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", symbols));
 
-            switch(target)
+            PlayerSettings.gcIncremental = true;
+            PlayerSettings.runInBackground = true;
+            PlayerSettings.usePlayerLog = true;
+
+            // mutithread rendering
+            PlayerSettings.MTRendering = true;
+            PlayerSettings.SetMobileMTRendering(group, true);
+
+            int buildNumber = 100;
+
+            switch (target)
             {
                 case BuildTarget.Android:
-                    PlayerSettings.SetMobileMTRendering(group, true);
-
                     PlayerSettings.Android.androidIsGame = true;
                     PlayerSettings.Android.startInFullscreen = true;
                     PlayerSettings.Android.blitType = AndroidBlitType.Auto;
@@ -121,17 +127,26 @@ namespace bLua
                     
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
                     EditorUserBuildSettings.androidCreateSymbolsZip = true;
-                    PlayerSettings.Android.bundleVersionCode = 100;
+                    PlayerSettings.Android.bundleVersionCode = buildNumber;
+
+                    PlayerSettings.Android.useCustomKeystore = true;
+                    PlayerSettings.Android.keystoreName = "android_build.keystore";
+                    PlayerSettings.Android.keystorePass = "123456";
+                    PlayerSettings.Android.keyaliasName = "build";
+                    PlayerSettings.Android.keyaliasPass = "123456";
+
                     break;
 
                 case BuildTarget.iOS:
-                    PlayerSettings.SetMobileMTRendering(group, true);
-
+                    PlayerSettings.iOS.scriptCallOptimization = ScriptCallOptimizationLevel.SlowAndSafe;
                     PlayerSettings.iOS.requiresFullScreen = true;
+                    PlayerSettings.iOS.backgroundModes = iOSBackgroundMode.None;
                     PlayerSettings.iOS.appInBackgroundBehavior = iOSAppInBackgroundBehavior.Custom;
+
                     // arch64 only: 0 - None, 1 - ARM64, 2 - Universal
                     PlayerSettings.SetArchitecture(BuildTargetGroup.iOS, 1);
-                    PlayerSettings.iOS.buildNumber = "100";
+                    PlayerSettings.iOS.buildNumber = buildNumber.ToString();
+
                     break;
             }
 
@@ -155,6 +170,15 @@ namespace bLua
         }
 
         [MenuItem("Tools/bLua/Build/Android Debug")]
+        public static void BuildAndroidDebug()
+        {
+            DoBuild(BuildTargetGroup.Android,
+                BuildTarget.Android,
+                "BuildAndroid/Demo.apk",
+                false);
+        }
+
+        [MenuItem("Tools/bLua/Build/Android Release")]
         public static void BuildAndroid()
         {
             DoBuild(BuildTargetGroup.Android,

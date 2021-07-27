@@ -14,12 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
- * 2021年5月26日, 边蓬
- */
+//
+// 2021年5月26日, 边蓬
+//
 
 using System;
 using System.Diagnostics;
+using System.Text;
 
 namespace bLua
 {
@@ -35,6 +36,7 @@ namespace bLua
         }
 
         public static Action<LogLevel, string> logCallback;
+        public static string Sep = " ";
 
         static LogUtil()
         {
@@ -53,16 +55,56 @@ namespace bLua
             };
         }
 
+        public static void PrintMessage(LogLevel level, string message)
+        {
+            logCallback?.Invoke(level, message);
+        }
+
+        private static readonly StringBuilder sb = new StringBuilder();
+
+        public static void Print<T1>(LogLevel level, T1 arg1)
+        {
+            sb.Clear();
+            sb.Append(arg1.ToString());
+
+            var message = sb.ToString();
+            PrintMessage(level, message);
+        }
+
+        public static void Print<T1, T2>(LogLevel level, T1 arg1, T2 arg2)
+        {
+            sb.Clear();
+            sb.Append(arg1.ToString());
+            sb.Append(Sep);
+            sb.Append(arg2.ToString());
+
+            var message = sb.ToString();
+            PrintMessage(level, message);
+        }
+
+        public static void Print<T1, T2, T3>(LogLevel level, T1 arg1, T2 arg2, T3 arg3)
+        {
+            sb.Clear();
+            sb.Append(arg1.ToString());
+            sb.Append(Sep);
+            sb.Append(arg2.ToString());
+            sb.Append(Sep);
+            sb.Append(arg3.ToString());
+
+            var message = sb.ToString();
+            PrintMessage(level, message);
+        }
+
         public static void Debug(string message)
         {
             //UnityEngine.Debug.Log(message);
-            logCallback(LogLevel.Debug, message);
+            PrintMessage(LogLevel.Debug, message);
         }
 
         public static void Error(string message)
         {
             //UnityEngine.Debug.LogError(message);
-            logCallback(LogLevel.Error, message);
+            PrintMessage(LogLevel.Error, message);
         }
 
         [Conditional("ENABLE_ASSERT")]
@@ -79,3 +121,4 @@ namespace bLua
         }
     }
 }
+

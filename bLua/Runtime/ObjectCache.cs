@@ -67,6 +67,10 @@ namespace bLua
         private const int ALLOC_SIZE = 2048;
         private Entry[] cache = new Entry[ALLOC_SIZE];
 
+        // 已分配的数量
+        private int usedCount = 0;
+        public int UsedCount => usedCount;
+
         // objHandle 就是下标
         public object GetObject(int objHandle)
         {
@@ -107,6 +111,8 @@ namespace bLua
             cache[objHandle].value = value;
             cache[objHandle].next = -2;
 
+            ++usedCount;
+
             return objHandle;
         }
 
@@ -117,6 +123,8 @@ namespace bLua
             // 清空
             cache[index].next = killIndex;
             cache[index].value = null;
+
+            --usedCount;
 
             // 加到死亡队列
             killIndex = index;

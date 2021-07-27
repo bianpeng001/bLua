@@ -29,10 +29,12 @@ using UnityEngine;
 namespace bLua
 {
     //
-    // 导出工具
+    // 导出工具, 导出binder.cs, binder.lua
     //
     public static class LuaExport
     {
+        public static ExportDefinition[] typeList;
+
         public static string outputNs = "namespace bLua.Extension";
         public static string[] usingBlock = new string[]
         {
@@ -75,8 +77,6 @@ namespace bLua
 
         private static int totalMethodCount = 0, totalPropCount = 0;
 
-        public static ExportDefinition[] typeList;
-
         //
         // 导出代码
         //
@@ -99,9 +99,21 @@ namespace bLua
             Debug.Log($"generate {totalPropCount} props");
         }
 
+        [MenuItem("Tools/bLua/Clear")]
         public static void Clear()
         {
+            typeList = new ExportDefinition[] { };
+            GenBinder();
 
+            foreach(var path in Directory.GetFiles(outputPath))
+            {
+                if (path.EndsWith(".cs") && !path.EndsWith("\\Binder.cs"))
+                {
+                    using (var fs = File.CreateText(path))
+                    {
+                    }
+                }
+            }
         }
 
         // lua里面的注册信息
@@ -817,11 +829,12 @@ namespace bLua
             fs.WriteLine("}");
         }
 
-        [MenuItem("Tools/bLua/InitSettings")]
+        [MenuItem("Tools/bLua/Init")]
         public static void InitSettings()
         {
-            
+            // TODO:
         }
+
     }
 
 }

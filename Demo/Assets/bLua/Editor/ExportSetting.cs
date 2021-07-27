@@ -334,7 +334,7 @@ namespace bLua
             {
                 type = typeof(UnityEngine.Light),
                 baseClass = typeof(UnityEngine.Behaviour),
-                blackList=new string[]
+                blackList = new string[]
                 {
                     "SetLightDirty", "shadowRadius",
                     "shadowAngle", "areaSize", "areaSize",
@@ -431,15 +431,11 @@ namespace bLua
         public static void Gen()
         {
             LuaExport.typeList = typeList;
+            LuaExport.outputPath = @"Assets\bLua\Generate";
+            LuaExport.outputPathLua = @"Assets\StreamingAssets\Lua";
             LuaExport.Gen();
         }
 
-        [MenuItem("Tools/bLua/Clear")]
-        public static void Clear()
-        {
-            LuaExport.Clear();
-        }
     }
 }
-
 

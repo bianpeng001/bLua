@@ -37,7 +37,7 @@ namespace bLua
         //
         // 定义符合lua的方法类型
         // 参数为 L: luaState
-        // 返回值为 return count:, 支持多值返回
+        // 返回值为 return count: 支持多值返回
         //
         public interface IUnityMethod
         {

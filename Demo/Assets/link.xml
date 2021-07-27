@@ -17,6 +17,9 @@
 	<assembly fullname="UnityEngine.VideoModule" preserve="all">
 	</assembly>
 	
+	<assembly fullname="bLua" preserve="all">
+	</assembly>
+	
 </linker>
 
 

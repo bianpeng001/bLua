@@ -17,6 +17,8 @@ limitations under the License.
 using System;
 using UnityEngine;
 
+[assembly: UnityEngine.Scripting.Preserve]
+
 namespace bLua
 {
     //

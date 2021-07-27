@@ -83,7 +83,6 @@ namespace bLua
             onFixedUpdate = module.GetFunction("FixedUpdate");
         }
 
-
         protected virtual void OnDestroy()
         {
             if (onAwake != null)

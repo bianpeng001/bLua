@@ -18,11 +18,12 @@ limitations under the License.
 // 2021年5月11日, 边蓬
 //
 
+
 using AOT;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
+//using UnityEngine;
 using static bLua.LuaLib;
 
 namespace bLua
@@ -194,7 +195,7 @@ namespace bLua
                 }
             }
 
-            Debug.Log(sb.ToString());
+            LogUtil.Debug(sb.ToString());
             sb.Clear();
 
             return 0;

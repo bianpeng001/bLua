@@ -195,6 +195,22 @@ namespace bLua
 
             return value;
         }
+
+        // 转换成delegate
+        public Func<TResult> ToFunc<TResult>()
+        {
+            return () => Call<TResult>();
+        }
+
+        public Func<T1, TResult> ToFunc<T1, TResult>()
+        {
+            return (T1 t1) => Call<T1, TResult>(t1);
+        }
+
+        public Func<T1, T2, TResult> ToFunc<T1, T2, TResult>()
+        {
+            return (T1 t1, T2 t2) => Call<T1, T2, TResult>(t1, t2);
+        }
     }
 }
 
