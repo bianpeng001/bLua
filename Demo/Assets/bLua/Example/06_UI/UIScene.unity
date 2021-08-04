@@ -1110,7 +1110,7 @@ GameObject:
   - component: {fileID: 1388808355}
   - component: {fileID: 1388808354}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: ExampleList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1128,6 +1128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce21c4f191543dd4893e0b5d14fee653, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  studyrpAsset: {fileID: 11400000, guid: ad8a80c58a16750489353f5bf38ffc1e, type: 2}
+  urpAsset: {fileID: 11400000, guid: 4954f0f3c40226d4a9cc3c57868ac169, type: 2}
 --- !u!4 &1388808355
 Transform:
   m_ObjectHideFlags: 0

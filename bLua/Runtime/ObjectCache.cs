@@ -57,13 +57,15 @@ namespace bLua
             public bool isLive => next == -2;
         }
 
+        private const int LIST_END = -1;
+
         // 空闲队列
-        private int freeIndex = -1;
+        private int freeIndex = LIST_END;
         // 可以分配的位置, 这个肯定是递增的, 从1开始, 用这个来跳过0位置
         private int allocIndex = 1;
 
         // 回收队列, 待回收的数量, 死亡队列
-        private int killIndex = -1, killCount = 0, deadIndex = -1;
+        private int killIndex = LIST_END, killCount = 0, deadIndex = LIST_END;
         private const int ALLOC_SIZE = 2048;
         private Entry[] cache = new Entry[ALLOC_SIZE];
 
@@ -139,7 +141,7 @@ namespace bLua
                 if (deadIndex >= 0)
                 {
                     var curr = cache[deadIndex].next;
-                    cache[deadIndex].next = -1;
+                    cache[deadIndex].next = LIST_END;
 
                     while (curr >= 0)
                     {

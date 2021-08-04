@@ -27,7 +27,9 @@ namespace bLua
     public abstract class LuaObject : IDisposable
     {
         private bool disposed = false;
-        internal int index;
+
+        // 存在luaState里面内部记录的index, 方便添加删除
+        internal int indexInLuaState;
 
         public void Dispose()
         {

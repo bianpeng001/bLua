@@ -164,7 +164,7 @@ MeshRenderer:
   m_GameObject: {fileID: 400151184}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -211,13 +211,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 400151184}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.2331059, z: 0, w: 0.9724514}
   m_LocalPosition: {x: -2.51, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 26.96, z: 0}
 --- !u!1 &478432496
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,3 +649,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 0
   path: Example07.lua
+  studyrpAsset: {fileID: 11400000, guid: ad8a80c58a16750489353f5bf38ffc1e, type: 2}

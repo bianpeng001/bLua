@@ -16,6 +16,7 @@ limitations under the License.
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 namespace bLua
@@ -40,9 +41,10 @@ namespace bLua
         {
             for(int i = 0;  i <  sceneList.Count; ++i)
             {
-                if (GUI.Button(new Rect(15, 60 + i * 32, 100, 28),  sceneList[i]))
+                var sceneName = sceneList[i];
+                if (GUI.Button(new Rect(15, 60 + i * 32, 100, 28), sceneName))
                 {
-                    SceneManager.LoadScene(sceneList[i], LoadSceneMode.Single);
+                    SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
                     break;
                 }
             }

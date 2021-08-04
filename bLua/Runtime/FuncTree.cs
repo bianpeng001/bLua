@@ -36,7 +36,9 @@ namespace bLua
         // 函数的类型, 映射
         private static readonly (Type, Type)[] funcTypeMap, actionTypeMap;
 
+        //
         // 这里用来缓存类型, 避免同类型的生成多个类型, 节约内存
+        //
         public class FuncTree
         {
             // 泛型参数, 某个

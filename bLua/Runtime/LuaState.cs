@@ -53,29 +53,32 @@ namespace bLua
 
         private readonly ILoader loader;
 
-        #region
+        #region 对象引用区
+
+        // 被引用的对象都要放这里, 需要在销毁state之前, 销毁
         private readonly List<LuaObject> objList = new List<LuaObject>(512);
 
         internal void AddLuaObject(LuaObject obj)
         {
-            obj.index = objList.Count;
+            obj.indexInLuaState = objList.Count;
             objList.Add(obj);
         }
 
         internal void RemoveLuaObject(LuaObject obj)
         {
             LogUtil.Assert(objList.Count > 0
-                && obj == objList[obj.index],
-                "obj is not belong to state");
+                && obj == objList[obj.indexInLuaState],
+                "it's a wild object!");
 
+            var index = obj.indexInLuaState;
             var lastIndex = objList.Count - 1;
-            if (lastIndex != obj.index)
+            if (lastIndex != index)
             {
-                var last = objList[lastIndex];
-                objList[obj.index] = last;
-                last.index = obj.index;
+                var lastObj = objList[lastIndex];
+                objList[index] = lastObj;
+                lastObj.indexInLuaState = index;
             }
-            obj.index = -1;
+            obj.indexInLuaState = -1;
             objList[lastIndex] = null;
             objList.RemoveAt(lastIndex);
         }

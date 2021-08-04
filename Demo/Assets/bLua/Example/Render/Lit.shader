@@ -1,4 +1,8 @@
-Shader "Unlit/LuanDou/Lit"
+//
+//
+//
+
+Shader "LuanDou/Lit"
 {
     Properties
     {
@@ -9,7 +13,7 @@ Shader "Unlit/LuanDou/Lit"
     {
         Tags
 		{
-			"RenderType"="Opaque"
+			"RenderType" = "Opaque"
 			"RenderPipeline" = "UniversalPipeline"
 		}
         LOD 100
@@ -26,16 +30,22 @@ Shader "Unlit/LuanDou/Lit"
             #pragma vertex ShadowVert
             #pragma fragment ShadowFrag
 
-            #include "Assets/bLua/Example/07_LuanDou/Shadow.hlsl"
+            #include "Assets/bLua/Example/Render/Shadow.hlsl"
             
             ENDHLSL
         }
 
         Pass
         {
-            Tags { "LightMode" = "UniversalForward" }
+            //Tags { "LightMode" = "UniversalForward" }
+            Tags { "LightMode" = "ExampleTag" }
+
+            ZWrite On
+            ZTest LEqual
+            Cull Back
 
             HLSLPROGRAM
+            
 			#pragma target 4.0
 
             #pragma vertex vert
@@ -48,6 +58,7 @@ Shader "Unlit/LuanDou/Lit"
                 float3 positionOS : POSITION;
                 float3 normalOS : NORMAL;
                 float4 tangentOS : TANGENT;
+                float2 uv : TEXCOORD0;
             };
 
             struct Varyings
@@ -56,13 +67,15 @@ Shader "Unlit/LuanDou/Lit"
                 float4 positionWS;
                 float3 normalWS;
                 float4 tangentWS;
+                float2 uv;
             };
 
             // 最终输出给frag用
             struct PackedVaryings
             {
                 float4 positionCS : SV_POSITION;
-                float4 positionWS : TEXCOORD0;
+                float2 uv : TEXCOORD0;
+                float4 positionWS : TEXCOORD1;
             };
 
             TEXTURE2D(_BaseMap);
@@ -78,6 +91,8 @@ Shader "Unlit/LuanDou/Lit"
                 PackedVaryings o = (PackedVaryings)0;
                 o.positionCS = input.positionCS;
                 o.positionWS = input.positionWS;
+                o.uv = input.uv;
+
                 return o;
             }
             
@@ -85,16 +100,17 @@ Shader "Unlit/LuanDou/Lit"
             {
                 Varyings o = (Varyings)0;
                 o.positionCS = TransformObjectToHClip(input.positionOS);
-
+                o.uv = TRANSFORM_TEX(input.uv, _BaseMap);
 
                 return PackVaryings(o);
             }
 
             half4 frag (PackedVaryings input) : SV_Target
             {
-                return half4(1, 0, 0, 1);
-                
+                half4 color = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
+                return color * _BaseColor;
             }
+
             ENDHLSL
         }
     }
