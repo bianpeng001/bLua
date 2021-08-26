@@ -26,6 +26,8 @@ namespace bLua
     //
     public class Builder
     {
+        public static readonly BuildTarget activeBuildTarget = EditorUserBuildSettings.activeBuildTarget;
+
         public static List<string> levels = new List<string>()
         {
             "Assets/bLua/Example/06_UI/UIScene.unity",
@@ -84,8 +86,8 @@ namespace bLua
                 //PlayerSettings.SetAdditionalCompilerArgumentsForGroup(group, new string[]
                 //{
                 //});
-                //PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Release);
-                PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Master);
+                PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Release);
+                //PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Master);
                 //PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Debug);
                 //PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-O0\" --linker-flags=\"-O0\"");
                 //PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-O1\" --linker-flags=\"-O1\"");
@@ -125,7 +127,9 @@ namespace bLua
                     PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
                     PlayerSettings.Android.splashScreenScale = AndroidSplashScreenScale.Center;
                     
+                    // 导出工程 gradle
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
+
                     EditorUserBuildSettings.androidCreateSymbolsZip = true;
                     PlayerSettings.Android.bundleVersionCode = buildNumber;
 

@@ -116,6 +116,21 @@ public static void TriggerSubEmitter(UnityEngine.ParticleSystem _this, int subEm
 	_this.TriggerSubEmitter(subEmitterIndex);
 }
 
+public static void AllocateAxisOfRotationAttribute(UnityEngine.ParticleSystem _this)
+{
+	_this.AllocateAxisOfRotationAttribute();
+}
+
+public static void AllocateMeshIndexAttribute(UnityEngine.ParticleSystem _this)
+{
+	_this.AllocateMeshIndexAttribute();
+}
+
+public static void AllocateCustomDataAttribute(UnityEngine.ParticleSystem _this, int stream)
+{
+	_this.AllocateCustomDataAttribute((UnityEngine.ParticleSystemCustomData)stream);
+}
+
 public static bool get_isPlaying(UnityEngine.ParticleSystem _this)
 {
 	return _this.isPlaying;

@@ -268,7 +268,7 @@ namespace bLua
 
             static void WriteAOT(StreamWriter fs)
             {
-                fs.WriteLine("public static void TouchWrapFuncs()");
+                fs.WriteLine("public static void TouchAll()");
                 WriteBlock(fs, () =>
                 {
                     fs.WriteLine("var L = IntPtr.Zero;");
@@ -346,7 +346,7 @@ namespace bLua
                 argList.Add(mi.ReturnType);
 
             if (isVoid && argList.Count == 0)
-                return "new AutoWrap.Action().Call(L);";
+                return "new AutoWrap.Action();";
 
             sb.Clear();
             sb.Append("new AutoWrap.");
@@ -363,7 +363,7 @@ namespace bLua
                     sb.Append(", ");
                 sb.Append(GetTypeLabel(argList[i]));
             }
-            sb.Append(">().Call(L);");
+            sb.Append(">();");
 
             return sb.ToString();
 

@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28db75767a839ca468bb4aeb95489acc, type: 3}
   m_Name: StudyRenderPipelineAsset
   m_EditorClassIdentifier: 
-  backgroundColor: {r: 1, g: 1, b: 1, a: 0}
+  version: 100
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0}
+  rendererDatas:
+  - {fileID: 0}

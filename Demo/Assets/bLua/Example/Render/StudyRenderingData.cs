@@ -19,7 +19,7 @@ using UnityEngine.Rendering;
 
 namespace bLua.Render
 {
-    public struct RenderingData
+    public struct StudyRenderingData
     {
         public Camera camera;
 

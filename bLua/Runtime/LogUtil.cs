@@ -119,6 +119,11 @@ namespace bLua
             if (!success)
                 throw new Exception(message);
         }
+
+        public static void PrintLogLevel(LogLevel level)
+        {
+            Debug($"recieved {level}");
+        }
     }
 }
 

@@ -14,12 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]--
 
+
+local LogUtil = bLua.LogUtil
+
 local LuaBehaviour = require("Core/LuaBehaviour")
 
 local module = LuaBehaviour.CreateModule()
 
 function module.Awake()
     print('example 07')
+    LogUtil.PrintLogLevel(0)
+    LogUtil.PrintLogLevel(1)
 end
 
 return module

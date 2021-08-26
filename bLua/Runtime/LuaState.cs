@@ -139,13 +139,14 @@ namespace bLua
             return 1;
         }
 
-        private static readonly StringBuilder sb = new StringBuilder();
+        private readonly StringBuilder sb = new StringBuilder();
 
         [MonoPInvokeCallbackAttribute(typeof(LuaLib.lua_CFunction))]
         private static int Print(IntPtr L)
         {
             var top = lua_gettop(L);
 
+            var sb = GetState(L).sb;
             for (int i = 1; i <= top; ++i)
             {
                 if (sb.Length > 0)
@@ -210,12 +211,10 @@ namespace bLua
             if (!disposed)
             {
                 disposed = true;
-                //LogUtil.Debug("dispose luaState");
 
                 for (int i = objList.Count - 1; i >= 0; --i)
-                {
                     objList[i].Dispose();
-                }
+                objList.Clear();
 
                 lua_close(L);
                 L = IntPtr.Zero;

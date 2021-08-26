@@ -198,6 +198,18 @@ namespace bLua
             }
         }
 
+        private static void PushEnum<T>(IntPtr L, T value) /*where T : Enum*/
+        {
+            var intValue = Convert.ToInt32(value);
+            PushInt(L, intValue);
+        }
+
+        private static T PullEnum<T>(IntPtr L, int pos) /*where T : Enum*/
+        {
+            var intValue = PullInt(L, pos);
+            return (T)Enum.ToObject(typeof(T), intValue);
+        }
+
         // 记录在obj = { [1]=objHandle }
         // 记录在UserData里面
         private static void PushObject<T>(IntPtr L, T value)
@@ -425,15 +437,15 @@ namespace bLua
                     else if (gd == typeof(HashSet<>))
                         InitSet(type);
                 }
+                else if (type.IsEnum)
+                {
+                    push = (Push<T>)PushEnum<T>;
+                    pull = (Pull<T>)PullEnum<T>;
+                }
                 else if (type.IsValueType)
                 {
                     push = (Push<T>)PushValueType<T>;
                     pull = (Pull<T>)PullValueType<T>;
-                }
-                else if (type.IsEnum)
-                {
-                    // TODO:
-                    throw new NotSupportedException();
                 }
                 else if (type == typeof(object) || type.IsClass || type.IsInterface)
                 {
@@ -484,15 +496,15 @@ namespace bLua
             {
                 if (type.IsValueType
                     && type.IsGenericType
-                    && type.GetGenericTypeDefinition() is var gd)
+                    && type.GetGenericTypeDefinition() is var retType)
                 {
-                    if (gd == typeof(MultRet<,>))
+                    if (retType == typeof(MultRet<,>))
                         retCount = 2;
-                    else if (gd == typeof(MulRet<,,>))
+                    else if (retType == typeof(MulRet<,,>))
                         retCount = 3;
-                    else if (gd == typeof(MulRet<,,,>))
+                    else if (retType == typeof(MulRet<,,,>))
                         retCount = 4;
-                    else if (gd == typeof(MulRet<,,,,>))
+                    else if (retType == typeof(MulRet<,,,,>))
                         retCount = 5;
                     else
                         throw new NotSupportedException();

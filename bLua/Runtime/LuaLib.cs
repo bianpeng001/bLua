@@ -508,12 +508,26 @@ namespace bLua
 
         public static long lua_tointeger(IntPtr L, int idx)
         {
-            return lua_tointegerx(L, idx, IntPtr.Zero);
+            unsafe
+            {
+                int isnum = 0;
+                IntPtr ptr = new IntPtr(&isnum);
+                return lua_tointegerx(L, idx, IntPtr.Zero);
+            }
+
+            // return lua_tointegerx(L, idx, IntPtr.Zero);
         }
 
         public static double lua_tonumber(IntPtr L, int idx)
         {
-            return lua_tonumberx(L, idx, IntPtr.Zero);
+            //return lua_tonumberx(L, idx, IntPtr.Zero);
+
+            unsafe
+            {
+                int isnum = 0;
+                IntPtr ptr = new IntPtr(&isnum);
+                return lua_tonumberx(L, idx, IntPtr.Zero);
+            }
         }
 
         public static void lua_newtable(IntPtr L)

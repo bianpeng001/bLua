@@ -961,6 +961,12 @@ UnityEngine.ParticleSystemStopBehavior =
 	StopEmitting = 1,
 }
 
+UnityEngine.ParticleSystemCustomData =
+{
+	Custom1 = 0,
+	Custom2 = 1,
+}
+
 UnityEngine.RenderMode =
 {
 	ScreenSpaceOverlay = 0,

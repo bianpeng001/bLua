@@ -1,4 +1,4 @@
-Shader "Unlit/LuanDou/Water"
+Shader "LuanDou/Water"
 {
     Properties
     {

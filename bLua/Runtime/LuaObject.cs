@@ -40,10 +40,7 @@ namespace bLua
             }
         }
 
-        protected virtual void OnDispose()
-        {
-            
-        }
+        protected abstract void OnDispose();
 
         ~LuaObject()
         {
