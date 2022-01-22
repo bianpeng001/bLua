@@ -61,3 +61,6 @@ crashlytics-build.properties
 Demo/Logs
 Demo/Library
 
+Demo/.vsconfig
+Demo/BuildWin64/
+
