@@ -14,18 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月11日, 边蓬
-//
 
 using System;
 using System.Runtime.InteropServices;
 
 namespace bLua
 {
-    //
-    // lua核心库
-    //
     public static class LuaLib
     {
         public static readonly string LuaVendor = "lua.org";
@@ -37,7 +31,6 @@ namespace bLua
         const string DLLNAME = "lua54";
 #endif
 
-        // lua data type
         public enum DataType : int
         {
             LUA_TNONE = -1,
@@ -53,7 +46,6 @@ namespace bLua
             LUA_NUMTYPES = 9,
         }
 
-        // gc option
         public enum GCOption : int
         {
             LUA_GCSTOP = 0,
@@ -69,7 +61,6 @@ namespace bLua
             LUA_GCINC = 11,
         }
 
-        // error code
         public enum ErrorCode : int
         {
             LUA_OK = 0,
@@ -80,7 +71,6 @@ namespace bLua
             LUA_ERRERR = 5,
         }
 
-        // lua_pcall, lua_call
         public const int LUA_MULTRET = -1;
 
         [StructLayout(LayoutKind.Sequential)]
@@ -100,14 +90,10 @@ namespace bLua
             public int i_ci;                    /* active function */
         }
 
-        // 内建常量
 
-        // LUAI_MAXSTACK: details see luaconf.h
-        //public const int LUAI_MAXSTACK = 15000;
         public const int LUAI_MAXSTACK = 1000000;
         public const int LUA_REGISTRYINDEX = (-LUAI_MAXSTACK - 1000);
 
-        // 引用的两个特殊值
         public const int LUA_NOREF = -2;
         public const int LUA_REFNIL = -1;
 
@@ -126,7 +112,6 @@ namespace bLua
         public delegate void lua_HookFunc(IntPtr L, ref Lua_Debug ar);    
 #endif
 
-        //push functions
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_pushnil(IntPtr L);
 
@@ -155,7 +140,6 @@ namespace bLua
         public static extern int lua_pushthread(IntPtr L);
 
 
-        // get functions
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_getglobal(IntPtr L, string key);
 
@@ -177,7 +161,6 @@ namespace bLua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_getmetatable(IntPtr L, int idx);
 
-        // set functions
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_rawset(IntPtr L, int idx);
 
@@ -196,14 +179,12 @@ namespace bLua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_settable(IntPtr L, int idx);
 
-        // state manipulation
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_close(IntPtr L);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr lua_newthread(IntPtr L);
 
-        // basic stack manipulation
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_gettop(IntPtr L);
 
@@ -236,7 +217,6 @@ namespace bLua
             lua_pop(L, 1);
         }
 
-        // access functions
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool lua_isnumber(IntPtr L, int idx);
 
@@ -265,7 +245,6 @@ namespace bLua
             return lua_type(L, idx) == DataType.LUA_TTABLE;
         }
 
-        // others...
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_setfenv(IntPtr L, int idx);
 
@@ -304,32 +283,21 @@ namespace bLua
 
         public static string lua_tostring(IntPtr L, int idx)
         {
-            var ptr = lua_tolstring(L, idx, out var len);
+            int len = 0;
+            IntPtr ptr;
+
+            ptr = lua_tolstring(L, idx, out len);
             if (ptr == IntPtr.Zero || len == 0)
                 return null;
 
-            // 没想到在在这里崩溃了好几天, 我不行了
             unsafe
             {
-                // v1: !!! 这个写法, 可能il2cpp后, 内存分配有问题, 各种崩溃
-                // 所以, 这里应该再加一个Marshal.Copy(str, buffer, 0, len), 估计就对了
-                //byte* a = (byte*)ptr.ToPointer();
-                //return System.Text.Encoding.UTF8.GetString(a, len);
 
-                // v2: 这个写法, 目前看来是可以用的
                 sbyte* a = (sbyte*)ptr.ToPointer();
                 return new string(a, 0, len, System.Text.Encoding.UTF8);
 
-                // 参考一下tolua的写法, 有一个copy操作, 似乎挺不错的
-                //string ss = Marshal.PtrToStringAnsi(str, len);
-                //if (ss == null)
-                //{
-                //    byte[] buffer = new byte[len];
-                //    Marshal.Copy(str, buffer, 0, len);
-                //    return Encoding.UTF8.GetString(buffer);
-                //}
-                //return ss;
             }
+
         }
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
@@ -351,8 +319,6 @@ namespace bLua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr lua_newuserdatauv(IntPtr L, int size, int nuvalue);
 
-        // idx: 栈上idx位置的, userdata
-        // n: 第n个uvaue, 从1开始
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_setiuservalue(IntPtr L, int idx, int n);
 
@@ -448,7 +414,6 @@ namespace bLua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_gethookcount(IntPtr L);
 
-        // laux
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void luaL_openlibs(IntPtr L);
 
@@ -458,7 +423,6 @@ namespace bLua
             byte[] buf, int bufsize,
             byte[] name, string mode);
 
-        // dostring, loadfile
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int luaL_loadstring(IntPtr L, string chunk);
 
@@ -480,7 +444,6 @@ namespace bLua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_error(IntPtr L);
 
-        // 压栈一个报错信息, 然后error()掉, 终止运行
         public static void LuaError(IntPtr L, string message)
         {
             lua_pushstring(L, message);
@@ -500,7 +463,6 @@ namespace bLua
             }
         }
 
-        // 工具方法
         public static void lua_pop(IntPtr L, int n)
         {
             lua_settop(L, -(n) - 1);
@@ -515,12 +477,10 @@ namespace bLua
                 return lua_tointegerx(L, idx, IntPtr.Zero);
             }
 
-            // return lua_tointegerx(L, idx, IntPtr.Zero);
         }
 
         public static double lua_tonumber(IntPtr L, int idx)
         {
-            //return lua_tonumberx(L, idx, IntPtr.Zero);
 
             unsafe
             {
@@ -535,7 +495,6 @@ namespace bLua
             lua_createtable(L, 0, 0);
         }
 
-        // 注册全局函数
         public static void lua_register(IntPtr L, string name, lua_CFunction func)
         {
             lua_pushcfunction(L, func);
@@ -548,7 +507,6 @@ namespace bLua
             lua_pushcclosure(L, fn, 0);
         }
 
-        // blua
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void blua_openlib(IntPtr L);
 

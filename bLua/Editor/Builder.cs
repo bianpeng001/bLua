@@ -17,30 +17,29 @@ limitations under the License.
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Build.Player;
 using UnityEngine;
 
 namespace bLua
 {
-    //
-    // build 脚本, 全部用c#来写, 不用外面加工具了
-    //
     public class Builder
     {
         public static readonly BuildTarget activeBuildTarget = EditorUserBuildSettings.activeBuildTarget;
 
-        public static List<string> levels = new List<string>()
+        public static readonly List<string> levels = new List<string>()
         {
             "Assets/bLua/Example/06_UI/UIScene.unity",
-            "Assets/bLua/Example/05_Tower/TowerScene.unity",
+
             "Assets/bLua/Example/01_Example/ExampleScene.unity",
             "Assets/bLua/Example/02_War/WarScene.unity",
-            "Assets/bLua/Example/07_LuanDou/LuanDouScene.unity",
+            "Assets/bLua/Example/05_Tower/TowerScene.unity",
+            "Assets/bLua/Example/07_URP/URPScene.unity",
+            "Assets/bLua/Example/08_Fight/FightScene.unity",
         };
 
         [MenuItem("Tools/bLua/Build/Bundle")]
         public static void BuildBundle()
         {
-            // TODO:
         }
 
         private static void DoBuild(BuildTargetGroup group,
@@ -63,43 +62,32 @@ namespace bLua
                 options |= BuildOptions.ConnectWithProfiler;
             }
             
-            // splash
             PlayerSettings.SplashScreen.showUnityLogo = false;
             PlayerSettings.SplashScreen.show = false;
             PlayerSettings.SplashScreen.backgroundColor = Color.white;
 
-            // 公共参数
             PlayerSettings.SetApiCompatibilityLevel(group, ApiCompatibilityLevel.NET_Standard_2_0);
             PlayerSettings.SetManagedStrippingLevel(group, ManagedStrippingLevel.Low);
             PlayerSettings.SetScriptingBackend(group, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetIncrementalIl2CppBuild(group, false);
 
-            // 朝向
             PlayerSettings.allowedAutorotateToLandscapeRight = true;
             PlayerSettings.allowedAutorotateToLandscapeLeft = true;
             PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
             PlayerSettings.allowedAutorotateToPortrait = false;
 
-            // il2cpp
             if (isRelease)
             {
-                //PlayerSettings.SetAdditionalCompilerArgumentsForGroup(group, new string[]
-                //{
-                //});
                 PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Release);
-                //PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Master);
-                //PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Debug);
-                //PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-O0\" --linker-flags=\"-O0\"");
-                //PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-O1\" --linker-flags=\"-O1\"");
-                //PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-O2\" --linker-flags=\"-O2\"");
+                PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"\" --linker-flags=\"\"");
             }
             else
             {
-                PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Debug);
-                PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-O0\" --linker-flags=\"-O0\"");
+
+                PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Release);
+                PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"\" --linker-flags=\"\"");
             }
 
-            // symbols
             var symbols = new HashSet<string>();
             if (!isRelease)
             {
@@ -112,7 +100,6 @@ namespace bLua
             PlayerSettings.runInBackground = true;
             PlayerSettings.usePlayerLog = true;
 
-            // mutithread rendering
             PlayerSettings.MTRendering = true;
             PlayerSettings.SetMobileMTRendering(group, true);
 
@@ -127,7 +114,6 @@ namespace bLua
                     PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
                     PlayerSettings.Android.splashScreenScale = AndroidSplashScreenScale.Center;
                     
-                    // 导出工程 gradle
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
 
                     EditorUserBuildSettings.androidCreateSymbolsZip = true;
@@ -147,14 +133,16 @@ namespace bLua
                     PlayerSettings.iOS.backgroundModes = iOSBackgroundMode.None;
                     PlayerSettings.iOS.appInBackgroundBehavior = iOSAppInBackgroundBehavior.Custom;
 
-                    // arch64 only: 0 - None, 1 - ARM64, 2 - Universal
                     PlayerSettings.SetArchitecture(BuildTargetGroup.iOS, 1);
                     PlayerSettings.iOS.buildNumber = buildNumber.ToString();
 
                     break;
+
+                case BuildTarget.StandaloneWindows64:
+
+                    break;
             }
 
-            // build
             var report = BuildPipeline.BuildPlayer(levels.ToArray(), outputPath, target, options);
 
             var t1 = DateTime.Now;
@@ -164,8 +152,17 @@ namespace bLua
             Debug.Log($"{target} release:{isRelease} {report.summary.result} in {t}s");
         }
 
-        [MenuItem("Tools/bLua/Build/Win64 Debug")]
+        [MenuItem("Tools/bLua/Build/Win64 Release")]
         public static void BuildWin64()
+        {
+            DoBuild(BuildTargetGroup.Standalone,
+                BuildTarget.StandaloneWindows64,
+                "BuildWin64/Demo.exe",
+                true);
+        }
+
+        [MenuItem("Tools/bLua/Build/Win64 Debug")]
+        public static void BuildWin64Debug()
         {
             DoBuild(BuildTargetGroup.Standalone,
                 BuildTarget.StandaloneWindows64,
@@ -189,6 +186,20 @@ namespace bLua
                 BuildTarget.Android,
                 "BuildAndroid/Demo.apk",
                 true);
+        }
+
+        [MenuItem("Tools/bLua/Build/Test Build Android")]
+        public static void TestRuntimeScriptsAndroid()
+        {
+            ScriptCompilationSettings settings = new ScriptCompilationSettings()
+            {
+                group = BuildTargetGroup.Android,
+                target = BuildTarget.Android,
+                options = ScriptCompilationOptions.None,
+            };
+            PlayerBuildInterface.CompilePlayerScripts(settings,
+                "Temp/RuntimeAssemblies");
+            Debug.Log("done");
         }
 
     }

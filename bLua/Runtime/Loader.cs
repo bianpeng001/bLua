@@ -14,23 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月11日, 边蓬
-//
 
 namespace bLua
 {
-    //
-    // lua的加载器
-    //
     public interface ILoader
     {
         byte[] Load(string path);
     }
 
-    //
-    // 系统支持文件系统比如, editor, ios, pc
-    //
     public class LuaFileLoader : ILoader
     {
         public byte[] Load(string path)
@@ -39,9 +30,6 @@ namespace bLua
         }
     }
 
-    //
-    // 安卓平台下面的读取, 没有文件系统, 得用webrequest
-    //
     public class LuaFileLoaderAndroid : ILoader
     {
         public byte[] Load(string path)

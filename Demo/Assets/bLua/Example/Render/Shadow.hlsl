@@ -160,10 +160,6 @@ Varyings ShadowVert_V2 (Attributes input)
 
 #endif
 
-#ifdef UNITY_REVERSED_Z
-    
-#endif
-
     // 注意:
     // 在editor下面, z离near plane越近, 越大
     // 
@@ -242,7 +238,7 @@ half4 StudyForwardFrag (PackedVaryings input) : SV_Target
 
     float light = 1;
     if (lightDepth > depth)
-        light = 0.1;
+        light = 0.3;
 
     // 看一下采样值, 和计算值的差距, 理论上, 无阴影处是一样的, 就是黑色
     //light = lightDepth - depth;

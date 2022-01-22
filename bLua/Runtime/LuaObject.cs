@@ -14,21 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月22日, 边蓬
-//
 using System;
 
 namespace bLua
 {
-    //
-    // 引用lua对象, 在c#这里用
-    //
     public abstract class LuaObject : IDisposable
     {
         private bool disposed = false;
 
-        // 存在luaState里面内部记录的index, 方便添加删除
         internal int indexInLuaState;
 
         public void Dispose()

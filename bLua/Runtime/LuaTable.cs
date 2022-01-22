@@ -14,18 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月22日, 边蓬
-//
 
 using System;
 using static bLua.LuaLib;
 
 namespace bLua
 {
-    //
-    // 对应的lua那边的table
-    //
     public class LuaTable : LuaObject
     {
         private readonly LuaState state;
@@ -42,41 +36,31 @@ namespace bLua
         protected override void OnDispose()
         {
             state.RemoveLuaObject(this);
-            //luaL_unref(state, LUA_REGISTRYINDEX, luaref);
-            //luaref = LUA_NOREF;
             luaref.Dispose(state);
         }
 
         public void SetField<T>(string name, T value)
         {
             luaref.Rawget(state);
-            // tbl
             AutoWrap.TypeTrait<T>.push(state, value);
-            // tbl value
             lua_setfield(state, -2, name);
-            // tbl
             lua_pop(state, 1);
         }
 
         public T GetField<T>(string name)
         {
             luaref.Rawget(state);
-            // tbl
             lua_getfield(state, -1, name);
-            // tbl value
             var value = AutoWrap.TypeTrait<T>.pull(state, -1);
             lua_pop(state, 2);
 
             return value;
         }
 
-        // 返回一个luaref
         private LuaRef GetFldRef(string name)
         {
             luaref.Rawget(state);
-            // table
             lua_getfield(state, -1, name);
-            // table fld
 
             var fldref = new LuaRef(state);
             lua_pop(state, 1);
@@ -105,9 +89,7 @@ namespace bLua
         public T GetItem<T>(int index)
         {
             luaref.Rawget(state);
-            // tbl
             lua_rawgeti(state, -1, index);
-            // tbl value
             var value = AutoWrap.TypeTrait<T>.pull(state, -1);
             lua_pop(state, 2);
 
@@ -117,14 +99,11 @@ namespace bLua
         public void SetItem<T>(int index, T value)
         {
             luaref.Rawget(state);
-            // tbl
             AutoWrap.TypeTrait<T>.push(state, value);
-            // tbl value
             lua_rawseti(state, -2, index);
             lua_pop(state, 1);
         }
 
-        // 压栈, 给别人用
         public void Push()
         {
             luaref.Rawget(state);
@@ -132,13 +111,11 @@ namespace bLua
 
         public LuaTable GetMetaTable()
         {
-            // TODO:
             return null;
         }
 
         public void SetMetaTable(LuaTable table)
         {
-            // TODO:
         }
 
     }

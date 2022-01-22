@@ -14,34 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月11日, 边蓬
-//
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace bLua
 {
-    //
-    //
-    //
     public static partial class AutoWrap
     {
 
-        // 减少内存分配, 预分配的一些参数模版
-        // 用来做泛型参数的
         private static readonly Type[][] gparamsCache;
 
-        // 函数的类型, 映射
         private static readonly (Type, Type)[] funcTypeMap, actionTypeMap;
 
-        //
-        // 这里用来缓存类型, 避免同类型的生成多个类型, 节约内存
-        //
         public class FuncTree
         {
-            // 泛型参数, 某个
             public readonly Type argType;
 
             public FuncTree(Type argType)
@@ -51,7 +38,6 @@ namespace bLua
 
             public List<FuncTree> childList;
 
-            // 缓存的类型, 回调类型
             public Type funcType, cbType;
         }
 
@@ -59,7 +45,6 @@ namespace bLua
             funcRoot = new FuncTree(null),
             actionRoot = new FuncTree(null);
 
-        // 根据泛型参数, 获取缓存好的func, cb类型
         private static (Type, Type) GetFuncType(
             FuncTree node,
             Type funcTemplate,
@@ -95,7 +80,6 @@ namespace bLua
             }
         }
 
-        // 创建一个wrap函数实例
         private static IUnityMethod CreateUnityMethod(MethodInfo method)
         {
             var retType = method.ReturnType;
@@ -129,23 +113,15 @@ namespace bLua
                 }
             }
 
-            // 创建一个wrap的实例
             var obj = Activator.CreateInstance(unityMethodType) as IUnityMethod;
-            // 关键代码, 就这一行
-            // 实际的cb的实例
             var cb = Delegate.CreateDelegate(cbType, null, method);
 
-            // 还是用了反射, 省点代码生成, 而且就反射这一次, 性能总还行吧
-            // unityMethodType.GetField("cb").SetValue(obj, cb);
-            // 反射去掉吧, 性能好一点点
             if (obj is IUnityMethodFromDelegate umd)
             {
-                //(obj as IUnityMethodFromDelegate).SetDelegate(cb);
                 umd.SetDelegate(cb);
             }
             else
             {
-                //unityMethodType.GetField("cb").SetValue(obj, cb);
             }
 
             return obj;

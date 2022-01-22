@@ -14,9 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月20日, 边蓬
-//
 
 using System.IO;
 using UnityEngine;
@@ -24,9 +21,6 @@ using UnityEngine.Networking;
 
 namespace bLua
 {
-    //
-    // 文件读取, 这里有些平台相关的东西
-    //
     public static class LoaderUtil
     {
         private static readonly string LuaExt = ".lua";
@@ -52,7 +46,6 @@ namespace bLua
 
             if (!File.Exists(assetPath))
             {
-                //return null;
                 throw new IOException($"file not exists: {path}");
             }
 
@@ -70,7 +63,6 @@ namespace bLua
             var waiter = req.SendWebRequest();
             while (!waiter.isDone)
             {
-                //Debug.Log($"wait {path}");
             }
 
             return File.ReadAllBytes(localPath);

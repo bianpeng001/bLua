@@ -16,21 +16,61 @@ limitations under the License.
 
 #define ENABLE_ASSERT
 
-//
-// 2021年5月21日, 边蓬
-//
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace bLua
 {
-    //
-    // 方法的定义
-    //
     public static partial class AutoWrap
     {
-        // func...
+
+        class DynMethod : IUnityMethod
+        {
+            public MethodInfo method;
+
+            public static object Pull<T>(IntPtr L, int pos)
+            {
+                var obj = TypeTrait<T>.pull(L, pos);
+                return (object)obj;
+            }
+
+            private static MethodInfo pullMethod = typeof(DynMethod).GetMethod("Pull");
+
+            private delegate object PullFunc(IntPtr L, int pos);
+
+            private static object GetObject(Type argType, IntPtr L, int pos)
+            {
+                var func = (PullFunc)Delegate.CreateDelegate(
+                    typeof(PullFunc),
+                    pullMethod.MakeGenericMethod(argType));
+
+                return func(L, pos);
+            }
+
+            private const string MethodName = "Pull";
+
+            public int Call(IntPtr L)
+            {
+                LogUtil.Assert(!method.IsStatic);
+                int argc = LuaLib.lua_gettop(L);
+                var pp = method.GetParameters();
+                var count = pp.Length;
+
+                var obj = GetObject(method.DeclaringType, L, -count - 1);
+
+                var args = new object[pp.Length];
+                for(int i = 0; i < count; ++i)
+                {
+                    args[i] = GetObject(pp[i].ParameterType, L, i - count);
+                }
+                
+                var ret = method.Invoke(obj, args);
+
+                return 0;
+            }
+        }
+
         public class Func<Result> : IUnityMethod, IUnityMethodFromDelegate
         {
             public System.Func<Result> cb;
@@ -359,7 +399,6 @@ namespace bLua
             }
         }
 
-        // action...
         public class Action : IUnityMethod, IUnityMethodFromDelegate
         {
             public System.Action cb;
@@ -677,17 +716,12 @@ namespace bLua
             }
         }
 
-        //
-        // overload的解决方法
-        // 同名函数, 必须以参数个数来区分. 枚举当int处理, 所以也是无法识别的
-        //
         public class OverloadResolver : IUnityMethod
         {
             private (MethodInfo method, int argc, IUnityMethod wrappedMethod)[] dispatch;
 
             public OverloadResolver(List<MethodInfo> methodList)
             {
-                // TODO: 这里的检查加多一些, 见到编辑期
                 dispatch = new (MethodInfo, int, IUnityMethod)[methodList.Count];
                 methodList.Sort((a, b) => a.GetParameters().Length - b.GetParameters().Length);
 
@@ -734,8 +768,6 @@ namespace bLua
             }
         }
 
-        // 辅助方法, 减少点代码
-        // func
         public static IUnityMethod CreateFunc<TResult>(System.Func<TResult> cb)
         {
             return new Func<TResult>() { cb = cb };
@@ -756,7 +788,6 @@ namespace bLua
             return new Func<T1, T2, T3, TResult>() { cb = cb };
         }
 
-        // action
         public static IUnityMethod CreateAction(System.Action cb)
         {
             return new Action() { cb = cb };

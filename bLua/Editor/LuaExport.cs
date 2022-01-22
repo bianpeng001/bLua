@@ -14,9 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月11日, 边蓬
-//
 
 using System;
 using System.Collections.Generic;
@@ -28,9 +25,6 @@ using UnityEngine;
 
 namespace bLua
 {
-    //
-    // 导出工具, 导出binder.cs, binder.lua
-    //
     public static class LuaExport
     {
         public static ExportDefinition[] typeList;
@@ -47,17 +41,14 @@ namespace bLua
 
         public const string _this = "_this";
 
-        // 一个类型注册信息
         public class ExportDefinition
         {
             public Type type, baseClass;
             public Type extClass;
 
             public string[] blackList, whiteList;
-            // 重命名
             public string typeName;
 
-            // 是否导出构造函数, 因为没搞定足够灵巧的overload
             public bool exportCtors = true;
 
             public string GetHelpClassName()
@@ -77,15 +68,11 @@ namespace bLua
 
         private static int totalMethodCount = 0, totalPropCount = 0;
 
-        //
-        // 导出代码
-        //
         public static void Gen()
         {
             totalMethodCount = 0;
             totalPropCount = 0;
 
-            // 导出wrap函数, 只有method需要包一下
             for (int i = 0; i < typeList.Length; ++i)
                 GenHelper(typeList[i]);
 
@@ -116,7 +103,6 @@ namespace bLua
             }
         }
 
-        // lua里面的注册信息
         private static void GenBinderLua()
         {
             var cache = new HashSet<string>();
@@ -170,7 +156,6 @@ namespace bLua
                 }
                 fs.WriteLine();
 
-                // IUnityMethod
                 fs.WriteLine("bLua.IUnityMethod.__call = CallUnityMethod or function(...)");
                 fs.WriteLine("\tprint(...)");
                 fs.WriteLine("end");
@@ -206,7 +191,6 @@ namespace bLua
             }
         }
 
-        // cs里面的注册信息
         public static void GenBinder()
         {
             using (var fs = File.CreateText(Path.Combine(outputPath, "Binder.cs")))
@@ -281,11 +265,9 @@ namespace bLua
                         var (methods, props) = GetMethodsProps(typeList[i]);
                         var (staticMethods, staticProps) = GetStaticMethodsProps(typeList[i]);
 
-                        // instance members
                         methodList.AddRange(methods);
                         propList.AddRange(props);
 
-                        // static members
                         methodList.AddRange(staticMethods);
                         propList.AddRange(staticProps);
 
@@ -304,7 +286,6 @@ namespace bLua
                                 methodList.Add(p.GetSetMethod());
                         }
 
-                        // TODO: 检查overload, 无法正确overload需要爆出来
 
                         for (int j = 0; j < methodList.Count; ++j)
                         {
@@ -428,7 +409,6 @@ namespace bLua
             }
         }
 
-        // 字段的访问, 必须生成方法了
         private static void WriteFlds(Type type, StreamWriter fs)
         {
             var flds = type.GetFields(AutoWrap.InstanceMemberFlag);
@@ -462,7 +442,6 @@ namespace bLua
                 var args = ctor.GetParameters();
                 fs.Write($"public static ");
 
-                // 返回值, 要处理下, 如果只是一个struct, 可能会遇到只读的问题
                 if (type.IsValueType)
                     fs.Write($"bLua.Box<{GetTypeName(type)}>");
                 else
@@ -552,13 +531,10 @@ namespace bLua
                     thisName = $"{_this}.value";
                 }
 
-                // just like:
-                // int this[int index] { get; set; }
                 if (prop.GetIndexParameters() is var indexParams
                     && indexParams != null
                     && indexParams.Length > 0)
                 {
-                    // TODO: 目前只处理1个的
                     if (indexParams.Length == 1)
                     {
                         var indexTypeName = GetTypeName(indexParams[0].ParameterType);
@@ -633,7 +609,6 @@ namespace bLua
 
                 WriteBlock(fs, () =>
                 {
-                    // array!!!
                     if (type.IsArray)
                     {
                         switch (method.Name)
@@ -668,7 +643,6 @@ namespace bLua
             }
         }
 
-        // 实际传参数的地方
         private static void WriteArgsPass(StreamWriter fs, ParameterInfo[] args)
         {
             int lastIndex = args.Length - 1;
@@ -676,11 +650,9 @@ namespace bLua
             {
                 var arg = args[i];
 
-                // out, ref, 要特殊处理一下
                 if (arg.IsOut)
                     fs.Write("out ");
 
-                // 枚举, 在wrap层都是用int代替的, 要转换一下类型
                 if (arg.ParameterType.IsEnum)
                 {
                     fs.Write('(');
@@ -694,7 +666,6 @@ namespace bLua
             }
         }
 
-        // 实例方法, 需要放一个this的参数
         private static void WriteInstanceMethodArgsDecl(StreamWriter fs, Type type, ParameterInfo[] args)
         {
             fs.Write('(');
@@ -729,7 +700,6 @@ namespace bLua
                     argtype = argtype.GetElementType();
                 }
 
-                // 枚举换成int
                 if (!argtype.IsEnum)
                     fs.Write(GetTypeName(argtype));
                 else
@@ -832,7 +802,6 @@ namespace bLua
         [MenuItem("Tools/bLua/Init")]
         public static void InitSettings()
         {
-            // TODO:
         }
 
     }

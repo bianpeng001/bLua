@@ -29,7 +29,8 @@ namespace bLua
             "ExampleScene",
             "WarScene",
             "UIScene",
-            "LuanDouScene",
+            "FightScene",
+            "URPScene",
         };
 
         private void Awake()

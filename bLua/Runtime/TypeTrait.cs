@@ -14,9 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月21日, 边蓬
-//
 
 using System;
 using System.Collections.Generic;
@@ -25,12 +22,8 @@ using static bLua.LuaLib;
 
 namespace bLua
 {
-    //
-    //
-    //
     public static partial class AutoWrap
     {
-        // 实际对应的函数
         private static void PushBool(IntPtr L, bool value)
         {
             lua_pushboolean(L, value ? -1 : 0);
@@ -108,13 +101,11 @@ namespace bLua
 
         private static void PushValueType<T>(IntPtr L, T value)
         {
-            // TODO: 不支持
             PushObject<Box<T>>(L, new Box<T>() { value = value });
         }
 
         private static T PullValueType<T>(IntPtr L, int pos)
         {
-            // TODO: 不支持
             var box = PullObject<Box<T>>(L, pos);
             return box.value;
         }
@@ -125,7 +116,7 @@ namespace bLua
                 lua_pushnil(L);
             else
             {
-                func.Prepare();
+                func.BeginExecute();
             }
         }
 
@@ -154,9 +145,6 @@ namespace bLua
             }
         }
 
-        //
-        // 如果参数里面,  用了luatable, 记得用完之后要释放, 建议放using语句里面
-        //
         private static LuaTable PullLuaTable(IntPtr L, int pos)
         {
             if (lua_isnil(L, pos))
@@ -172,7 +160,6 @@ namespace bLua
             return table;
         }
 
-        // 放入交换区, 新增一项, 而不是指向旧的. 为了lua端gc的时候, 可以正确释放
         private static void PushObject(IntPtr L, object obj, ClassDefinition cls)
         {
             if (obj == null)
@@ -190,11 +177,8 @@ namespace bLua
                 LogUtil.Assert(addr != IntPtr.Zero);
                 UserDataSetObjHandle(L, -1, objHandle);
 
-                // userdata metatable
                 lua_rawgeti(L, LUA_REGISTRYINDEX, cls.luaref);
-                // like lua code: setmetatable(table, metatable)
                 lua_setmetatable(L, -2);
-                // userdata
             }
         }
 
@@ -210,8 +194,6 @@ namespace bLua
             return (T)Enum.ToObject(typeof(T), intValue);
         }
 
-        // 记录在obj = { [1]=objHandle }
-        // 记录在UserData里面
         private static void PushObject<T>(IntPtr L, T value)
         {
             var type = typeof(T);
@@ -224,7 +206,6 @@ namespace bLua
             if (lua_isnil(L, pos))
                 return default(T);
 
-            // crash???
             if (!lua_isuserdata(L, pos))
                 throw new Exception();
 
@@ -335,7 +316,6 @@ namespace bLua
             }
         }
 
-        // 这个是简单版本的, 有GC
         private static void PushMultRet<T>(IntPtr L, T value)
         {
             if (value is IMultRet ret)
@@ -346,7 +326,6 @@ namespace bLua
             }
         }
 
-        // 无GC的版本, 就是创建的时候, 稍微费点事情
         public static void PushMultRetNoGC<T>(IntPtr L, T value) where T : struct, IMultRet
         {
             value.Push(L);
@@ -373,7 +352,6 @@ namespace bLua
             return dele;
         }
 
-        // 这里可以改成预先注册的形式
         public static void RegisterMultRet<T>(System.Action<IntPtr, T> fun) where T : struct, IMultRet
         {
             multRetCache.Add((typeof(T), fun));
@@ -381,14 +359,10 @@ namespace bLua
 
         #endregion
 
-        // 根据数据类型, 注册对应的实现方法
         public static class TypeTrait<T>
         {
-            // 返回值的数量
             public static int retCount = 1;
-            // 压栈
             public static Push<T> push;
-            // 从栈上读取
             public static Pull<T> pull;
             
             public static void Set(int aretCount, Push<T> apush, Pull<T> apull)
@@ -509,14 +483,9 @@ namespace bLua
                     else
                         throw new NotSupportedException();
 
-                    // 这个是带GC的, 但是代码很简单
-                    //push = (Push<T>)PushMulRet<T>;
 
-                    // 这个是不带GC的, 但是代码丑陋
-                    //push = (Push<T>)PushMultRetNoGC<T>;
                     push = (Push<T>)MakePushMultRet(typeof(Push<T>), typeof(T));
 
-                    // pull 暂时不需要
                     pull = null;
                 }
                 else

@@ -14,21 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月26日, 边蓬
-//
 
 using UnityEngine;
 using static bLua.AutoWrap;
 
 namespace bLua
 {
-    //
-    // unity这边到lua那边对应的模块
-    //
     public class LuaBehaviour : MonoBehaviour
     {
-        // 模块的使用方式, 一般来说, 是不用requre的, 除非很特殊
         public enum ModuleType
         {
             Dofile,
@@ -39,13 +32,11 @@ namespace bLua
         public string path;
         protected LuaTable module;
 
-        // update event callback
         protected LuaFunction onAwake,
             onUpdate,
             onLateUpdate,
             onFixedUpdate;
 
-        // 支持了delegate之后, 就可以做这个功能了
         protected void CreateProperty<T>(
             string name,
             System.Func<T> getter,
@@ -60,19 +51,19 @@ namespace bLua
             }
         }
 
-        // 加载, 根据记录的path
         public void LoadModule(LuaState state)
         {
+            if (string.IsNullOrEmpty(path))
+                path = gameObject.name;
+
             if (mode == ModuleType.Dofile)
                 module = state.DoFileRetTable(path);
             else
                 module = state.Require(path);
 
-            // 固有属性, 而且是只读
             module.SetField("gameObject", gameObject);
             module.SetField("luaBehaviour", this);
 
-            // 动态属性
             CreateProperty("path", () => path, value => path = value);
             CreateProperty("name", () => name, value => name = value);
             CreateProperty("enabled", () => enabled, value => enabled = value);

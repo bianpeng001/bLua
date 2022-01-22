@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/bLua/Example/01_Example/ExampleScene.unity
     guid: cfe4010b024f7b64296eeb1e455ba41a
   - enabled: 1
-    path: Assets/bLua/Example/07_LuanDou/LuanDouScene.unity
+    path: Assets/bLua/Example/07_URP/URPScene.unity
     guid: bccda14bf97c6e04ca8ba5388caf0307
+  - enabled: 1
+    path: Assets/bLua/Example/08_Fight/FightScene.unity
+    guid: 59eeeae32032fa04dba62332d6570392
   m_configObjects: {}

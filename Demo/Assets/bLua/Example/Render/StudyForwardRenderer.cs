@@ -29,7 +29,7 @@ namespace bLua.Render
 
     public sealed class StudyForwardRenderer : ScriptableRenderer
     {
-        private readonly StudyRendererData asset;
+        public readonly StudyRendererData asset;
 
         private StencilState defaultStencilState;
 
@@ -86,9 +86,6 @@ namespace bLua.Render
         public override void Setup(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             var camera = renderingData.cameraData.camera;
-            var mainLightShadows = mainLightShadowCasterPass.Setup(ref renderingData);
-            if (mainLightShadows)
-                EnqueuePass(mainLightShadowCasterPass);
 
             EnqueuePass(studyShadowCasterPass);
             EnqueuePass(renderStudyOpaqueForwardPass);

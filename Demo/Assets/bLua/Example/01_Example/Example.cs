@@ -20,6 +20,22 @@ using UnityEngine;
 
 namespace bLua
 {
+    public class DynTest
+    {
+        private static int seed = 100;
+        public int id = ++seed;
+
+        public static DynTest Create()
+        {
+            return new DynTest();
+        }
+
+        public void SayHello(string msg, int a, float b)
+        {
+            Debug.Log($"{id}: {msg} {a} {b}");
+        }
+    }
+
     public class Example : MonoBehaviour
     {
         private static Example instance;
@@ -38,6 +54,7 @@ namespace bLua
             var (x, y) = a;
             Debug.Log($"{a} {x} {y}");
 
+            AutoWrap.luaRegister.AddAssembly(typeof(Example).Assembly);
             state.DoFile("Test.lua");
 
             using (var tbl = state.Require("Test2.lua"))
@@ -47,10 +64,10 @@ namespace bLua
 
                 using (var func = tbl.GetFunction("SayHello"))
                 {
-                    func.Prepare();
+                    func.BeginExecute();
                     func.Execute(0, 1);
                     var ret = AutoWrap.TypeTrait<int>.pull(state, -1);
-                    func.Cleanup();
+                    func.EndExecute();
                     Debug.Log($"ret: {ret}");
 
                     var ret2 = func.Call<int>();

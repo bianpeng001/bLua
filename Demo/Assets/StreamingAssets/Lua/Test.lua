@@ -134,6 +134,16 @@ local function Test8()
     print('blua.hello', blua.version())
 end
 
+local function Test9()
+    print('test9 begin')
+    local DynTest = AutoWrap.DefineClass({ class = "bLua.DynTest" })
+    local obj = DynTest.Create()
+    local obj2 = DynTest.Create()
+    obj.SayHello(obj, 'hellohellohellohellohello', 1234, 45.67)
+    obj2:SayHello('hellohellohellohellohello', 4321, 76.54)
+    print('test9 end')
+end
+
 Test1()
 Test2()
 Test3()
@@ -142,6 +152,7 @@ Test5()
 Test6()
 Test7()
 Test8()
+Test9()
 
 collectgarbage('collect')
 

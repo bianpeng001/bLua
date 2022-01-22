@@ -14,20 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年6月3日, 边蓬
-//
 
 using System.Collections.Generic;
 
 namespace bLua
 {
-    //
-    //
-    //
     public static class Cs2Lua
     {
-        // 这个写0, 然后在实际msgId编码是从1开始, 在lua那边的存储节约一些
         private static int msgIdSeed = 0;
         private static readonly Dictionary<string, int> msgDict = new Dictionary<string, int>();
 
@@ -44,49 +37,49 @@ namespace bLua
 
         private static void RegisterMessage(string message, int msgId)
         {
-            register.Prepare();
+            register.BeginExecute();
             AutoWrap.TypeTrait<string>.push(state, message);
             AutoWrap.TypeTrait<int>.push(state, msgId);
             register.Execute(2, 0);
-            register.Cleanup();
+            register.EndExecute();
         }
 
         public static void SendMessage<T1>(string message)
         {
-            send.Prepare();
+            send.BeginExecute();
             PushMessage(message);
             send.Execute(1, 0);
-            send.Cleanup();
+            send.EndExecute();
         }
 
         public static void SendMessage<T1>(string message, T1 t1)
         {
-            send.Prepare();
+            send.BeginExecute();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
             send.Execute(2, 0);
-            send.Cleanup();
+            send.EndExecute();
         }
 
         public static void SendMessage<T1, T2>(string message, T1 t1, T2 t2)
         {
-            send.Prepare();
+            send.BeginExecute();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             send.Execute(3, 0);
-            send.Cleanup();
+            send.EndExecute();
         }
 
         public static void SendMessage<T1, T2, T3>(string message, T1 t1, T2 t2, T3 t3)
         {
-            send.Prepare();
+            send.BeginExecute();
             PushMessage(message);
             AutoWrap.TypeTrait<T1>.push(state, t1);
             AutoWrap.TypeTrait<T2>.push(state, t2);
             AutoWrap.TypeTrait<T3>.push(state, t3);
             send.Execute(4, 0);
-            send.Cleanup();
+            send.EndExecute();
         }
 
         private static LuaTable cs2lua;

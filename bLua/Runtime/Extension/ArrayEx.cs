@@ -16,9 +16,6 @@ limitations under the License.
 
 namespace bLua
 {
-    //
-    // 扩展方法, 就是为了让和List保持一致
-    //
     public static class ArrayEx<T>
     {
         public static int get_Count(T[] _this) => _this.Length;

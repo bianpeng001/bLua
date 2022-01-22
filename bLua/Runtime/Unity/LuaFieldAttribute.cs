@@ -21,11 +21,6 @@ using System;
 
 namespace bLua
 {
-    //
-    // 注入到lua那边去
-    // TODO: 刚才觉得注入一个常量过去就有用了, 但是想了想还是不行
-    // 会改的才有用, 如果是gameObject之类的, 是可以注入过去的
-    //
     public class LuaFieldAttribute : Attribute
     {
         public bool nowrap = false;

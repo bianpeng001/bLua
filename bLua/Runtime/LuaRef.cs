@@ -14,16 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月24日, 边蓬
-//
 using System;
 
 namespace bLua
 {
-    //
-    // 一个ref, 其实还要看他的index, 存在哪里
-    //
     public struct LuaRef
     {
         public static int REGISTRYINDEX = LuaLib.LUA_REGISTRYINDEX;
@@ -42,7 +36,6 @@ namespace bLua
                 && luaref != LuaLib.LUA_REFNIL;
         }
 
-        // 释放本luaref
         public void Dispose(LuaState state)
         {
             LuaLib.luaL_unref(state, REGISTRYINDEX, luaref);

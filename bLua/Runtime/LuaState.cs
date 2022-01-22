@@ -14,32 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月11日, 边蓬
-//
 
 
 using AOT;
 using System;
 using System.Collections.Generic;
 using System.Text;
-//using UnityEngine;
 using static bLua.LuaLib;
 
 namespace bLua
 {
 
-    //
-    // 现在只有一个Instance
-    //
     public sealed class LuaState : IDisposable
     {
-        // 记录当前活着的stateList,
-        // 因为Loader当做实例方法的时候, 经常遇到对应的实例state为空的bug, 感觉是不安全啊!!!
-        // 这样记录安全一些
         private static (IntPtr, LuaState)[] stateList;
 
-        // 从lua_State的指针, 来获取luaState, 这个信息还是用得着的
         public static LuaState GetState(IntPtr L)
         {
             for (int i = 0; i < stateList.Length; ++i)
@@ -55,7 +44,6 @@ namespace bLua
 
         #region 对象引用区
 
-        // 被引用的对象都要放这里, 需要在销毁state之前, 销毁
         private readonly List<LuaObject> objList = new List<LuaObject>(512);
 
         internal void AddLuaObject(LuaObject obj)
@@ -100,18 +88,13 @@ namespace bLua
         public void Create()
         {
             L = luaL_newstate();
-            // TODO: 记录一下
             stateList = new (IntPtr, LuaState)[] { (L, this), };
 
-            // libs
             luaL_openlibs(L);
             blua_openlib(L);
-            // gc in generation mode
             lua_gc(L, GCOption.LUA_GCGEN, 20, 100);
-            // print
             lua_register(L, "print", Print);
 
-            // loader
             lua_getglobal(L, "package");
             lua_getfield(L, 1, "searchers");
             lua_pushcfunction(L, Loader);
@@ -295,8 +278,6 @@ namespace bLua
 
         private bool PCall(int args, int rets)
         {
-            //var topBegin = lua_gettop(L);
-            // 0, LUA_MULTRET, 0
             if (lua_pcall(L, args, rets, 0) != ErrorCode.LUA_OK)
             {
                 var msg = lua_tostring(L, -1);
@@ -305,13 +286,9 @@ namespace bLua
 
                 return false;
             }
-            //var topEnd = lua_gettop(L);
-            //if (topEnd != topBegin)
-            //    lua_pop(L, topEnd - topBegin);
             return true;
         }
 
-        // 用来存obj的地方, 根据index访问
         public readonly ObjectCache objCache = new ObjectCache();
 
         public static implicit operator IntPtr(LuaState state) => state.L;

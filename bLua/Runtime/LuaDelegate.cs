@@ -19,19 +19,6 @@ using static bLua.AutoWrap;
 
 namespace bLua
 {
-    //
-    // 一个delegate的实现, 这个比较复杂, 哈哈, 见证奇迹的时刻
-    // 隐隐有跟autowrap那边统一的意思, 但看下来还是现在记录一个int的方法省一些
-    // 这边的需要占的内存大, 弄1w个, 有点舍不得
-    // 这里是一个对象, 无论如何为了那个meta信息, 也要来一个对象
-    // 
-    // 似乎做完了, 我也没想到, 竟然会如此简单, 编辑器crash了几次, 但代码还是很少的
-    // 核心代码:
-    // bLua.LuaDelegate.__call = CallLuaDelegate or function(obj, ...)
-    //     print(obj, ...)
-    // end
-    //
-    // 最后, 我直接把IUnityMethod传给lua使用了
     [Obsolete]
     public class LuaDelegate
     {

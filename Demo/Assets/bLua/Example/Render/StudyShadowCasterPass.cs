@@ -70,7 +70,7 @@ namespace bLua.Render
 
             var light = lightData.visibleLights[mainLightIndex];
 
-            CommandBuffer cmd = CommandBufferPool.Get();
+            CommandBuffer cmd = CommandBufferPool.Get(nameof(StudyShadowCasterPass));
 
             var from = new Vector3(1, 5, -5);
             var to = new Vector3(0, 0, 0);
@@ -102,6 +102,15 @@ namespace bLua.Render
             var projMatrix = Matrix4x4.Ortho(-10, 10, -10, 10, -10, 30);
             cmd.SetProjectionMatrix(projMatrix);
 
+            cmd.SetViewport(new Rect(0, 0, shadowmapSize, shadowmapSize));
+
+            var mat = mainShadowCaster.sharedMaterial;
+            var pass = mat.FindPass("StudyShadowCaster");
+
+            cmd.DrawMesh(mainMesh, Matrix4x4.identity, mat, 0, pass);
+
+            cmd.DrawRenderer(mainShadowCaster, mat, 0, pass);
+
             var normMatrix = new Matrix4x4();
             normMatrix.m00 = 0.5f;
             normMatrix.m11 = 0.5f;
@@ -111,15 +120,6 @@ namespace bLua.Render
             normMatrix.m23 = 0.5f;
 
             normMatrix.m33 = 1.0f;
-
-            cmd.SetViewport(new Rect(0, 0, shadowmapSize, shadowmapSize));
-
-            var mat = mainShadowCaster.sharedMaterial;
-            var pass = mat.FindPass("StudyShadowCaster");
-
-            cmd.DrawMesh(mainMesh, Matrix4x4.identity, mat, 0, pass);
-
-            cmd.DrawRenderer(mainShadowCaster, mat, 0, pass);
 
             cmd.SetGlobalMatrix(RenderUtil._World2Shadow, normMatrix * projMatrix * viewMatrix);
             cmd.SetGlobalTexture(RenderUtil._StudyShadowmapTexture, shadowmapTexture);

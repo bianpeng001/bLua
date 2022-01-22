@@ -14,9 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//
-// 2021年5月26日, 边蓬
-//
 
 using System;
 using System.Diagnostics;
@@ -24,9 +21,6 @@ using System.Text;
 
 namespace bLua
 {
-    //
-    //
-    //
     public static class LogUtil
     {
         public enum LogLevel
@@ -97,13 +91,11 @@ namespace bLua
 
         public static void Debug(string message)
         {
-            //UnityEngine.Debug.Log(message);
             PrintMessage(LogLevel.Debug, message);
         }
 
         public static void Error(string message)
         {
-            //UnityEngine.Debug.LogError(message);
             PrintMessage(LogLevel.Error, message);
         }
 

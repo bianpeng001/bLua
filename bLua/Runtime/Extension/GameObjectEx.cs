@@ -21,9 +21,6 @@ using UnityEngine;
 
 namespace bLua
 {
-    //
-    //
-    //
     public static class GameObjectEx
     {
         public static Component GetComponent2(GameObject _this, Type type)
