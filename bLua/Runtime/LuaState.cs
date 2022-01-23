@@ -130,12 +130,12 @@ namespace bLua
             var top = lua_gettop(L);
 
             var sb = GetState(L).sb;
-            for (int i = 1; i <= top; ++i)
+            for (int idx = 1; idx <= top; ++idx)
             {
                 if (sb.Length > 0)
                     sb.Append(' ');
 
-                var type = lua_type(L, i);
+                var type = lua_type(L, idx);
                 switch (type)
                 {
                     case DataType.LUA_TNIL:
@@ -144,14 +144,14 @@ namespace bLua
 
                     case DataType.LUA_TBOOLEAN:
                         {
-                            var value = AutoWrap.TypeTrait<bool>.pull(L, i);
+                            var value = AutoWrap.TypeTrait<bool>.pull(L, idx);
                             sb.Append(value ? "true" : "false");
                         }
                         break;
 
                     case DataType.LUA_TNUMBER:
                     case DataType.LUA_TSTRING:
-                        sb.Append(lua_tostring(L, i));
+                        sb.Append(lua_tostring(L, idx));
                         break;
 
                     case DataType.LUA_TFUNCTION:
@@ -159,7 +159,7 @@ namespace bLua
                         break;
 
                     case DataType.LUA_TTABLE:
-                        sb.Append(luaL_tostring(L, i));
+                        sb.Append(lua_tostring(L, idx));
                         break;
 
                     case DataType.LUA_TLIGHTUSERDATA:
@@ -168,7 +168,7 @@ namespace bLua
 
                     case DataType.LUA_TUSERDATA:
                         sb.Append("<udata:");
-                        sb.Append(luaL_tostring(L, i));
+                        sb.Append(lua_tostring(L, idx));
                         sb.Append('>');
                         break;
 

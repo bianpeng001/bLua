@@ -454,15 +454,9 @@ namespace bLua
 
         public static string luaL_tostring(IntPtr L, int idx)
         {
-            var ptr = luaL_tolstring(L, idx, out var len);
-            if (ptr == IntPtr.Zero)
-                return null;
+            return lua_tostring(L, idx);
 
-            unsafe
-            {
-                byte* a = (byte*)ptr.ToPointer();
-                return System.Text.Encoding.UTF8.GetString(a, len);
-            }
+
         }
 
         public static void lua_pop(IntPtr L, int n)
