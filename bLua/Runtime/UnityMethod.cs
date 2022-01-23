@@ -39,16 +39,57 @@ namespace bLua
 
             private delegate object PullFunc(IntPtr L, int pos);
 
-            private static object GetObject(Type argType, IntPtr L, int pos)
+            private static readonly Dictionary<Type, PullFunc> cache = new Dictionary<Type, PullFunc>();
+
+            private static object GetObject(Type type, IntPtr L, int pos)
             {
-                var func = (PullFunc)Delegate.CreateDelegate(
+                if (type == typeof(string))
+                    return TypeTrait<string>.pull(L, pos);
+                else if (type.IsClass)
+                    return TypeTrait<object>.pull(L, pos);
+                else if (!type.IsPrimitive && type.IsValueType)
+                {
+                    throw new NotImplementedException();
+                }
+
+                if (cache.TryGetValue(type, out var func))
+                    return func(L, pos);
+
+                func = (PullFunc)Delegate.CreateDelegate(
                     typeof(PullFunc),
-                    pullMethod.MakeGenericMethod(argType));
+                    pullMethod.MakeGenericMethod(type));
+                cache[type] = func;
 
                 return func(L, pos);
             }
 
             private const string MethodName = "Pull";
+
+            private static readonly object[][] argTemps = null;
+
+            private static void DummyAOT()
+            {
+                IntPtr L = IntPtr.Zero;
+
+                Pull<bool>(L, 0);
+                Pull<int>(L, 0);
+                Pull<uint>(L, 0);
+                Pull<long>(L, 0);
+                Pull<ulong>(L, 0);
+                Pull<float>(L, 0);
+                Pull<double>(L, 0);
+
+                Pull<string>(L, 0);
+            }
+
+            static DynMethod()
+            {
+                argTemps = new object[16][];
+                for(int i = 1; i < argTemps.Length; ++i)
+                {
+                    argTemps[i] = new object[i];
+                }
+            }
 
             public int Call(IntPtr L)
             {
@@ -59,15 +100,18 @@ namespace bLua
 
                 var obj = GetObject(method.DeclaringType, L, -count - 1);
 
-                var args = new object[pp.Length];
+                var args = argTemps[pp.Length];
                 for(int i = 0; i < count; ++i)
                 {
                     args[i] = GetObject(pp[i].ParameterType, L, i - count);
                 }
                 
                 var ret = method.Invoke(obj, args);
+                if (method.ReturnType == typeof(void))
+                    return 0;
 
-                return 0;
+                TypeTrait<int>.push(L, 0);
+                return 1;
             }
         }
 

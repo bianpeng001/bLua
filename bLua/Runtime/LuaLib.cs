@@ -25,7 +25,9 @@ namespace bLua
         public static readonly string LuaVendor = "lua.org";
         public static readonly string LuaVersion = "5.4.3";
 
-#if !UNITY_EDITOR && UNITY_IOS
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        const string DLLNAME = "blua";
+#elif !UNITY_EDITOR && UNITY_IOS
         const string DLLNAME = "__Internal";
 #else
         const string DLLNAME = "lua54";

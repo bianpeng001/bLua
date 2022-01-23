@@ -64,6 +64,16 @@ namespace bLua
             return (long)lua_tointeger(L, pos);
         }
 
+        private static void PushULong(IntPtr L, ulong value)
+        {
+            PushLong(L, (long)value);
+        }
+
+        private static ulong PullULong(IntPtr L, int pos)
+        {
+            return (ulong)PullLong(L, pos);
+        }
+
         private static float PullFloat(IntPtr L, int pos)
         {
             return (float)lua_tonumber(L, pos);
@@ -449,6 +459,11 @@ namespace bLua
                 {
                     push = (Push<long>)PushLong as Push<T>;
                     pull = (Pull<long>)PullLong as Pull<T>;
+                }
+                else if (type == typeof(ulong))
+                {
+                    push = (Push<ulong>)PushULong as Push<T>;
+                    pull = (Pull<ulong>)PullULong as Pull<T>;
                 }
                 else if (type == typeof(float))
                 {
