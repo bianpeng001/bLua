@@ -112,9 +112,9 @@ namespace bLua
         public int FindAllMethods(
             ClassDefinition cls,
             string methodName,
-            List<MethodInfo> methodList)
+            List<MethodInfo> matchedList)
         {
-            methodList.Clear();
+            matchedList.Clear();
 
             if (cls.methodList == null)
             {
@@ -127,19 +127,32 @@ namespace bLua
 
                 cls.methodList.AddRange(cls.type.GetMethods(flag));
 
-                cls.methodList.AddRange(cls.type.GetMethods(BindingFlags.Instance |
-                    BindingFlags.Public |
-                    BindingFlags.DeclaredOnly));
+                if (cls.helpClass == null)
+                {
+                    cls.dynMethodList = new List<MethodInfo>();
+                    cls.dynMethodList.AddRange(cls.type.GetMethods(BindingFlags.Instance |
+                        BindingFlags.Public |
+                        BindingFlags.DeclaredOnly));
+                }
             }
 
-            for (int i = 0; i < cls.methodList.Count; ++i)
+            static void FindMatched(List<MethodInfo> source, string methodName, List<MethodInfo> matched)
             {
-                var method = cls.methodList[i];
-                if (method.Name == methodName)
-                    methodList.Add(method);
+                if (source == null)
+                    return;
+
+                for (int i = 0; i < source.Count; ++i)
+                {
+                    var m = source[i];
+                    if (m.Name == methodName)
+                        matched.Add(m);
+                }
             }
 
-            if (methodList.Count == 0)
+            FindMatched(cls.methodList, methodName, matchedList);
+            FindMatched(cls.dynMethodList, methodName, matchedList);
+
+            if (matchedList.Count == 0)
             {
                 var baseClass = cls.baseClass;
                 if (baseClass == null)
@@ -149,13 +162,13 @@ namespace bLua
                     baseClass = typeof(object);
                 }
 
-                return FindAllMethods(
+                FindAllMethods(
                     GetClass(baseClass),
                     methodName,
-                    methodList);
+                    matchedList);
             }
 
-            return methodList.Count;
+            return matchedList.Count;
         }
 
     }

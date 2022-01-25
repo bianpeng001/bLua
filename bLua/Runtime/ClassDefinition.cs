@@ -35,6 +35,7 @@ namespace bLua
         public Type extClass;
 
         public List<MethodInfo> methodList;
+        public List<MethodInfo> dynMethodList;
         
         public readonly int classId;
 
@@ -43,6 +44,7 @@ namespace bLua
         {
             this.classId = classId;
         }
+
     }
 
 }
