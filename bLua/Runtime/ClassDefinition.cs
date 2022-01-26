@@ -35,6 +35,8 @@ namespace bLua
         public Type extClass;
 
         public List<MethodInfo> methodList;
+
+        public bool isDynClass;
         public List<MethodInfo> dynMethodList;
         
         public readonly int classId;

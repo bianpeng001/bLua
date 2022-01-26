@@ -76,7 +76,9 @@ namespace bLua
                 if (type != null)
                 {
                     Add(fullname, type, null, null);
-                    return typeList[typeList.Count - 1];
+                    var cls = typeList[typeList.Count - 1];
+                    cls.isDynClass = true;
+                    return cls;
                 }
             }
 
@@ -126,31 +128,35 @@ namespace bLua
                     cls.methodList.AddRange(cls.helpClass.GetMethods(flag));
 
                 cls.methodList.AddRange(cls.type.GetMethods(flag));
-
-                if (cls.helpClass == null)
-                {
-                    cls.dynMethodList = new List<MethodInfo>();
-                    cls.dynMethodList.AddRange(cls.type.GetMethods(BindingFlags.Instance |
-                        BindingFlags.Public |
-                        BindingFlags.DeclaredOnly));
-                }
             }
 
-            static void FindMatched(List<MethodInfo> source, string methodName, List<MethodInfo> matched)
+            if (cls.isDynClass && cls.dynMethodList == null)
             {
-                if (source == null)
+                var flag = BindingFlags.Instance |
+                    BindingFlags.Public |
+                    BindingFlags.DeclaredOnly;
+
+                cls.dynMethodList = new List<MethodInfo>();
+                cls.dynMethodList.AddRange(cls.type.GetMethods(flag));
+            }
+
+            static void FindMatched(List<MethodInfo> aList, string methodName, List<MethodInfo> matched)
+            {
+                if (aList == null)
                     return;
 
-                for (int i = 0; i < source.Count; ++i)
+                for (int i = 0; i < aList.Count; ++i)
                 {
-                    var m = source[i];
+                    var m = aList[i];
                     if (m.Name == methodName)
                         matched.Add(m);
                 }
             }
 
             FindMatched(cls.methodList, methodName, matchedList);
-            FindMatched(cls.dynMethodList, methodName, matchedList);
+
+            if (cls.isDynClass)
+                FindMatched(cls.dynMethodList, methodName, matchedList);
 
             if (matchedList.Count == 0)
             {
