@@ -19,6 +19,7 @@ limitations under the License.
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using static bLua.LuaLib;
 
 namespace bLua
 {
@@ -781,11 +782,16 @@ namespace bLua
                 }
             }
 
+            private (DataType luaType, Type csType)[] args = new (DataType, Type)[16];
+
             public int Call(IntPtr L)
             {
                 IUnityMethod wrappedMethod = null;
 
                 var argumentCount = LuaLib.lua_gettop(L) - 1;
+
+                GetArgsType(L, argumentCount);
+                
 
                 for (int i = 0; i < dispatch.Length; ++i)
                 {
@@ -799,6 +805,7 @@ namespace bLua
                             dispatch[i].method = null;
                             dispatch[i].wrappedMethod = wrappedMethod;
                         }
+
                         break;
                     }
                 }
@@ -809,6 +816,22 @@ namespace bLua
                 }
 
                 return wrappedMethod.Call(L);
+            }
+
+            private void GetArgsType(IntPtr L, int argc)
+            {
+                for (int i = 0; i < argc; ++i)
+                {
+                    var pos = i - argc;
+                    var type = lua_type(L, pos);
+                    args[i] = (type, null);
+
+                    if (type == DataType.LUA_TLIGHTUSERDATA)
+                    {
+                        var obj = TypeTrait<object>.pull(L, pos);
+                        args[i].csType = obj.GetType();
+                    }
+                }
             }
         }
 

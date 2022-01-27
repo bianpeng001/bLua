@@ -109,7 +109,7 @@ namespace bLua
             return 0;
         }
 
-        private static readonly List<MethodInfo> tempMethodList = new List<MethodInfo>(8);
+        private static readonly List<MethodInfo> matchedList = new List<MethodInfo>(8);
 
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
         private static int RegisterUnityMethod(IntPtr L)
@@ -120,17 +120,17 @@ namespace bLua
             var methodName = lua_tostring(L, -1);
 
             var cls = luaRegister.GetClass(classId);
-            luaRegister.FindAllMethods(cls, methodName, tempMethodList);
+            luaRegister.FindAllMethods(cls, methodName, matchedList);
 
-            if (tempMethodList.Count == 0)
+            if (matchedList.Count == 0)
             {
-                LogUtil.Error($"method not exists: {cls.name}.{methodName}@{argumentCount}");
+                LogUtil.Debug($"method not exists: {cls.name}.{methodName}@{argumentCount}");
                 return 0;
             }
-            else if (tempMethodList.Count == 1)
+            else if (matchedList.Count == 1)
             {
 
-                var method = tempMethodList[0];
+                var method = matchedList[0];
                 if (method.IsStatic)
                     TypeTrait<IUnityMethod>.push(L, CreateUnityMethod(method));
                 else
@@ -140,8 +140,8 @@ namespace bLua
             }
             else
             {
-                var method = new OverloadResolver(tempMethodList);
-                tempMethodList.Clear();
+                var method = new OverloadResolver(matchedList);
+                matchedList.Clear();
                 TypeTrait<IUnityMethod>.push(L, method);
                 
                 return 1;
@@ -265,7 +265,7 @@ namespace bLua
 
             state.Register("RegisterUnityClass", RegisterUnityClass);
             state.Register("RegisterUnityMethod", RegisterUnityMethod);
-            state.Register("CallUnityMethod", CallUnityMethod); 
+            state.Register("CallUnityMethod", CallUnityMethod);
 
             state.Register("CollectUnityObject", CollectUnityObject);
             state.Register("UnityObjectEqual", UnityObjectEqual);
