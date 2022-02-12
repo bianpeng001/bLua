@@ -95,7 +95,9 @@ end
 local function Test6()
     local LuaBehaviour = require('Core/LuaBehaviour')
     local module = LuaBehaviour.CreateModule()
-    module.CreateProperty('name', function () return 'this is name' end)
+    module.CreateProperty('name', function()
+        return 'this is name'
+    end)
 
     print('module.name', module.name)
 end

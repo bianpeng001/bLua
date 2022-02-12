@@ -106,7 +106,7 @@ namespace bLua
         [MonoPInvokeCallbackAttribute(typeof(lua_CFunction))]
         private static int Loader(IntPtr L)
         {
-            var path = lua_tostring(L, 1);
+            var path = blua_tostring(L, 1);
 
             var state = GetState(L);
             var buffer = state.loader.Load(path);
@@ -151,7 +151,7 @@ namespace bLua
 
                     case DataType.LUA_TNUMBER:
                     case DataType.LUA_TSTRING:
-                        sb.Append(lua_tostring(L, idx));
+                        sb.Append(blua_tostring(L, idx));
                         break;
 
                     case DataType.LUA_TFUNCTION:
@@ -159,7 +159,7 @@ namespace bLua
                         break;
 
                     case DataType.LUA_TTABLE:
-                        sb.Append(lua_tostring(L, idx));
+                        sb.Append(blua_tostring(L, idx));
                         break;
 
                     case DataType.LUA_TLIGHTUSERDATA:
@@ -168,7 +168,7 @@ namespace bLua
 
                     case DataType.LUA_TUSERDATA:
                         sb.Append("<udata:");
-                        sb.Append(lua_tostring(L, idx));
+                        sb.Append(blua_tostring(L, idx));
                         sb.Append('>');
                         break;
 
@@ -280,7 +280,7 @@ namespace bLua
         {
             if (lua_pcall(L, args, rets, 0) != ErrorCode.LUA_OK)
             {
-                var msg = lua_tostring(L, -1);
+                var msg = blua_tostring(L, -1);
                 LogUtil.Error(msg);
                 lua_pop(L, 1);
 

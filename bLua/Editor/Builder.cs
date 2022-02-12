@@ -79,13 +79,13 @@ namespace bLua
             if (isRelease)
             {
                 PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Release);
-                PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"\" --linker-flags=\"\"");
+                PlayerSettings.SetAdditionalIl2CppArgs("");
             }
             else
             {
 
                 PlayerSettings.SetIl2CppCompilerConfiguration(group, Il2CppCompilerConfiguration.Release);
-                PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"\" --linker-flags=\"\"");
+                PlayerSettings.SetAdditionalIl2CppArgs("");
             }
 
             var symbols = new HashSet<string>();
@@ -114,7 +114,7 @@ namespace bLua
                     PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
                     PlayerSettings.Android.splashScreenScale = AndroidSplashScreenScale.Center;
                     
-                    EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
+                    EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
 
                     EditorUserBuildSettings.androidCreateSymbolsZip = true;
                     PlayerSettings.Android.bundleVersionCode = buildNumber;
@@ -175,7 +175,7 @@ namespace bLua
         {
             DoBuild(BuildTargetGroup.Android,
                 BuildTarget.Android,
-                "BuildAndroid/Demo.apk",
+                "BuildAndroid/Demo",
                 false);
         }
 
@@ -184,7 +184,7 @@ namespace bLua
         {
             DoBuild(BuildTargetGroup.Android,
                 BuildTarget.Android,
-                "BuildAndroid/Demo.apk",
+                "BuildAndroid/Demo",
                 true);
         }
 

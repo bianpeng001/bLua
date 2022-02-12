@@ -454,7 +454,7 @@ namespace bLua
 
         public static string luaL_tostring(IntPtr L, int idx)
         {
-            return lua_tostring(L, idx);
+            return blua_tostring(L, idx);
 
 
         }
@@ -511,6 +511,48 @@ namespace bLua
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void UserDataSetObjHandle(IntPtr L, int pos, int value);
+
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern int blua_str2buf(IntPtr L, int pos, byte* buf, int bufsize, byte* buf2, int bufsize2);
+
+        private static byte[] strBuffer = new byte[1024 * 50];
+
+        public static string blua_tostring(IntPtr L, int pos)
+        {
+            string str = null;
+            int len = 0;
+            len = Copy2Buffer(L, pos, strBuffer);
+
+            if (len < 0)
+                throw new Exception();
+            else if (len == 0)
+                return null;
+            else if (len <= strBuffer.Length)
+            {
+                str = System.Text.Encoding.UTF8.GetString(strBuffer, 0, len);
+            }
+            else
+            {
+                byte[] strBuffer2 = new byte[len];
+                len = Copy2Buffer(L, pos, strBuffer2);
+                str = System.Text.Encoding.UTF8.GetString(strBuffer2, 0, len);
+            }
+
+            return str;
+
+            static unsafe int Copy2Buffer(IntPtr L, int pos, byte[] buffer)
+            {
+                int len;
+                
+                fixed (byte* buf = buffer)
+                {
+                    len = blua_str2buf(L, pos, buf, buffer.Length, buf, buffer.Length);
+                }
+
+                return len;
+            }
+        }
 
     }
 

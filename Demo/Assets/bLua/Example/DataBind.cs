@@ -135,7 +135,7 @@ namespace bLua
                 return 0;
 
             LogUtil.Assert(lua_isstring(L, 2));
-            var k = lua_tostring(L, 2);
+            var k = blua_tostring(L, 2);
 
             var v = new Data();
             if (lua_isnil(L, 3))
@@ -143,7 +143,7 @@ namespace bLua
             else if (lua_isinteger(L, 3))
                 v = lua_tointeger(L, 3);
             else if (lua_isstring(L, 3))
-                v = lua_tostring(L, 3);
+                v = blua_tostring(L, 3);
             else if (lua_isnumber(L, 3))
                 v = lua_tonumber(L, 3);
 

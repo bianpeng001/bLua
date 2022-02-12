@@ -56,7 +56,7 @@ namespace bLua
             var err = lua_pcall(state, nargs, nresultes, 0);
             if (err != ErrorCode.LUA_OK)
             {
-                var msg = lua_tostring(state, -1);
+                var msg = blua_tostring(state, -1);
                 lua_pop(state, 1);
                 throw new Exception(msg);
             }

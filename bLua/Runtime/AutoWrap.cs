@@ -117,7 +117,7 @@ namespace bLua
             CheckArgumentCount(L, 2);
             var argumentCount = lua_gettop(L);
             var classId = TypeTrait<int>.pull(L, -2);
-            var methodName = lua_tostring(L, -1);
+            var methodName = blua_tostring(L, -1);
 
             var cls = luaRegister.GetClass(classId);
             luaRegister.FindAllMethods(cls, methodName, matchedList);
@@ -199,7 +199,7 @@ namespace bLua
         {
             CheckArgumentCount(L, 2);
             
-            var className = lua_tostring(L, 1);
+            var className = blua_tostring(L, 1);
             var cls = luaRegister.GetClass(className);
 
             LogUtil.Assert(lua_istable(L, 2));
