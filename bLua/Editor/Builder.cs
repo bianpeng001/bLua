@@ -113,7 +113,7 @@ namespace bLua
                     PlayerSettings.Android.blitType = AndroidBlitType.Auto;
                     PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
                     PlayerSettings.Android.splashScreenScale = AndroidSplashScreenScale.Center;
-                    
+
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
 
                     EditorUserBuildSettings.androidCreateSymbolsZip = true;
